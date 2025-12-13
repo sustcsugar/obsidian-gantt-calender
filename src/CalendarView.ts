@@ -258,7 +258,7 @@ export class CalendarView extends ItemView {
 	private renderMonthView(container: HTMLElement): void {
 		const year = this.currentDate.getFullYear();
 		const month = this.currentDate.getMonth() + 1;
-		const monthData = generateMonthCalendar(year, month);
+		const monthData = generateMonthCalendar(year, month, !!(this.plugin?.settings?.startOnMonday));
 
 		const monthContainer = container.createDiv('calendar-month-view');
 
