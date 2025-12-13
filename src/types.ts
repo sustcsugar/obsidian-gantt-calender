@@ -17,6 +17,7 @@ export interface CalendarDay {
 	weekday: number; // 0-6, 0 = Sunday
 	lunarText?: string; // 农历显示文本
 	festival?: string; // 节日名称
+	festivalType?: 'solar' | 'lunar' | 'solarTerm'; // 节日类型：阳历、农历、节气
 }
 
 export interface CalendarWeek {

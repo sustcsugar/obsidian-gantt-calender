@@ -214,6 +214,9 @@ export class CalendarView extends ItemView {
 					lunarEl.addClass('calendar-lunar-text');
 					if (day.festival) {
 						lunarEl.addClass('festival');
+						if (day.festivalType) {
+							lunarEl.addClass(`festival-${day.festivalType}`);
+						}
 					}
 				}
 				
@@ -296,6 +299,9 @@ export class CalendarView extends ItemView {
 					lunarEl.addClass('calendar-lunar-text');
 					if (day.festival) {
 						lunarEl.addClass('festival');
+						if (day.festivalType) {
+							lunarEl.addClass(`festival-${day.festivalType}`);
+						}
 					}
 				}
 				

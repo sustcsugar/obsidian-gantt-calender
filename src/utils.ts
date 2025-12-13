@@ -74,6 +74,7 @@ export function generateMonthCalendar(year: number, month: number, startOnMonday
 			weekday: date.getDay(),
 			lunarText: getShortLunarText(date),
 			festival: lunarInfo.festival,
+			festivalType: lunarInfo.festivalType,
 		});
 	}
 
@@ -89,6 +90,7 @@ export function generateMonthCalendar(year: number, month: number, startOnMonday
 			weekday: date.getDay(),
 			lunarText: getShortLunarText(date),
 			festival: lunarInfo.festival,
+			festivalType: lunarInfo.festivalType,
 		});
 	}
 
@@ -108,6 +110,7 @@ export function generateMonthCalendar(year: number, month: number, startOnMonday
 			weekday: date.getDay(),
 			lunarText: getShortLunarText(date),
 			festival: lunarInfo.festival,
+			festivalType: lunarInfo.festivalType,
 		});
 	}
 

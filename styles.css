@@ -185,8 +185,22 @@ Gantt Calendar Plugin Styles - 甘特日历
 }
 
 .calendar-lunar-text.festival {
-	color: #e74c3c;
 	font-weight: 600;
+}
+
+/* 阳历节日 - 红色 */
+.calendar-lunar-text.festival-solar {
+	color: #e74c3c;
+}
+
+/* 农历传统节日 - 橙色 */
+.calendar-lunar-text.festival-lunar {
+	color: #e8a041;
+}
+
+/* 二十四节气 - 浅绿色 */
+.calendar-lunar-text.festival-solarTerm {
+	color: #52c41a;
 }
 
 .calendar-day:hover {
@@ -306,8 +320,22 @@ Gantt Calendar Plugin Styles - 甘特日历
 }
 
 .calendar-day-cell .calendar-lunar-text.festival {
-	color: #e74c3c;
 	font-weight: 600;
+}
+
+/* 月视图：阳历节日 - 红色 */
+.calendar-day-cell .calendar-lunar-text.festival-solar {
+	color: #e74c3c;
+}
+
+/* 月视图：农历传统节日 - 橙色 */
+.calendar-day-cell .calendar-lunar-text.festival-lunar {
+	color: #e8a041;
+}
+
+/* 月视图：二十四节气 - 浅绿色 */
+.calendar-day-cell .calendar-lunar-text.festival-solarTerm {
+	color: #52c41a;
 }
 
 .calendar-day-cell:hover {

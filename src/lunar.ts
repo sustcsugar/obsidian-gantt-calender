@@ -52,6 +52,7 @@ export interface LunarDate {
 	animal: string;
 	solarTerm: string;
 	festival: string;
+	festivalType?: 'solar' | 'lunar' | 'solarTerm'; // 节日类型
 }
 
 // 获取某年的农历信息
@@ -152,8 +153,8 @@ export function solarToLunar(date: Date): LunarDate {
 	const ganzhiYear = Gan[ganIndex] + Zhi[zhiIndex];
 	const animal = Animals[zhiIndex];
 
-	// 获取节日
-	const festival = getFestival(date, lunarMonth, lunarDay, isLeapMonth);
+	// 获取节日（包括节气）
+	const festivalInfo = getFestival(date, lunarMonth, lunarDay, isLeapMonth);
 	const solarTerm = getSolarTerm(date);
 
 	return {
@@ -166,12 +167,13 @@ export function solarToLunar(date: Date): LunarDate {
 		ganzhiYear,
 		animal,
 		solarTerm,
-		festival,
+		festival: festivalInfo.name,
+		festivalType: festivalInfo.type || (solarTerm ? 'solarTerm' : undefined),
 	};
 }
 
-// 获取节日
-function getFestival(date: Date, lunarMonth: number, lunarDay: number, isLeapMonth: boolean): string {
+// 获取节日，返回节日名称和类型
+function getFestival(date: Date, lunarMonth: number, lunarDay: number, isLeapMonth: boolean): { name: string; type?: 'solar' | 'lunar' | 'solarTerm' } {
 	const month = date.getMonth() + 1;
 	const day = date.getDate();
 
@@ -208,13 +210,13 @@ function getFestival(date: Date, lunarMonth: number, lunarDay: number, isLeapMon
 
 	const solarKey = `${month}-${day}`;
 	if (solarFestivals[solarKey]) {
-		return solarFestivals[solarKey];
+		return { name: solarFestivals[solarKey], type: 'solar' };
 	}
 
 	if (!isLeapMonth) {
 		const lunarKey = `${lunarMonth}-${lunarDay}`;
 		if (lunarFestivals[lunarKey]) {
-			return lunarFestivals[lunarKey];
+			return { name: lunarFestivals[lunarKey], type: 'lunar' };
 		}
 	}
 
@@ -224,14 +226,14 @@ function getFestival(date: Date, lunarMonth: number, lunarDay: number, isLeapMon
 		nextDay.setDate(date.getDate() + 1);
 		const nextLunar = solarToLunar(nextDay);
 		if (nextLunar.lunarMonth === 1 && nextLunar.lunarDay === 1) {
-			return '除夕';
+			return { name: '除夕', type: 'lunar' };
 		}
 	}
 	if (lunarMonth === 12 && lunarDay === 30) {
-		return '除夕';
+		return { name: '除夕', type: 'lunar' };
 	}
 
-	return '';
+	return { name: '' };
 }
 
 // 二十四节气数据（简化版）
@@ -248,23 +250,50 @@ function getSolarTerm(date: Date): string {
 	const month = date.getMonth();
 	const day = date.getDate();
 
-	// 简化的节气日期对应（每月两个节气，大约在6号和21号附近）
-	const termDates = [
-		[6, 20], [4, 19], [6, 21], [19, 20], [6, 21], [21, 20],
-		[5, 20], [20, 21], [6, 21], [21, 22], [6, 21], [22, 22],
-		[7, 23], [23, 23], [8, 23], [23, 23], [8, 23], [23, 23],
-		[8, 23], [24, 23], [8, 22], [22, 22], [7, 22], [22, 22]
-	];
+	// 节气日期对应（每年每个节气的具体日期）
+	// 格式：[1月的小寒, 1月的大寒, 2月的立春, ...]
+	// 这是一个简化的对应表，实际应该根据年份调整
+	const termDates: { [key: string]: string } = {
+		// 1月
+		'1-5': '小寒',
+		'1-20': '大寒',
+		// 2月
+		'2-4': '立春',
+		'2-19': '雨水',
+		// 3月
+		'3-6': '惊蛰',
+		'3-21': '春分',
+		// 4月
+		'4-5': '清明',
+		'4-20': '谷雨',
+		// 5月
+		'5-6': '立夏',
+		'5-21': '小满',
+		// 6月
+		'6-6': '芒种',
+		'6-21': '夏至',
+		// 7月
+		'7-7': '小暑',
+		'7-23': '大暑',
+		// 8月
+		'8-8': '立秋',
+		'8-23': '处暑',
+		// 9月
+		'9-8': '白露',
+		'9-23': '秋分',
+		// 10月
+		'10-8': '寒露',
+		'10-23': '霜降',
+		// 11月
+		'11-7': '立冬',
+		'11-22': '小雪',
+		// 12月
+		'12-7': '大雪',
+		'12-21': '冬至',
+	};
 
-	const termIndex = month * 2;
-	if (Math.abs(day - termDates[termIndex][0]) <= 1) {
-		return solarTerms[termIndex];
-	}
-	if (Math.abs(day - termDates[termIndex][1]) <= 1) {
-		return solarTerms[termIndex + 1];
-	}
-
-	return '';
+	const key = `${month + 1}-${day}`;
+	return termDates[key] || '';
 }
 
 // 获取简短的农历显示（用于小格子显示）
