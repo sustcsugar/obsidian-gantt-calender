@@ -209,10 +209,10 @@ export class CalendarView extends ItemView {
 				this.render();
 			});
 
-			// 刷新按钮（图标模式 + 悬浮提示）
 			const refreshBtn = right.createEl('button', { cls: 'calendar-view-btn icon-btn', attr: { title: '刷新任务' } });
 			setIcon(refreshBtn, 'rotate-ccw');
 			refreshBtn.addEventListener('click', () => this.render());
+			right.appendChild(refreshBtn);
 		} else {
 			// 日历视图功能区：上一期/今天/下一期 + 子视图选择
 			const navButtons = right.createDiv('calendar-nav-buttons');
@@ -242,6 +242,11 @@ export class CalendarView extends ItemView {
 				if (type === this.viewType) btn.addClass('active');
 				btn.onclick = () => this.switchView(type as CalendarViewType);
 			});
+
+			// 刷新按钮（图标模式 + 悬浮提示）
+			const refreshBtn = right.createEl('button', { cls: 'calendar-view-btn icon-btn', attr: { title: '刷新任务' } });
+			setIcon(refreshBtn, 'rotate-ccw');
+			refreshBtn.addEventListener('click', () => this.render());
 		}
 	}
 
