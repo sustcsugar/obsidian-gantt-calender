@@ -568,9 +568,8 @@ export class CalendarView extends ItemView {
 		checkbox.disabled = true;
 		checkbox.addClass('gantt-task-checkbox');
 
-		// Task content with global filter prefix if configured
-		const prefix = (this.plugin?.settings?.globalTaskFilter || '').trim();
-		const displayText = prefix ? `${prefix} ${task.content}` : task.content;
+		// Task content: only clean description (no attributes)
+		const displayText = this.cleanTaskDescription(task.content);
 		taskItem.createEl('span', { text: displayText, cls: 'gantt-task-text' });
 
 		// Priority badge
@@ -658,6 +657,20 @@ export class CalendarView extends ItemView {
 
 	private formatDateForDisplay(date: Date): string {
 		return formatDate(date, 'YYYY-MM-DD');
+	}
+
+	// Remove Tasks/Dataview attribute markers from task text
+	private cleanTaskDescription(raw: string): string {
+		let text = raw;
+		// Remove Tasks emoji-based attributes with dates/values
+		text = text
+			.replace(/\s*(🔺|⏫|🔼|🔽|⏬)\b/g, '')
+			.replace(/\s*(➕|🛫|⏳|📅|❌|✅)\s*\d{4}-\d{2}-\d{2}\b/g, '');
+		// Remove Dataview [field:: value] blocks
+		text = text.replace(/\s*\[(priority|created|start|scheduled|due|cancelled|completion)::[^\]]+\]/g, '');
+		// Collapse multiple spaces
+		text = text.replace(/\s{2,}/g, ' ').trim();
+		return text;
 	}
 
 	public switchView(type: CalendarViewType): void {
