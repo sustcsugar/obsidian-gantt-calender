@@ -959,10 +959,10 @@ Gantt Calendar Plugin Styles - 甘特日历
 .gantt-task-filter-buttons {
 	display: flex;
 	align-items: center;
-	gap: 8px;
-	padding: 8px 0;
-	border-bottom: 1px solid var(--background-modifier-border);
-	margin-bottom: 8px;
+	gap: 6px;
+	padding: 0;
+	border: none;
+	margin: 0;
 }
 
 .gantt-filter-label {
