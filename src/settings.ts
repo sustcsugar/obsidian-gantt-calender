@@ -226,24 +226,14 @@ export class GanttCalendarSettingTab extends PluginSettingTab {
 					this.plugin.settings.yearHeatmapEnabled = value;
 					await this.plugin.saveSettings();
 					this.plugin.refreshCalendarViews();
+					// 切换显示色卡设置
+					this.display();
 				}));
 
-		// 热力图色卡选择（可视化）
-		new Setting(containerEl)
-			.setName('热力图配色方案')
-			.setDesc('选择任务热力图的颜色梯度')
-			.addDropdown(drop => {
-				// 使用色块字符展示色卡（简单可视化）；实际效果在年视图渲染
-				drop.addOption('blue', '▏▎▍▌▋▊▉ 蓝色');
-				drop.addOption('green', '▏▎▍▌▋▊▉ 绿色');
-				drop.addOption('red', '▏▎▍▌▋▊▉ 红色');
-				drop.setValue(this.plugin.settings.yearHeatmapPalette);
-				drop.onChange(async (value) => {
-					this.plugin.settings.yearHeatmapPalette = value as 'blue' | 'green' | 'red';
-					await this.plugin.saveSettings();
-					this.plugin.refreshCalendarViews();
-				});
-			});
+		// 热力图色卡选择（平铺单选色卡）
+		if (this.plugin.settings.yearHeatmapEnabled) {
+			this.createHeatmapPaletteSetting(containerEl);
+		}
 
 		// ===== 任务视图设置 =====
 		containerEl.createEl('h2', { text: '任务视图设置' });
@@ -316,6 +306,61 @@ export class GanttCalendarSettingTab extends PluginSettingTab {
 					this.plugin.refreshTaskViews();
 				}));
 
+	}
+
+	private createHeatmapPaletteSetting(containerEl: HTMLElement): void {
+		const settingDiv = containerEl.createDiv('heatmap-palette-setting');
+		const labelDiv = settingDiv.createDiv('heatmap-palette-label');
+		labelDiv.createEl('div', { text: '热力图配色方案', cls: 'heatmap-palette-name' });
+		labelDiv.createEl('div', { text: '选择任务热力图的颜色梯度', cls: 'heatmap-palette-desc' });
+
+		const palettes: Array<{ key: 'blue'|'green'|'red'; colors: string[]; label: string }> = [
+			{ key: 'blue', label: '蓝色', colors: [
+				'rgba(56, 132, 255, 0.12)',
+				'rgba(56, 132, 255, 0.22)',
+				'rgba(56, 132, 255, 0.32)',
+				'rgba(56, 132, 255, 0.44)',
+				'rgba(56, 132, 255, 0.58)'
+			] },
+			{ key: 'green', label: '绿色', colors: [
+				'rgba(82, 196, 26, 0.12)',
+				'rgba(82, 196, 26, 0.22)',
+				'rgba(82, 196, 26, 0.32)',
+				'rgba(82, 196, 26, 0.44)',
+				'rgba(82, 196, 26, 0.58)'
+			] },
+			{ key: 'red', label: '红色', colors: [
+				'rgba(231, 76, 60, 0.12)',
+				'rgba(231, 76, 60, 0.22)',
+				'rgba(231, 76, 60, 0.32)',
+				'rgba(231, 76, 60, 0.44)',
+				'rgba(231, 76, 60, 0.58)'
+			] },
+		];
+
+		const listDiv = settingDiv.createDiv('heatmap-palette-list');
+		palettes.forEach(p => {
+			const option = listDiv.createDiv('heatmap-palette-option');
+			option.setAttr('data-palette', p.key);
+			const bars = option.createDiv('heatmap-palette-bars');
+			p.colors.forEach(c => {
+				const bar = bars.createDiv('heatmap-palette-bar');
+				(bar as HTMLElement).style.backgroundColor = c;
+			});
+			option.createEl('span', { text: p.label, cls: 'heatmap-palette-label-text' });
+			// 初始选中态
+			if (this.plugin.settings.yearHeatmapPalette === p.key) {
+				(option as HTMLElement).classList.add('selected');
+			}
+			option.addEventListener('click', async () => {
+				this.plugin.settings.yearHeatmapPalette = p.key;
+				await this.plugin.saveSettings();
+				// 选中态更新
+				Array.from(listDiv.children).forEach(el => el.classList.remove('selected'));
+				(option as HTMLElement).classList.add('selected');
+				this.plugin.refreshCalendarViews();
+			});
+		});
 	}
 
 	private createColorSetting(

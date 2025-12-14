@@ -1567,3 +1567,74 @@ Gantt Calendar Plugin Styles - 甘特日历
 	line-height: 1.6;
 	color: var(--text-normal);
 }
+
+/* Heatmap palette setting (tiled single-select) */
+.heatmap-palette-setting {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 12px 0;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.heatmap-palette-label {
+	padding: 0 10px;
+}
+
+.heatmap-palette-name {
+	font-weight: 600;
+	color: var(--text-normal);
+	margin-bottom: 4px;
+}
+
+.heatmap-palette-desc {
+	font-size: 12px;
+	color: var(--text-muted);
+}
+
+.heatmap-palette-list {
+	display: flex;
+	gap: 12px;
+	padding: 8px 10px;
+	flex-wrap: wrap;
+}
+
+.heatmap-palette-option {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 10px;
+	border: 2px solid transparent;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	background: var(--background-secondary);
+}
+
+.heatmap-palette-option:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+.heatmap-palette-option.selected {
+	border-color: var(--interactive-accent);
+}
+
+.heatmap-palette-bars {
+	display: grid;
+	grid-auto-flow: column;
+	grid-auto-columns: 14px;
+	gap: 3px;
+}
+
+.heatmap-palette-bar {
+	width: 14px;
+	height: 14px;
+	border-radius: 2px;
+	background-color: var(--background-modifier-border);
+}
+
+.heatmap-palette-label-text {
+	font-size: 12px;
+	color: var(--text-muted);
+}
