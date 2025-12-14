@@ -1,6 +1,8 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin } from 'obsidian';
 import { CalendarView, CALENDAR_VIEW_ID } from './src/CalendarView';
 import { GanttCalendarSettings, DEFAULT_SETTINGS, GanttCalendarSettingTab } from './src/settings';
+import { searchTasks } from './src/taskManager';
+import { TaskListModal } from './src/taskModal';
 
 export default class GanttCalendarPlugin extends Plugin {
     settings: GanttCalendarSettings;
@@ -55,6 +57,22 @@ export default class GanttCalendarPlugin extends Plugin {
 
                     // This command will only show up in Command Palette when the check function returns true
                     return true;
+                }
+            }
+        });
+
+        // Search all tasks with global filter
+        this.addCommand({
+            id: 'gantt-calendar-search-tasks',
+            name: '搜索所有任务',
+            callback: async () => {
+                try {
+                    const tasks = await searchTasks(this.app, this.settings.globalTaskFilter);
+                    new TaskListModal(this.app, tasks).open();
+                    new Notice(`找到 ${tasks.length} 个任务`);
+                } catch (error) {
+                    console.error('Error searching tasks:', error);
+                    new Notice('搜索任务时出错');
                 }
             }
         });

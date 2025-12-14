@@ -18,6 +18,7 @@ export interface GanttCalendarSettings {
 	solarFestivalColor: string;
 	lunarFestivalColor: string;
 	solarTermColor: string;
+	globalTaskFilter: string;
 }
 
 export const DEFAULT_SETTINGS: GanttCalendarSettings = {
@@ -27,6 +28,7 @@ export const DEFAULT_SETTINGS: GanttCalendarSettings = {
 	solarFestivalColor: '#e74c3c',  // 阳历节日 - 红色
 	lunarFestivalColor: '#e8a041',  // 农历节日 - 橙色
 	solarTermColor: '#52c41a',      // 节气 - 绿色
+	globalTaskFilter: '🎯 ',        // 全局任务筛选标记
 };
 
 export class GanttCalendarSettingTab extends PluginSettingTab {
@@ -72,7 +74,17 @@ export class GanttCalendarSettingTab extends PluginSettingTab {
 				});
 			});
 
-		// Festival colors setting
+		new Setting(containerEl)
+			.setName('全局任务筛选标记')
+			.setDesc('用于标记任务的前缀符号或文字（如 "🎯 " 或 "TODO"）')
+			.addText(text => text
+				.setPlaceholder('🎯 ')
+				.setValue(this.plugin.settings.globalTaskFilter)
+				.onChange(async (value) => {
+					this.plugin.settings.globalTaskFilter = value;
+					await this.plugin.saveSettings();
+				}));
+
 		containerEl.createEl('h2', { text: '节日颜色设置' });
 		
 		this.createColorSetting(
