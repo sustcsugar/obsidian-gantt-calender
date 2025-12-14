@@ -509,11 +509,11 @@ export class CalendarView extends ItemView {
 		tasksTitle.addClass('calendar-day-tasks-title');
 		const tasksList = tasksSection.createDiv('calendar-day-tasks-list');
 
-		// Load and display tasks for current day
-		this.loadDayViewTasks(tasksList);
+		// Load and display tasks for current view date
+		this.loadDayViewTasks(tasksList, new Date(this.currentDate));
 	}
 
-	private async loadDayViewTasks(listContainer: HTMLElement): Promise<void> {
+	private async loadDayViewTasks(listContainer: HTMLElement, targetDate: Date): Promise<void> {
 		listContainer.empty();
 		listContainer.createEl('div', { text: '加载中...', cls: 'gantt-task-empty' });
 
@@ -523,15 +523,20 @@ export class CalendarView extends ItemView {
 			// Get the date field to filter by
 			const dateField = this.plugin.settings.dateFilterField || 'dueDate';
 
-			// Filter tasks for current day
+			// Normalize target date to compare by Y-M-D
+			const normalizedTarget = new Date(targetDate);
+			normalizedTarget.setHours(0, 0, 0, 0);
+
+			// Filter tasks for the target day
 			const currentDayTasks = tasks.filter(task => {
 				const dateValue = (task as any)[dateField];
 				if (!dateValue) return false;
 				
 				const taskDate = new Date(dateValue);
 				if (isNaN(taskDate.getTime())) return false;
+				taskDate.setHours(0, 0, 0, 0);
 				
-				return isToday(taskDate);
+				return taskDate.getTime() === normalizedTarget.getTime();
 			});
 
 			listContainer.empty();
