@@ -1,94 +1,265 @@
-# Obsidian Sample Plugin
+# Obsidian Gantt Calendar 插件
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+一个强大的 Obsidian 任务管理和日历插件，提供多种视图模式和双格式任务支持。
 
-This project uses TypeScript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
+## 功能特性
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+### 📅 多种日历视图
+- **年视图**：全年任务概览，掌握全局计划
+- **月视图**：月度日历，清晰显示每日任务
+- **周视图**：周计划视图，精细安排每周工作
+- **日视图**：单日详细视图，专注当日任务
+- **农历支持**：显示农历日期和节假日
 
-## First time developing plugins?
+### ✅ 任务管理
+- **任务列表视图**：专门的任务管理界面，集中管理所有任务
+- **全局筛选**：自定义任务标记（如 🎯），快速筛选特定任务
+- **双格式支持**：兼容 Tasks 插件和 Dataview 插件的任务格式
+- **完整任务属性**：
+  - 优先级：5个等级（highest, high, medium, low, lowest）
+  - 创建日期、开始日期、计划日期、截止日期
+  - 取消日期、完成日期
+- **表格布局**：任务属性按列清晰展示
+- **快速跳转**：点击任务直接跳转到源文件位置
 
-Quick starting guide for new plugin devs:
+### 📊 甘特图视图
+- 项目时间线可视化
+- 任务进度跟踪
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+### 🎨 友好界面
+- **视图切换**：工具栏一键切换日历视图和任务视图
+- **灵活导航**：年月周日之间快速切换
+- **响应式设计**：适配不同屏幕尺寸
 
-## Releasing new releases
+## 快速开始
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+### 安装插件
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+1. 打开 Obsidian 设置
+2. 进入"社区插件"
+3. 搜索"Gantt Calendar"
+4. 点击安装并启用
 
-## Adding your plugin to the community plugin list
+### 打开视图
 
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+**方法 1：命令面板**
+1. 按 `Ctrl/Cmd + P` 打开命令面板
+2. 输入"打开日历视图"或"打开任务视图"
+3. 选择对应命令
 
-## How to use
+**方法 2：视图切换**
+- 在日历视图中，点击工具栏左侧的"Tasks"按钮切换到任务视图
+- 在任务视图中，点击"Calendar"按钮切换回日历视图
 
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
+## 任务格式详解
 
-## Manually installing the plugin
+本插件兼容两种主流任务格式：Tasks 插件格式和 Dataview 插件格式。
 
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
+### Tasks 插件格式（基于 Emoji）
 
-## Improve code quality with eslint (optional)
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- To use eslint with this project, make sure to install eslint from terminal:
-  - `npm install -g eslint`
-- To use eslint to analyze this project use this command:
-  - `eslint main.ts`
-  - eslint will then create a report with suggestions for code improvement by file and line number.
-- If your source code is in a folder, such as `src`, you can use eslint with this command to analyze all files in that folder:
-  - `eslint ./src/`
+使用表情符号标记任务属性：
 
-## Funding URL
-
-You can include funding URLs where people who use your plugin can financially support it.
-
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
-
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
+```markdown
+- [ ] 🎯 完成项目文档 ⏫ ➕ 2025-01-10 🛫 2025-01-11 ⏳ 2025-01-12 📅 2025-01-15
 ```
 
-If you have multiple URLs, you can also do:
+**Emoji 标记说明**：
+- `🎯` - 全局任务标记（可自定义）
+- 优先级 emoji（6个级别）：
+  - `🔺` - Highest（最高优先级）
+  - `⏫` - High（高优先级）
+  - `🔼` - Medium（中优先级）
+  - 无emoji - Normal（普通优先级）
+  - `🔽` - Low（低优先级）
+  - `⏬` - Lowest（最低优先级）
+- `➕ [date]` - 创建日期
+- `🛫 [date]` - 开始日期
+- `⏳ [date]` - 计划日期
+- `📅 [date]` - 截止日期
+- `❌ [date]` - 取消日期
+- `✅ [date]` - 完成日期
 
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
-    }
-}
+### Dataview 插件格式（基于字段）
+
+使用字段标记任务属性：
+
+```markdown
+- [ ] 🎯 完成项目文档 [priority:: high] [created:: 2025-01-10] [start:: 2025-01-11] [scheduled:: 2025-01-12] [due:: 2025-01-15]
 ```
 
-## API Documentation
+**字段标记说明**：
+- 优先级字段（6个级别）：
+  - `[priority:: highest]` - 最高优先级
+  - `[priority:: high]` - 高优先级
+  - `[priority:: medium]` - 中优先级
+  - 无字段 - 普通优先级（normal）
+  - `[priority:: low]` - 低优先级
+  - `[priority:: lowest]` - 最低优先级
+- `[created:: date]` - 创建日期
+- `[start:: date]` - 开始日期
+- `[scheduled:: date]` - 计划日期
+- `[due:: date]` - 截止日期
+- `[cancelled:: date]` - 取消日期
+- `[completion:: date]` - 完成日期
 
-See https://github.com/obsidianmd/obsidian-api
+### 任务属性详解
+
+#### 1. 全局筛选标记（globalFilter）
+- **用途**：用于全局筛选任务
+- **位置**：必须在任务行开头（复选框之后）
+- **示例**：`- [ ] 🎯 任务内容`
+- **匹配规则**：仅匹配任务开头，不搜索全文
+
+#### 2. 任务描述（content）
+- **用途**：描述任务的具体内容
+- **格式**：纯文本，所有属性标记会被自动清理
+- **显示**：与全局标记一起显示在"任务描述"列
+
+#### 3. 优先级（priority）
+- **取值**：`highest`、`high`、`medium`、`normal`、`low`、`lowest`
+- **Tasks 格式**：使用 emoji 表示
+  - `🔺` - Highest
+  - `⏫` - High
+  - `🔼` - Medium
+  - 无 emoji - Normal
+  - `🔽` - Low
+  - `⏬` - Lowest
+- **Dataview 格式**：使用字段表示
+  - `[priority:: highest/high/medium/low/lowest]`
+  - 无字段表示 Normal
+- **显示**：使用彩色圆圈图标
+  - 🔴 highest（最高）
+  - 🟠 high（高）
+  - 🟡 medium（中）
+  - ⚪ normal（普通）
+  - 🟢 low（低）
+  - 🔵 lowest（最低）
+
+#### 4. 时间属性
+所有时间属性均为可选，日期格式为 `YYYY-MM-DD`：
+
+- **创建日期（created）**：任务创建时间
+- **开始日期（start）**：任务开始时间
+- **计划日期（scheduled）**：计划执行时间
+- **截止日期（due）**：任务截止时间
+- **取消日期（cancelled）**：任务取消时间
+- **完成日期（completion）**：任务完成时间
+
+## 任务列表视图
+
+任务列表采用表格布局，清晰展示所有任务属性：
+
+| 列名 | 说明 |
+|------|------|
+| ☐ | 复选框，勾选表示完成 |
+| 任务描述 | 全局标记 + 任务内容 |
+| 优先级 | 彩色图标显示优先级 |
+| 创建 | 创建日期 |
+| 开始 | 开始日期 |
+| 计划 | 计划日期 |
+| 截止 | 截止日期 |
+| 取消 | 取消日期 |
+| 完成 | 完成日期 |
+| 位置 | 文件名:行号 |
+
+### 任务交互
+
+- **点击任务**：跳转到任务所在文件的具体位置
+- **勾选复选框**：标记任务为完成/未完成
+- **查看统计**：顶部显示总任务数、已完成、未完成数量
+
+## 插件设置
+
+打开 Obsidian 设置 → Gantt Calendar 插件，可配置：
+
+### 全局任务筛选
+- **设置项**：Global Task Filter
+- **说明**：定义全局任务标记，只有包含此标记的任务才会被识别
+- **示例**：设置为 `🎯 `，则只识别以 `- [ ] 🎯` 开头的任务
+- **默认值**：空（识别所有任务）
+
+### 任务格式选择
+- **设置项**：Enabled Task Formats
+- **选项**：
+  - Tasks 格式（仅 emoji 标记）
+  - Dataview 格式（仅字段标记）
+  - 两者都支持（默认）
+- **说明**：选择要解析的任务格式
+
+### 日历设置
+- 首日设置：周一或周日作为一周开始
+- 显示周数：是否显示ISO周数
+- 农历显示：是否显示农历日期
+
+## 界面布局
+
+### 工具栏布局
+
+工具栏分为三个区域：
+
+**左侧区域**：主视图切换
+- Tasks 按钮：切换到任务列表视图
+- Calendar 按钮：切换到日历视图
+
+**中间区域**：当前视图标题
+- 显示当前年月或"任务管理"
+
+**右侧区域**：导航和子视图
+- ← → 按钮：切换上一个/下一个时间段
+- 今天按钮：回到今天
+- 年/月/周/日按钮：切换日历子视图
+
+## 开发构建
+
+### 环境要求
+- Node.js 18+
+- npm
+
+### 安装依赖
+```bash
+npm install
+```
+
+### 开发模式（热重载）
+```bash
+npm run dev
+```
+
+### 生产构建
+```bash
+npm run build
+```
+
+### 测试安装
+将 `main.js`、`manifest.json`、`styles.css` 复制到：
+```
+<你的库>/.obsidian/plugins/obsidian-gantt-calendar/
+```
+
+## 许可证
+
+MIT License
+
+## 技术栈
+
+- TypeScript
+- Obsidian API
+- esbuild（构建工具）
+- 农历库（lunar.ts）
+
+## 贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+## 更新日志
+
+### 最新版本
+- ✅ 支持 Tasks 和 Dataview 双格式
+- ✅ 完整的任务属性解析（优先级、6个时间属性）
+- ✅ 任务列表视图集成到日历
+- ✅ 工具栏三区域布局
+- ✅ 全局筛选支持开头匹配
+
+---
+
+📖 详细开发文档请参考 [AGENTS.md](AGENTS.md)
