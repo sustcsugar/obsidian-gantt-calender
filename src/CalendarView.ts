@@ -8,6 +8,7 @@ export const CALENDAR_VIEW_ID = 'gantt-calendar-view';
 export class CalendarView extends ItemView {
 	private currentDate: Date = new Date();
 	private viewType: CalendarViewType = 'year';
+	private lastCalendarViewType: CalendarViewType = 'month';
 	private resizeObserver: ResizeObserver | null = null;
 	private yearContainer: HTMLElement | null = null;
 	private plugin: any;
@@ -102,14 +103,27 @@ export class CalendarView extends ItemView {
 	}
 
 	private createToolbar(toolbar: HTMLElement): void {
-		// Date navigation
-		const navContainer = toolbar.createDiv('calendar-nav');
+		const isTaskView = this.viewType === 'task';
 
-		const prevBtn = navContainer.createEl('button', { text: '◀ 上一个' });
-		prevBtn.addClass('calendar-nav-btn');
-		prevBtn.onclick = () => this.previousPeriod();
+		// Left region: primary view toggle (Tasks / Calendar)
+		const left = toolbar.createDiv('calendar-toolbar-left');
+		const toggleGroup = left.createDiv('calendar-toggle-group');
+		const taskToggle = toggleGroup.createEl('button', { text: 'Tasks' });
+		taskToggle.addClass('calendar-toggle-btn');
+		if (isTaskView) taskToggle.addClass('active');
+		taskToggle.onclick = () => this.switchView('task');
 
-		const dateDisplay = navContainer.createEl('span');
+		const calendarToggle = toggleGroup.createEl('button', { text: 'Calendar' });
+		calendarToggle.addClass('calendar-toggle-btn');
+		if (!isTaskView) calendarToggle.addClass('active');
+		calendarToggle.onclick = () => {
+			const target = this.lastCalendarViewType || 'month';
+			this.switchView(target);
+		};
+
+		// Center region: title/date display
+		const center = toolbar.createDiv('calendar-toolbar-center');
+		const dateDisplay = center.createEl('span');
 		dateDisplay.addClass('calendar-date-display');
 		
 		// Add lunar info if in day view
@@ -130,40 +144,42 @@ export class CalendarView extends ItemView {
 			dateDisplay.setText(this.getDateRangeText());
 		}
 
-		const nextBtn = navContainer.createEl('button', { text: '下一个 ▶' });
-		nextBtn.addClass('calendar-nav-btn');
-		nextBtn.onclick = () => this.nextPeriod();
-
-		const todayBtn = navContainer.createEl('button', { text: '今天' });
-		todayBtn.addClass('calendar-nav-btn');
-		todayBtn.onclick = () => this.goToToday();
-
-		const isTaskView = this.viewType === 'task';
-		if (isTaskView) {
-			[prevBtn, nextBtn, todayBtn].forEach(btn => btn.setAttr('disabled', 'true'));
-		}
-
 		// View type selector
-		const viewContainer = toolbar.createDiv('calendar-view-selector');
+		// Right region: navigation + sub-view selector (only for calendar)
+		const right = toolbar.createDiv('calendar-toolbar-right');
+		if (!isTaskView) {
+			const navButtons = right.createDiv('calendar-nav-buttons');
+			const prevBtn = navButtons.createEl('button', { text: '◀ 上一个' });
+			prevBtn.addClass('calendar-nav-btn');
+			prevBtn.onclick = () => this.previousPeriod();
 
-		const viewTypes: { [key: string]: string } = {
-			'day': '日',
-			'week': '周',
-			'month': '月',
-			'year': '年',
-			'task': '任务'
-		};
+			const nextBtn = navButtons.createEl('button', { text: '下一个 ▶' });
+			nextBtn.addClass('calendar-nav-btn');
+			nextBtn.onclick = () => this.nextPeriod();
 
-		['day', 'week', 'month', 'year', 'task'].forEach((type) => {
-			const btn = viewContainer.createEl('button', {
-				text: viewTypes[type],
+			const todayBtn = navButtons.createEl('button', { text: '今天' });
+			todayBtn.addClass('calendar-nav-btn');
+			todayBtn.onclick = () => this.goToToday();
+
+			const viewContainer = right.createDiv('calendar-view-selector');
+			const viewTypes: { [key: string]: string } = {
+				'day': '日',
+				'week': '周',
+				'month': '月',
+				'year': '年',
+			};
+
+			['day', 'week', 'month', 'year'].forEach((type) => {
+				const btn = viewContainer.createEl('button', {
+					text: viewTypes[type],
+				});
+				btn.addClass('calendar-view-btn');
+				if (type === this.viewType) {
+					btn.addClass('active');
+				}
+				btn.onclick = () => this.switchView(type as CalendarViewType);
 			});
-			btn.addClass('calendar-view-btn');
-			if (type === this.viewType) {
-				btn.addClass('active');
-			}
-			btn.onclick = () => this.switchView(type as CalendarViewType);
-		});
+		}
 	}
 
 	private renderCalendarContent(content: HTMLElement): void {
@@ -559,6 +575,9 @@ export class CalendarView extends ItemView {
 	}
 
 	public switchView(type: CalendarViewType): void {
+		if (type !== 'task') {
+			this.lastCalendarViewType = type;
+		}
 		this.viewType = type;
 		this.render();
 	}

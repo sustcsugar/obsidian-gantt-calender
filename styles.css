@@ -21,11 +21,61 @@ Gantt Calendar Plugin Styles - 甘特日历
 	border-bottom: 1px solid var(--background-modifier-border);
 }
 
-.calendar-nav {
+.calendar-toolbar-left,
+.calendar-toolbar-center,
+.calendar-toolbar-right {
 	display: flex;
 	align-items: center;
 	gap: 10px;
+}
+
+.calendar-toolbar-left {
+	flex: 0 1 auto;
+}
+
+.calendar-toolbar-center {
+	flex: 1 1 auto;
+	justify-content: center;
+}
+
+.calendar-toolbar-right {
+	flex: 0 1 auto;
+	justify-content: flex-end;
+}
+
+.calendar-nav {
+	display: flex;
+	align-items: center;
+	gap: 12px;
 	flex: 1;
+}
+
+.calendar-toggle-group {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.calendar-toggle-btn {
+	padding: 6px 12px;
+	border: 1px solid var(--background-modifier-border);
+	background-color: var(--background-modifier-hover);
+	border-radius: 6px;
+	color: var(--text-normal);
+	cursor: pointer;
+	transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.calendar-toggle-btn.active {
+	background-color: var(--interactive-accent);
+	border-color: var(--interactive-accent);
+	color: white;
+}
+
+.calendar-nav-buttons {
+	display: flex;
+	align-items: center;
+	gap: 8px;
 }
 
 .calendar-nav-btn {
