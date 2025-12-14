@@ -210,9 +210,6 @@ export class TaskCacheManager {
 		this.globalTaskFilter = (globalTaskFilter || '').trim();
 		this.enabledFormats = enabledFormats || ['tasks', 'dataview'];
 
-		console.time('[TaskCache] Initial scan');
-		console.log('[TaskCache] Starting initial scan...');
-
 		this.cache.clear();
 		let markdownFiles = this.app.vault.getMarkdownFiles();
 		
@@ -223,6 +220,11 @@ export class TaskCacheManager {
 			await new Promise(resolve => setTimeout(resolve, 500));
 			return this.initialize(globalTaskFilter, enabledFormats, retryCount + 1);
 		}
+
+		// 仅在实际扫描时开始计时，避免重试时重复 console.time
+		const timerLabel = retryCount === 0 ? '[TaskCache] Initial scan' : `[TaskCache] Initial scan (retry ${retryCount})`;
+		console.time(timerLabel);
+		console.log('[TaskCache] Starting initial scan...');
 		
 		// 批量处理文件，避免阻塞UI
 		const batchSize = 50;
@@ -240,7 +242,7 @@ export class TaskCacheManager {
 		this.isInitializing = false;
 		
 		const totalTasks = Array.from(this.cache.values()).reduce((sum, tasks) => sum + tasks.length, 0);
-		console.timeEnd('[TaskCache] Initial scan');
+		console.timeEnd(timerLabel);
 		console.log(`[TaskCache] Initialized with ${totalTasks} tasks from ${markdownFiles.length} files`);
 	}
 

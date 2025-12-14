@@ -14,19 +14,23 @@ export default class GanttCalendarPlugin extends Plugin {
 
         // Initialize task cache manager
         this.taskCache = new TaskCacheManager(this.app);
-        
-        // Initialize cache in background to avoid blocking plugin load
-        this.taskCache.initialize(this.settings.globalTaskFilter, this.settings.enabledTaskFormats)
-            .then(() => {
-                console.log('[GanttCalendar] Task cache initialized');
-                // Refresh all views after cache is ready
-                this.refreshCalendarViews();
-                this.refreshTaskViews();
-            })
-            .catch(error => {
-                console.error('[GanttCalendar] Failed to initialize task cache:', error);
-                new Notice('任务缓存初始化失败');
-            });
+
+        // 不阻塞 onload：布局就绪后再延迟触发首次扫描
+        this.app.workspace.onLayoutReady(() => {
+            setTimeout(() => {
+                this.taskCache.initialize(this.settings.globalTaskFilter, this.settings.enabledTaskFormats)
+                    .then(() => {
+                        console.log('[GanttCalendar] Task cache initialized');
+                        // Refresh all views after cache is ready
+                        this.refreshCalendarViews();
+                        this.refreshTaskViews();
+                    })
+                    .catch(error => {
+                        console.error('[GanttCalendar] Failed to initialize task cache:', error);
+                        new Notice('任务缓存初始化失败');
+                    });
+            }, 800);  // 布局就绪后再延迟 800ms，避免 vault 未就绪
+        });
 
         // Register file change listeners for cache updates
         this.registerEvent(
