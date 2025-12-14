@@ -83,6 +83,7 @@ export class GanttCalendarSettingTab extends PluginSettingTab {
 				.onChange(async (value) => {
 					this.plugin.settings.globalTaskFilter = value;
 					await this.plugin.saveSettings();
+					this.plugin.refreshTaskViews();
 				}));
 
 		containerEl.createEl('h2', { text: '节日颜色设置' });

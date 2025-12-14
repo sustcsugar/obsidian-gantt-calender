@@ -847,7 +847,7 @@ Gantt Calendar Plugin Styles - 甘特日历
 }
 
 .gantt-task-item {
-	display: flex;
+ 	display: flex;
 	flex-direction: column;
 	gap: 6px;
 	padding: 10px;
@@ -856,6 +856,58 @@ Gantt Calendar Plugin Styles - 甘特日历
 	cursor: pointer;
 	transition: all 0.2s ease;
 	border-left: 3px solid transparent;
+}
+
+/* Task View (pane) */
+.gantt-task-view {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	height: 100%;
+	padding: 12px;
+	overflow: hidden;
+}
+
+.gantt-task-view-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.gantt-task-view-header h2 {
+	margin: 0;
+	font-size: 18px;
+}
+
+.gantt-task-view-actions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.gantt-task-view-actions button {
+	padding: 6px 12px;
+	border: 1px solid var(--background-modifier-border);
+	background-color: var(--background-primary);
+	border-radius: 6px;
+	cursor: pointer;
+	transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.gantt-task-view-actions button:hover {
+	background-color: var(--background-modifier-hover);
+	border-color: var(--interactive-normal);
+}
+
+.gantt-task-filter-info {
+	font-size: 12px;
+	color: var(--text-muted);
+}
+
+.gantt-task-view .gantt-task-list {
+	max-height: none;
+	height: 100%;
+	overflow: auto;
 }
 
 .gantt-task-item:hover {

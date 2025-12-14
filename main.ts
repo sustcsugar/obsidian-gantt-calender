@@ -3,6 +3,7 @@ import { CalendarView, CALENDAR_VIEW_ID } from './src/CalendarView';
 import { GanttCalendarSettings, DEFAULT_SETTINGS, GanttCalendarSettingTab } from './src/settings';
 import { searchTasks } from './src/taskManager';
 import { TaskListModal } from './src/taskModal';
+import { TaskView, TASK_VIEW_ID } from './src/TaskView';
 
 export default class GanttCalendarPlugin extends Plugin {
     settings: GanttCalendarSettings;
@@ -12,6 +13,8 @@ export default class GanttCalendarPlugin extends Plugin {
 
         // Register the calendar view
         this.registerView(CALENDAR_VIEW_ID, (leaf) => new CalendarView(leaf, this));
+        // Register the task management view
+        this.registerView(TASK_VIEW_ID, (leaf) => new TaskView(leaf, this));
 
         // This creates an icon in the left ribbon.
         const ribbonIconEl = this.addRibbonIcon('calendar-days', '甘特日历', (evt: MouseEvent) => {
@@ -61,6 +64,15 @@ export default class GanttCalendarPlugin extends Plugin {
             }
         });
 
+        // Open dedicated task view
+        this.addCommand({
+            id: 'gantt-calendar-open-task-view',
+            name: '打开任务视图',
+            callback: async () => {
+                await this.activateTaskView();
+            }
+        });
+
         // Search all tasks with global filter
         this.addCommand({
             id: 'gantt-calendar-search-tasks',
@@ -91,7 +103,8 @@ export default class GanttCalendarPlugin extends Plugin {
     }
 
     onunload() {
-
+        this.app.workspace.getLeavesOfType(CALENDAR_VIEW_ID).forEach(leaf => leaf.detach());
+        this.app.workspace.getLeavesOfType(TASK_VIEW_ID).forEach(leaf => leaf.detach());
     }
 
     async activateView() {
@@ -103,6 +116,21 @@ export default class GanttCalendarPlugin extends Plugin {
             leaf = workspace.getLeaf('tab');
             await leaf.setViewState({
                 type: CALENDAR_VIEW_ID,
+                active: true,
+            });
+        }
+
+        workspace.revealLeaf(leaf);
+    }
+
+    async activateTaskView() {
+        const { workspace } = this.app;
+
+        let leaf = workspace.getLeavesOfType(TASK_VIEW_ID)[0];
+        if (!leaf) {
+            leaf = workspace.getLeaf('tab');
+            await leaf.setViewState({
+                type: TASK_VIEW_ID,
                 active: true,
             });
         }
@@ -129,9 +157,19 @@ export default class GanttCalendarPlugin extends Plugin {
     refreshCalendarViews() {
         const leaves = this.app.workspace.getLeavesOfType(CALENDAR_VIEW_ID);
         leaves.forEach(leaf => {
-            const view = leaf.view as CalendarView;
+            const view = leaf.view as unknown as CalendarView;
             if (view && view.refreshSettings) {
                 view.refreshSettings();
+            }
+        });
+    }
+
+    refreshTaskViews() {
+        const leaves = this.app.workspace.getLeavesOfType(TASK_VIEW_ID);
+        leaves.forEach(leaf => {
+            const view = leaf.view as unknown as TaskView;
+            if (view && view.render) {
+                view.render();
             }
         });
     }
