@@ -529,6 +529,7 @@ export class CalendarView extends ItemView {
 
 			// Create tooltip
 			tooltip = document.body.createDiv('calendar-week-task-tooltip');
+			tooltip.style.opacity = '0';
 			
 			// Task description with global filter
 			const gf = (this.plugin?.settings?.globalTaskFilter || '').trim();
@@ -612,15 +613,32 @@ export class CalendarView extends ItemView {
 			
 			tooltip.style.left = `${left}px`;
 			tooltip.style.top = `${top}px`;
+			
+			// Trigger fade-in animation
+			setTimeout(() => {
+				if (tooltip) {
+					tooltip.style.opacity = '1';
+					tooltip.addClass('tooltip-show');
+				}
+			}, 10);
 		};
 
 		const hideTooltip = () => {
 			hideTimeout = window.setTimeout(() => {
 				if (tooltip) {
-					tooltip.remove();
-					tooltip = null;
+					// Start fade-out animation
+					tooltip.removeClass('tooltip-show');
+					tooltip.style.opacity = '0';
+					
+					// Remove element after animation completes
+					setTimeout(() => {
+						if (tooltip) {
+							tooltip.remove();
+							tooltip = null;
+						}
+					}, 200); // Match CSS transition duration
 				}
-			}, 200); // Small delay before hiding
+			}, 100); // Small delay before starting hide
 		};
 
 		taskItem.addEventListener('mouseenter', showTooltip);
