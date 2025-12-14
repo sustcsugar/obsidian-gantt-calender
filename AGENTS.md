@@ -95,6 +95,45 @@ npm run build
 - 使用 `this.loadData()` / `this.saveData()` 持久化设置
 - 使用稳定的命令 ID；一旦发布就避免重命名
 
+### 命令注册
+本项目命令 ID 统一使用 `gantt-calendar-` 前缀规范：
+- `gantt-calendar-common` - 简单命令（通用功能）
+- `gantt-calendar-editor` - 编辑器命令（编辑相关操作）
+- `gantt-calendar-conditional` - 条件命令（条件判断后执行）
+
+```typescript
+// 简单命令
+this.addCommand({
+  id: 'gantt-calendar-common',  // 项目命令 ID 规范
+  name: '用户可见的命令名称',
+  callback: () => { /* 简单命令 */ }
+});
+
+// 编辑器上下文命令：
+this.addCommand({
+  id: 'gantt-calendar-editor',
+  name: '编辑器命令',
+  editorCallback: (editor: Editor, view: MarkdownView) => {
+    editor.replaceSelection('text');
+  }
+});
+
+// 条件可用命令：
+this.addCommand({
+  id: 'gantt-calendar-conditional',
+  name: '条件命令',
+  checkCallback: (checking: boolean) => {
+    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+    if (view) {
+      if (!checking) { /* 执行操作 */ }
+      return true;  // 命令可用
+    }
+  }
+});
+```
+
+
+
 ## 版本控制和发布
 
 - 在 `manifest.json` 中提升 `version`（SemVer）并更新 `versions.json` 以映射插件版本 → 最低应用版本
@@ -103,7 +142,7 @@ npm run build
 - 初次发布后，按照要求遵循在社区目录中添加/更新插件的流程
 
 
-## UX 和文案指南（用于 UI 文本、命令、设置）
+## UI 和文案指南（用于 UI 文本、命令、设置）
 
 - 标题、按钮和标题优先使用句子大小写
 - 在分步文案中使用清晰的、面向行动的祈使句

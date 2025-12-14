@@ -121,10 +121,21 @@ export class CalendarView extends ItemView {
 		prevBtn.addClass('calendar-nav-btn');
 		prevBtn.onclick = () => this.previousPeriod();
 
-		const dateDisplay = navContainer.createEl('span', {
-			text: this.getDateRangeText(),
-		});
+		const dateDisplay = navContainer.createEl('span');
 		dateDisplay.addClass('calendar-date-display');
+		dateDisplay.createEl('div', { text: this.getDateRangeText() });
+		
+		// Add lunar info if in day view
+		if (this.viewType === 'day') {
+			const lunar = this.getLunarInfo(this.currentDate);
+			const lunarDiv = dateDisplay.createEl('div', { cls: 'lunar-info-display' });
+			if (lunar.lunarText) {
+				lunarDiv.createEl('span', { text: lunar.lunarText, cls: 'lunar-date-text' });
+			}
+			if (lunar.festival) {
+				lunarDiv.createEl('span', { text: lunar.festival, cls: 'lunar-festival-text' });
+			}
+		}
 
 		const nextBtn = navContainer.createEl('button', { text: '下一个 ▶' });
 		nextBtn.addClass('calendar-nav-btn');
@@ -410,16 +421,6 @@ export class CalendarView extends ItemView {
 
 	private renderDayView(container: HTMLElement): void {
 		const dayContainer = container.createDiv('calendar-day-view');
-
-		// Show lunar date
-		const lunarInfo = container.createDiv('calendar-lunar-info');
-		const lunar = this.getLunarInfo(this.currentDate);
-		if (lunar.lunarText) {
-			lunarInfo.createEl('div', { text: lunar.lunarText, cls: 'lunar-date' });
-		}
-		if (lunar.festival) {
-			lunarInfo.createEl('div', { text: lunar.festival, cls: 'lunar-festival' });
-		}
 
 		// Time grid
 		const dayGrid = dayContainer.createDiv('calendar-day-grid');
