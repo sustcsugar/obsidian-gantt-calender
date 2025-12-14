@@ -22,6 +22,8 @@ export interface GanttCalendarSettings {
 	enabledTaskFormats: string[];
 	showGlobalFilterInTaskText: boolean; // 是否在任务列表文本中显示 global filter 前缀
 	dateFilterField: 'createdDate' | 'startDate' | 'scheduledDate' | 'dueDate' | 'completionDate' | 'cancelledDate'; // 日期筛选使用的字段
+	dailyNotePath: string; // Daily note 文件夹路径
+	dailyNoteNameFormat: string; // Daily note 文件名格式 (如 yyyy-MM-dd)
 }
 
 export const DEFAULT_SETTINGS: GanttCalendarSettings = {
@@ -35,6 +37,8 @@ export const DEFAULT_SETTINGS: GanttCalendarSettings = {
 	enabledTaskFormats: ['tasks', 'dataview'], // 启用的任务格式
 	showGlobalFilterInTaskText: true, // 默认显示 global filter
 	dateFilterField: 'dueDate', // 默认使用截止日期作为筛选字段
+	dailyNotePath: 'DailyNotes', // 默认 daily note 文件夹路径
+	dailyNoteNameFormat: 'yyyy-MM-dd', // 默认文件名格式
 };
 
 export class GanttCalendarSettingTab extends PluginSettingTab {
@@ -172,6 +176,35 @@ export class GanttCalendarSettingTab extends PluginSettingTab {
 				.setValue(this.plugin.settings.dateFilterField)
 				.onChange(async (value) => {
 					this.plugin.settings.dateFilterField = value as 'createdDate' | 'startDate' | 'scheduledDate' | 'dueDate' | 'completionDate' | 'cancelledDate';
+					await this.plugin.saveSettings();
+					this.plugin.refreshTaskViews();
+				}));
+
+		// ===== Daily Note 设置 =====
+		containerEl.createEl('h2', { text: 'Daily Note 设置' });
+
+		// Daily Note 文件夹路径
+		new Setting(containerEl)
+			.setName('Daily Note 文件夹路径')
+			.setDesc('指定存放 Daily Note 文件的文件夹路径（相对于库根目录）')
+			.addText(text => text
+				.setPlaceholder('DailyNotes')
+				.setValue(this.plugin.settings.dailyNotePath)
+				.onChange(async (value) => {
+					this.plugin.settings.dailyNotePath = value;
+					await this.plugin.saveSettings();
+					this.plugin.refreshTaskViews();
+				}));
+
+		// Daily Note 文件名格式
+		new Setting(containerEl)
+			.setName('Daily Note 文件名格式')
+			.setDesc('指定 Daily Note 文件名格式（如 yyyy-MM-dd，会在日视图中用当前日期自动替换）')
+			.addText(text => text
+				.setPlaceholder('yyyy-MM-dd')
+				.setValue(this.plugin.settings.dailyNoteNameFormat)
+				.onChange(async (value) => {
+					this.plugin.settings.dailyNoteNameFormat = value;
 					await this.plugin.saveSettings();
 					this.plugin.refreshTaskViews();
 				}));

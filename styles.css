@@ -1164,3 +1164,63 @@ Gantt Calendar Plugin Styles - 甘特日历
 .calendar-day-tasks-list .gantt-task-item.pending {
 	border-left-color: #ff7a45;
 }
+/* Day View Split Screen Layout */
+.calendar-day-split-container {
+	display: flex;
+	gap: 0;
+	width: 100%;
+	height: 100%;
+	flex: 1;
+}
+
+.calendar-day-split-container .calendar-day-tasks-section {
+	flex: 1 1 50%;
+	display: flex;
+	flex-direction: column;
+	overflow-y: auto;
+	padding-right: 8px;
+	border-right: 1px solid var(--divider-color);
+}
+
+.calendar-day-split-container .calendar-day-notes-section {
+	flex: 1 1 50%;
+	display: flex;
+	flex-direction: column;
+	overflow-y: auto;
+	padding-left: 8px;
+}
+
+.calendar-day-divider {
+	width: 8px;
+	background-color: transparent;
+	cursor: col-resize;
+	transition: background-color 0.2s;
+	flex-shrink: 0;
+}
+
+.calendar-day-divider:hover {
+	background-color: var(--interactive-accent);
+}
+
+.calendar-day-notes-title {
+	margin: 0 0 12px 0;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--text-normal);
+}
+
+.calendar-day-notes-content {
+	flex: 1;
+	overflow-y: auto;
+	padding: 8px;
+	background-color: var(--background-primary);
+	border-radius: 4px;
+}
+
+.calendar-day-notes-markdown {
+	font-size: 12px;
+	line-height: 1.6;
+	color: var(--text-normal);
+	white-space: pre-wrap;
+	word-wrap: break-word;
+}

@@ -1,4 +1,4 @@
-import { ItemView, WorkspaceLeaf, Plugin, setIcon } from 'obsidian';
+import { ItemView, WorkspaceLeaf, Plugin, setIcon, TFile } from 'obsidian';
 import { CalendarViewType } from './types';
 import { generateMonthCalendar, getWeekOfDate, formatDate, formatMonth, isToday, isThisWeek, isThisMonth } from './utils';
 import { searchTasks, GanttTask } from './taskManager';
@@ -508,14 +508,32 @@ export class CalendarView extends ItemView {
 	private renderDayView(container: HTMLElement): void {
 		const dayContainer = container.createDiv('calendar-day-view');
 
-		// Tasks section only (time grid removed)
-		const tasksSection = dayContainer.createDiv('calendar-day-tasks-section');
+		// Split-screen layout container
+		const splitContainer = dayContainer.createDiv('calendar-day-split-container');
+
+		// Tasks section (left)
+		const tasksSection = splitContainer.createDiv('calendar-day-tasks-section');
 		const tasksTitle = tasksSection.createEl('h3', { text: '当日任务' });
 		tasksTitle.addClass('calendar-day-tasks-title');
 		const tasksList = tasksSection.createDiv('calendar-day-tasks-list');
 
+		// Divider (middle)
+		const divider = splitContainer.createDiv('calendar-day-divider');
+
+		// Notes section (right)
+		const notesSection = splitContainer.createDiv('calendar-day-notes-section');
+		const notesTitle = notesSection.createEl('h3', { text: 'Daily Note' });
+		notesTitle.addClass('calendar-day-notes-title');
+		const notesContent = notesSection.createDiv('calendar-day-notes-content');
+
+		// Setup resizable divider
+		this.setupDayViewDivider(divider, tasksSection, notesSection);
+
 		// Load and display tasks for current view date
 		this.loadDayViewTasks(tasksList, new Date(this.currentDate));
+
+		// Load and display daily note for current view date
+		this.loadDayViewNotes(notesContent, new Date(this.currentDate));
 	}
 
 	private async loadDayViewTasks(listContainer: HTMLElement, targetDate: Date): Promise<void> {
@@ -556,6 +574,88 @@ export class CalendarView extends ItemView {
 			console.error('Error loading day view tasks', error);
 			listContainer.empty();
 			listContainer.createEl('div', { text: '加载任务时出错', cls: 'gantt-task-empty' });
+		}
+	}
+
+	private setupDayViewDivider(divider: HTMLElement, tasksSection: HTMLElement, notesSection: HTMLElement): void {
+		let isResizing = false;
+		const container = divider.parentElement;
+		if (!container) return;
+
+		divider.addEventListener('mousedown', (e: MouseEvent) => {
+			isResizing = true;
+			const startX = e.clientX;
+			const startTasksWidth = tasksSection.offsetWidth;
+			const startNotesWidth = notesSection.offsetWidth;
+			const totalWidth = container.offsetWidth;
+
+			const mouseMoveHandler = (moveEvent: MouseEvent) => {
+				if (!isResizing) return;
+
+				const deltaX = moveEvent.clientX - startX;
+				const newTasksWidth = Math.max(100, startTasksWidth + deltaX);
+				const newNotesWidth = Math.max(100, totalWidth - newTasksWidth - 8); // 8px for divider
+
+				tasksSection.style.flex = `0 0 ${newTasksWidth}px`;
+				notesSection.style.flex = `0 0 ${newNotesWidth}px`;
+			};
+
+			const mouseUpHandler = () => {
+				isResizing = false;
+				document.removeEventListener('mousemove', mouseMoveHandler);
+				document.removeEventListener('mouseup', mouseUpHandler);
+			};
+
+			document.addEventListener('mousemove', mouseMoveHandler);
+			document.addEventListener('mouseup', mouseUpHandler);
+		});
+	}
+
+	private formatDateByPattern(date: Date, pattern: string): string {
+		const year = date.getFullYear();
+		const month = String(date.getMonth() + 1).padStart(2, '0');
+		const day = String(date.getDate()).padStart(2, '0');
+
+		return pattern
+			.replace('yyyy', String(year))
+			.replace('MM', month)
+			.replace('dd', day);
+	}
+
+	private async loadDayViewNotes(contentContainer: HTMLElement, targetDate: Date): Promise<void> {
+		contentContainer.empty();
+		contentContainer.createEl('div', { text: '加载中...', cls: 'gantt-task-empty' });
+
+		try {
+			const folderPath = this.plugin.settings.dailyNotePath || 'DailyNotes';
+			const nameFormat = this.plugin.settings.dailyNoteNameFormat || 'yyyy-MM-dd';
+			const fileName = this.formatDateByPattern(targetDate, nameFormat) + '.md';
+			const filePath = `${folderPath}/${fileName}`;
+
+			const file = this.app.vault.getAbstractFileByPath(filePath);
+
+			// 检查文件是否存在且是文件类型
+			if (!file || !(file instanceof TFile)) {
+				contentContainer.empty();
+				contentContainer.createEl('div', { text: '未找到 Daily Note', cls: 'gantt-task-empty' });
+				return;
+			}
+
+			const content = await this.app.vault.read(file);
+			contentContainer.empty();
+
+			if (!content.trim()) {
+				contentContainer.createEl('div', { text: '无内容', cls: 'gantt-task-empty' });
+				return;
+			}
+
+			// 显示 markdown 内容（可选：使用 marked 库进行渲染，这里简单显示）
+			const noteContent = contentContainer.createDiv('calendar-day-notes-markdown');
+			noteContent.setText(content);
+		} catch (error) {
+			console.error('Error loading daily note', error);
+			contentContainer.empty();
+			contentContainer.createEl('div', { text: '加载 Daily Note 时出错', cls: 'gantt-task-empty' });
 		}
 	}
 
