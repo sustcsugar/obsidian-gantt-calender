@@ -1088,12 +1088,21 @@ Gantt Calendar Plugin Styles - 甘特日历
 }
 
 /* Festival Color Settings */
+.festival-color-settings-container {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 16px;
+	padding: 12px 0;
+	margin-bottom: 16px;
+}
+
 .festival-color-setting {
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
-	padding: 12px 0;
-	border-bottom: 1px solid var(--background-modifier-border);
+	padding: 12px;
+	background: var(--background-secondary);
+	border-radius: 8px;
 }
 
 .festival-color-label {
