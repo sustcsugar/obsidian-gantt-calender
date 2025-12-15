@@ -1,6 +1,7 @@
-# Obsidian Gantt Calendar
+
 
 <div align="center" style="padding: 20px; border: 2px solid #8b5cf6; border-radius: 12px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%); margin: 20px 0;">
+# Obsidian Gantt Calendar
 
 📅 一个强大的 Obsidian 任务管理和日历插件 ✨  
 集成日历视图与任务列表 📋 支持农历节日 🏮 任务热力图 🔥  
