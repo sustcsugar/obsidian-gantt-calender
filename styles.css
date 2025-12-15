@@ -1185,7 +1185,8 @@ Gantt Calendar Plugin Styles - 甘特日历
 	padding: 8px 0;
 }
 
-.gantt-task-item {
+.gantt-task-item,
+.calendar-day-task-item {
 	flex-direction: row;
 	align-items: center;
 	gap: 8px;
@@ -1310,18 +1311,20 @@ Gantt Calendar Plugin Styles - 甘特日历
 	height: 100%;
 	overflow: auto;
 }
-
-.gantt-task-item:hover {
+.gantt-task-item:hover,
+.calendar-day-task-item:hover {
 	background-color: var(--background-modifier-hover);
 	transform: translateX(4px);
 }
 
-.gantt-task-item.completed {
+.gantt-task-item.completed,
+.calendar-day-task-item.completed {
 	border-left-color: #52c41a;
 	opacity: 0.7;
 }
 
-.gantt-task-item.pending {
+.gantt-task-item.pending,
+.calendar-day-task-item.pending {
 	border-left-color: #f5a623;
 }
 
@@ -1350,7 +1353,8 @@ Gantt Calendar Plugin Styles - 甘特日历
 	font-size: 14px;
 }
 
-.gantt-task-item.completed .gantt-task-text {
+.gantt-task-item.completed .gantt-task-text,
+.calendar-day-task-item.completed .gantt-task-text {
 	text-decoration: line-through;
 	color: var(--text-muted);
 }
@@ -1429,6 +1433,21 @@ Gantt Calendar Plugin Styles - 甘特日历
 	flex-shrink: 0;
 	white-space: nowrap;
 }
+
+/* Warning Icon - 任务警告图标 */
+.gantt-task-warning-icon {
+	display: inline-flex;
+	align-items: center;
+	margin-left: 8px;
+	font-size: 14px;
+	cursor: help;
+	transition: transform 0.2s ease;
+}
+
+.gantt-task-warning-icon:hover {
+	transform: scale(1.2);
+}
+
 /* Day View Tasks Section */
 .calendar-day-tasks-section {
 	margin-top: 16px;
@@ -1458,7 +1477,7 @@ Gantt Calendar Plugin Styles - 甘特日历
 	min-height: 0;
 }
 
-.calendar-day-tasks-list .gantt-task-item {
+.calendar-day-tasks-list .calendar-day-task-item {
 	padding: 8px 10px;
 	background-color: var(--background-primary);
 	border-left: 3px solid var(--interactive-accent);
@@ -1466,12 +1485,12 @@ Gantt Calendar Plugin Styles - 甘特日历
 	font-size: 12px;
 }
 
-.calendar-day-tasks-list .gantt-task-item.completed {
+.calendar-day-tasks-list .calendar-day-task-item.completed {
 	opacity: 0.65;
 	border-left-color: #52c41a;
 }
 
-.calendar-day-tasks-list .gantt-task-item.pending {
+.calendar-day-tasks-list .calendar-day-task-item.pending {
 	border-left-color: #ff7a45;
 }
 /* Day View Split Screen Layout */

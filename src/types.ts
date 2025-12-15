@@ -33,3 +33,23 @@ export interface CalendarMonth {
 	weeks: CalendarWeek[];
 	days: CalendarDay[];
 }
+
+// 任务类型：供 TaskView/CalendarView/任务解析共享
+export interface GanttTask {
+	filePath: string;
+	fileName: string;
+	lineNumber: number;
+	content: string;
+	completed: boolean;
+	// 源格式：'tasks' | 'dataview'（用于写回时选择字段样式）
+	format?: 'tasks' | 'dataview';
+	priority?: string; // highest, high, medium, low, lowest
+	createdDate?: Date;
+	startDate?: Date;
+	scheduledDate?: Date;
+	dueDate?: Date;
+	cancelledDate?: Date;
+	completionDate?: Date;
+	// 警告信息：用于显示任务格式问题或缺失属性
+	warning?: string;
+}

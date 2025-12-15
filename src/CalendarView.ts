@@ -1,7 +1,8 @@
 import { ItemView, WorkspaceLeaf, Plugin, setIcon, TFile, MarkdownRenderer, Notice } from 'obsidian';
 import { CalendarViewType } from './types';
 import { generateMonthCalendar, getWeekOfDate, formatDate, formatMonth, isToday, isThisWeek, isThisMonth, openFileInExistingLeaf } from './utils';
-import { searchTasks, GanttTask } from './taskManager';
+import { searchTasks } from './taskManager';
+import type { GanttTask } from './types';
 
 export const CALENDAR_VIEW_ID = 'gantt-calendar-view';
 
@@ -1023,7 +1024,7 @@ export class CalendarView extends ItemView {
 				return;
 			}
 
-			currentDayTasks.forEach(task => this.renderTaskItem(task, listContainer));
+			currentDayTasks.forEach(task => this.renderDayTaskItem(task, listContainer));
 		} catch (error) {
 			console.error('Error loading day view tasks', error);
 			listContainer.empty();
@@ -1206,7 +1207,7 @@ export class CalendarView extends ItemView {
 				return;
 			}
 
-			tasks.forEach(task => this.renderTaskItem(task, listContainer));
+			tasks.forEach(task => this.renderDayTaskItem(task, listContainer));
 		} catch (error) {
 			console.error('Error rendering task view', error);
 			listContainer.empty();
@@ -1214,8 +1215,8 @@ export class CalendarView extends ItemView {
 		}
 	}
 
-	private renderTaskItem(task: GanttTask, listContainer: HTMLElement): void {
-		const taskItem = listContainer.createDiv('gantt-task-item');
+	private renderDayTaskItem(task: GanttTask, listContainer: HTMLElement): void {
+		const taskItem = listContainer.createDiv('calendar-day-task-item');
 		taskItem.addClass(task.completed ? 'completed' : 'pending');
 
 		// Checkbox
@@ -1300,6 +1301,15 @@ export class CalendarView extends ItemView {
 
 		// File location
 		taskItem.createEl('span', { text: `${task.fileName}:${task.lineNumber}`, cls: 'gantt-task-file' });
+
+		// Warning icon if task has warnings
+		if (task.warning) {
+			taskItem.createEl('span', {
+				text: '⚠️',
+				cls: 'gantt-task-warning-icon',
+				attr: { title: task.warning }
+			});
+		}
 
 		taskItem.addEventListener('click', async () => {
 			await openFileInExistingLeaf(this.app, task.filePath, task.lineNumber);

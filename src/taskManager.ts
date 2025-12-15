@@ -1,21 +1,5 @@
 import { App, TFile } from 'obsidian';
-
-export interface GanttTask {
-	filePath: string;
-	fileName: string;
-	lineNumber: number;
-	content: string;
-	completed: boolean;
-	// 源格式：'tasks' | 'dataview'（用于写回时选择字段样式）
-	format?: 'tasks' | 'dataview';
-	priority?: string; // highest, high, medium, low, lowest
-	createdDate?: Date;
-	startDate?: Date;
-	scheduledDate?: Date;
-	dueDate?: Date;
-	cancelledDate?: Date;
-	completionDate?: Date;
-}
+import { GanttTask } from './types';
 
 /**
  * 从笔记库中搜索所有符合全局筛选条件的任务
@@ -60,11 +44,24 @@ export async function searchTasks(app: App, globalTaskFilter: string, enabledFor
 			};
 
 			// 根据启用的格式解析日期
+			let hasTasksFormat = false;
+			let hasDataviewFormat = false;
+			
 			if (formats.includes('tasks')) {
-				parseTasksFormat(contentWithoutFilter, task);
+				hasTasksFormat = parseTasksFormat(contentWithoutFilter, task);
 			}
 			if (formats.includes('dataview')) {
-				parseDataviewFormat(contentWithoutFilter, task);
+				hasDataviewFormat = parseDataviewFormat(contentWithoutFilter, task);
+			}
+
+			// 检测混用格式
+			if (hasTasksFormat && hasDataviewFormat) {
+				task.warning = '混用任务格式，请修改';
+			}
+			// 检测是否缺少任何属性（除了content和基本信息）
+			else if (!task.priority && !task.createdDate && !task.startDate && 
+			         !task.scheduledDate && !task.dueDate && !task.cancelledDate && !task.completionDate) {
+				task.warning = '未规划任务时间，请设置';
 			}
 
 			tasks.push(task);
@@ -84,8 +81,9 @@ export async function searchTasks(app: App, globalTaskFilter: string, enabledFor
  * 解析 Tasks 插件格式日期和优先级（使用emoji表示）
  * 优先级: 🔺 highest, ⏫ high, 🔼 medium, 🔽 low, ⏬ lowest
  * 日期: ➕ 创建日期, 🛫 开始日期, ⏳ 计划日期, 📅 due日期, ❌ 取消日期, ✅ 完成日期
+ * @returns 返回true表示匹配到Tasks格式
  */
-function parseTasksFormat(content: string, task: GanttTask): void {
+function parseTasksFormat(content: string, task: GanttTask): boolean {
 	// 解析优先级（使用emoji）
 	if (content.includes('🔺')) {
 		task.priority = 'highest';
@@ -131,16 +129,19 @@ function parseTasksFormat(content: string, task: GanttTask): void {
 	}
 
 	// 如果匹配到 Tasks 风格的日期或优先级，标记为 tasks 格式
-	if (/([➕🛫⏳📅❌✅])\s*\d{4}-\d{2}-\d{2}/.test(content) || /[🔺⏫🔼🔽⏬]/.test(content)) {
+	const hasTasksFormat = /([➕🛫⏳📅❌✅])\s*\d{4}-\d{2}-\d{2}/.test(content) || /[🔺⏫🔼🔽⏬]/.test(content);
+	if (hasTasksFormat) {
 		task.format = 'tasks';
 	}
+	return hasTasksFormat;
 }
 
 /**
  * 解析 Dataview 插件格式日期和优先级（使用字段表示）
  * [priority:: ...], [created:: ...], [start:: ...], [scheduled:: ...], [due:: ...], [cancelled:: ...], [completion:: ...]
+ * @returns 返回true表示匹配到Dataview格式
  */
-function parseDataviewFormat(content: string, task: GanttTask): void {
+function parseDataviewFormat(content: string, task: GanttTask): boolean {
 	const fieldRegex = /\[(priority|created|start|scheduled|due|cancelled|completion)::\s*([^\]]+)\]/g;
 	let match;
 
@@ -176,10 +177,12 @@ function parseDataviewFormat(content: string, task: GanttTask): void {
 		}
 	}
 
-	// 如果匹配到 Dataview 风格字段，标记为 dataview 格式
-	if (/\[(priority|created|start|scheduled|due|cancelled|completion)::\s*[^\]]+\]/.test(content)) {
+	// 如果匙配到 Dataview 风格字段，标记为 dataview 格式
+	const hasDataviewFormat = /\[(priority|created|start|scheduled|due|cancelled|completion)::\s*[^\]]+\]/.test(content);
+	if (hasDataviewFormat) {
 		task.format = 'dataview';
 	}
+	return hasDataviewFormat;
 }
 
 /**

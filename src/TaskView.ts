@@ -1,6 +1,7 @@
 import { ItemView, WorkspaceLeaf, Notice } from 'obsidian';
 import type GanttCalendarPlugin from '../main';
-import { searchTasks, GanttTask, updateTaskCompletion } from './taskManager';
+import { searchTasks, updateTaskCompletion } from './taskManager';
+import type { GanttTask } from './types';
 import { openFileInExistingLeaf } from './utils';
 
 export const TASK_VIEW_ID = 'gantt-task-view';
@@ -145,6 +146,15 @@ export class TaskView extends ItemView {
 
 		const infoDiv = taskItem.createDiv('gantt-task-info');
 		infoDiv.createEl('span', { text: `${task.fileName} : 第 ${task.lineNumber} 行`, cls: 'gantt-task-file' });
+
+		// 如果有警告信息，添加警告图标
+		if (task.warning) {
+			const warningIcon = infoDiv.createEl('span', {
+				text: '⚠️',
+				cls: 'gantt-task-warning-icon',
+				attr: { title: task.warning }
+			});
+		}
 
 		// 点击文件信息打开文件，但不打开文件信息的其他地方
 		infoDiv.addEventListener('click', async (e) => {
