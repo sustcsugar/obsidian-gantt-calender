@@ -3,7 +3,6 @@ import { CalendarView, CALENDAR_VIEW_ID } from './src/CalendarView';
 import { GanttCalendarSettings, DEFAULT_SETTINGS, GanttCalendarSettingTab } from './src/settings';
 import { searchTasks, TaskCacheManager } from './src/taskManager';
 import { TaskListModal } from './src/taskModal';
-import { TaskView, TASK_VIEW_ID } from './src/TaskView';
 
 export default class GanttCalendarPlugin extends Plugin {
     settings: GanttCalendarSettings;
@@ -18,12 +17,11 @@ export default class GanttCalendarPlugin extends Plugin {
         // 不阻塞 onload：布局就绪后再延迟触发首次扫描
         this.app.workspace.onLayoutReady(() => {
             setTimeout(() => {
-                this.taskCache.initialize(this.settings.globalTaskFilter, this.settings.enabledTaskFormats)
+                        this.taskCache.initialize(this.settings.globalTaskFilter, this.settings.enabledTaskFormats)
                     .then(() => {
                         console.log('[GanttCalendar] Task cache initialized');
                         // Refresh all views after cache is ready
                         this.refreshCalendarViews();
-                        this.refreshTaskViews();
                     })
                     .catch(error => {
                         console.error('[GanttCalendar] Failed to initialize task cache:', error);
@@ -69,8 +67,6 @@ export default class GanttCalendarPlugin extends Plugin {
 
         // Register the calendar view
         this.registerView(CALENDAR_VIEW_ID, (leaf) => new CalendarView(leaf, this));
-        // Register the task management view
-        this.registerView(TASK_VIEW_ID, (leaf) => new TaskView(leaf, this));
 
         // This creates an icon in the left ribbon.
         const ribbonIconEl = this.addRibbonIcon('calendar-days', '甘特日历', (evt: MouseEvent) => {
@@ -184,7 +180,6 @@ export default class GanttCalendarPlugin extends Plugin {
         }
         
         this.app.workspace.getLeavesOfType(CALENDAR_VIEW_ID).forEach(leaf => leaf.detach());
-        this.app.workspace.getLeavesOfType(TASK_VIEW_ID).forEach(leaf => leaf.detach());
     }
 
     async activateView() {
@@ -203,20 +198,6 @@ export default class GanttCalendarPlugin extends Plugin {
         workspace.revealLeaf(leaf);
     }
 
-    async activateTaskView() {
-        const { workspace } = this.app;
-
-        let leaf = workspace.getLeavesOfType(TASK_VIEW_ID)[0];
-        if (!leaf) {
-            leaf = workspace.getLeaf('tab');
-            await leaf.setViewState({
-                type: TASK_VIEW_ID,
-                active: true,
-            });
-        }
-
-        workspace.revealLeaf(leaf);
-    }
 
     async loadSettings() {
         this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
@@ -252,15 +233,7 @@ export default class GanttCalendarPlugin extends Plugin {
         });
     }
 
-    refreshTaskViews() {
-        const leaves = this.app.workspace.getLeavesOfType(TASK_VIEW_ID);
-        leaves.forEach(leaf => {
-            const view = leaf.view as unknown as TaskView;
-            if (view && view.render) {
-                view.render();
-            }
-        });
-    }
+    // 仅保留日历视图刷新（任务子模式包含在 CalendarView 内）
 }
 
 class SampleModal extends Modal {

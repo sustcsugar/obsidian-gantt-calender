@@ -74,12 +74,12 @@ export class GanttCalendarSettingTab extends PluginSettingTab {
 			.setName('全局任务筛选标记')
 			.setDesc('用于标记任务的前缀符号或文字（如 "🎯 " 或 "TODO"）')
 			.addText(text => text
-				.setPlaceholder('🎯 ')
+				.setPlaceholder('空则不使用筛选')
 				.setValue(this.plugin.settings.globalTaskFilter)
 				.onChange(async (value) => {
 					this.plugin.settings.globalTaskFilter = value;
 					await this.plugin.saveSettings();
-					this.plugin.refreshTaskViews();
+					this.plugin.refreshCalendarViews();
 				}));
 
 		// 启用的任务格式
@@ -101,7 +101,7 @@ export class GanttCalendarSettingTab extends PluginSettingTab {
 				drop.onChange(async (value) => {
 					this.plugin.settings.enabledTaskFormats = (value === 'both') ? ['tasks', 'dataview'] : [value];
 					await this.plugin.saveSettings();
-					this.plugin.refreshTaskViews();
+					this.plugin.refreshCalendarViews();
 				});
 			});
 
@@ -114,7 +114,7 @@ export class GanttCalendarSettingTab extends PluginSettingTab {
 				.onChange(async (value) => {
 					this.plugin.settings.showGlobalFilterInTaskText = value;
 					await this.plugin.saveSettings();
-					this.plugin.refreshTaskViews();
+					this.plugin.refreshCalendarViews();
 				}));
 
 		// 日期筛选字段
@@ -134,7 +134,7 @@ export class GanttCalendarSettingTab extends PluginSettingTab {
 				.onChange(async (value) => {
 					this.plugin.settings.dateFilterField = value as 'createdDate' | 'startDate' | 'scheduledDate' | 'dueDate' | 'completionDate' | 'cancelledDate';
 					await this.plugin.saveSettings();
-					this.plugin.refreshTaskViews();
+					this.plugin.refreshCalendarViews();
 				}));
 
 
