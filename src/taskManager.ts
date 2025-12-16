@@ -539,6 +539,97 @@ export async function updateTaskCompletion(
 }
 
 /**
+ * 更新任务的日期字段（由日期筛选字段指定）
+ * @param app Obsidian App
+ * @param task 任务对象
+ * @param dateFieldName 日期字段名（dueDate, startDate, scheduledDate, createdDate, cancelledDate, completionDate）
+ * @param newDate 新的日期值
+ * @param enabledFormats 启用的任务格式
+ */
+export async function updateTaskDateField(
+	app: App,
+	task: GanttTask,
+	dateFieldName: string,
+	newDate: Date,
+	enabledFormats: string[]
+): Promise<void> {
+	const file = app.vault.getAbstractFileByPath(task.filePath);
+	if (!(file instanceof TFile)) {
+		throw new Error(`File not found: ${task.filePath}`);
+	}
+
+	const content = await app.vault.read(file);
+	const lines = content.split('\n');
+	
+	// 获取任务行的索引（lineNumber 是 1-based）
+	const taskLineIndex = task.lineNumber - 1;
+	if (taskLineIndex < 0 || taskLineIndex >= lines.length) {
+		throw new Error(`Invalid line number: ${task.lineNumber}`);
+	}
+
+	let taskLine = lines[taskLineIndex];
+	const dateStr = formatDate(newDate, 'YYYY-MM-DD');
+
+	// 选择写回格式：优先使用任务本身的格式；否则根据当前行判断；再否则使用设置
+	let formatToUse: 'dataview' | 'tasks' | undefined = task.format;
+	if (!formatToUse) {
+		if (/\[(priority|created|start|scheduled|due|cancelled|completion)::\s*[^\]]+\]/.test(taskLine)) {
+			formatToUse = 'dataview';
+		} else if (/(➕🛫⏳📅❌✅)\s*\d{4}-\d{2}-\d{2}/.test(taskLine)) {
+			formatToUse = 'tasks';
+		} else if (enabledFormats.includes('dataview') && enabledFormats.includes('tasks')) {
+			// 两者都支持时：如果行中已有方括号则 dataview，否则 tasks
+			formatToUse = taskLine.includes('[') ? 'dataview' : 'tasks';
+		} else if (enabledFormats.includes('dataview')) {
+			formatToUse = 'dataview';
+		} else {
+			formatToUse = 'tasks';
+		}
+	}
+
+	// 根据字段名和格式更新日期
+	if (formatToUse === 'dataview') {
+		const fieldMap: { [key: string]: string } = {
+			dueDate: 'due',
+			startDate: 'start',
+			scheduledDate: 'scheduled',
+			createdDate: 'created',
+			cancelledDate: 'cancelled',
+			completionDate: 'completion',
+		};
+		const fieldKey = fieldMap[dateFieldName] || dateFieldName;
+
+		// 移除旧值，添加新值
+		taskLine = taskLine.replace(new RegExp(`\\[${fieldKey}::\\s*[^\\]]+\\]`), '');
+		taskLine = taskLine.trimEnd() + ` [${fieldKey}:: ${dateStr}]`;
+	} else {
+		// Tasks 格式
+		const emojiMap: { [key: string]: string } = {
+			dueDate: '📅',
+			startDate: '🛫',
+			scheduledDate: '⏳',
+			createdDate: '➕',
+			cancelledDate: '❌',
+			completionDate: '✅',
+		};
+		const emoji = emojiMap[dateFieldName];
+
+		if (emoji) {
+			// 移除旧值，添加新值
+			taskLine = taskLine.replace(new RegExp(`${emoji}\\s*\\d{4}-\\d{2}-\\d{2}`, 'g'), '');
+			taskLine = taskLine.trimEnd() + ` ${emoji} ${dateStr}`;
+		}
+	}
+
+	// 更新内容
+	lines[taskLineIndex] = taskLine;
+	const newContent = lines.join('\n');
+
+	// 写入文件
+	await app.vault.modify(file, newContent);
+}
+
+/**
  * 格式化日期为 YYYY-MM-DD
  */
 function formatDate(date: Date, format: string): string {

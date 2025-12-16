@@ -1,7 +1,7 @@
 import { ItemView, WorkspaceLeaf, Plugin, setIcon, TFile, MarkdownRenderer, Notice } from 'obsidian';
 import { CalendarViewType } from './types';
 import { generateMonthCalendar, getWeekOfDate, formatDate, formatMonth, isToday, isThisWeek, isThisMonth, openFileInExistingLeaf } from './utils';
-import { searchTasks, updateTaskCompletion } from './taskManager';
+import { searchTasks, updateTaskCompletion, updateTaskDateField } from './taskManager';
 import type { GanttTask } from './types';
 
 export const CALENDAR_VIEW_ID = 'gantt-calendar-view';
@@ -534,6 +534,58 @@ export class CalendarView extends ItemView {
 
 			// Load and display tasks for this day
 			this.loadWeekViewTasks(dayTasksColumn, day.date);
+
+			// 设置列为拖拽目标
+			dayTasksColumn.addEventListener('dragover', (e: DragEvent) => {
+				e.preventDefault();
+				if (e.dataTransfer) {
+					e.dataTransfer.dropEffect = 'move';
+				}
+				dayTasksColumn.style.backgroundColor = 'var(--background-modifier-hover)';
+			});
+
+			dayTasksColumn.addEventListener('dragleave', (e: DragEvent) => {
+				if (e.target === dayTasksColumn) {
+					dayTasksColumn.style.backgroundColor = '';
+				}
+			});
+
+			dayTasksColumn.addEventListener('drop', async (e: DragEvent) => {
+				e.preventDefault();
+				dayTasksColumn.style.backgroundColor = '';
+				
+				const taskId = e.dataTransfer?.getData('taskId');
+				if (!taskId) return;
+
+				const [filePath, lineNum] = taskId.split(':');
+				const lineNumber = parseInt(lineNum, 10);
+
+				// 查找源任务
+				const allTasks = this.plugin.taskCache.getAllTasks();
+				const sourceTask = allTasks.find((t: GanttTask) => t.filePath === filePath && t.lineNumber === lineNumber);
+				if (!sourceTask) {
+					console.error('[CalendarView] Source task not found:', taskId);
+					return;
+				}
+
+				// 获取日期筛选字段
+				const dateFieldName = this.plugin.settings.dateFilterField || 'dueDate';
+
+				try {
+					this.clearTaskTooltips();
+					await updateTaskDateField(
+						this.app,
+						sourceTask,
+						dateFieldName,
+						day.date,
+						this.plugin.settings.enabledTaskFormats
+					);
+					console.log('[CalendarView] Task drag-drop update successful', { taskId, dateField: dateFieldName, targetDate: day.date });
+				} catch (error) {
+					console.error('[CalendarView] Error updating task date:', error);
+					new Notice('更新任务日期失败');
+				}
+			});
 		});
 	}
 
@@ -568,16 +620,23 @@ export class CalendarView extends ItemView {
 				return;
 			}
 
-			currentDayTasks.forEach(task => this.renderWeekTaskItem(task, columnContainer));
+			currentDayTasks.forEach(task => this.renderWeekTaskItem(task, columnContainer, targetDate));
 		} catch (error) {
 			console.error('Error loading week view tasks', error);
 			columnContainer.createEl('div', { text: '加载出错', cls: 'calendar-week-task-empty' });
 		}
 	}
 
-	private renderWeekTaskItem(task: GanttTask, container: HTMLElement): void {
+	private renderWeekTaskItem(task: GanttTask, container: HTMLElement, dayDate?: Date): void {
 		const taskItem = container.createDiv('calendar-week-task-item');
 		taskItem.addClass(task.completed ? 'completed' : 'pending'); // Updated task item class based on completion status
+
+		// 设置可拖拽属性
+		taskItem.draggable = true;
+		taskItem.setAttribute('data-task-id', `${task.filePath}:${task.lineNumber}`);
+		if (dayDate) {
+			taskItem.setAttribute('data-target-date', dayDate.toISOString().split('T')[0]);
+		}
 
 		// Checkbox
 		const checkbox = taskItem.createEl('input', { type: 'checkbox' }) as HTMLInputElement;
@@ -614,6 +673,19 @@ export class CalendarView extends ItemView {
 		checkbox.addEventListener('click', (e) => {
 			console.log('[CalendarView][Week] Checkbox click event triggered', e);
 			e.stopPropagation();
+		});
+
+		// 拖拽事件
+		taskItem.addEventListener('dragstart', (e: DragEvent) => {
+			if (e.dataTransfer) {
+				e.dataTransfer.effectAllowed = 'move';
+				e.dataTransfer.setData('taskId', `${task.filePath}:${task.lineNumber}`);
+				taskItem.style.opacity = '0.6';
+			}
+		});
+
+		taskItem.addEventListener('dragend', (e: DragEvent) => {
+			taskItem.style.opacity = '1';
 		});
 
 		// Task content: only clean description, no global filter, priority, or time properties
