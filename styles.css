@@ -1,3 +1,24 @@
+/*
+========================================
+Gantt Calendar Plugin Styles - 甘特日历
+========================================
+*/
+
+/* ========================================
+   1. 总体 - 全局变量与样式
+   ======================================== */
+
+/* CSS Variables for Festival Colors */
+:root {
+	--festival-solar-color: #e74c3c;    /* 阳历节日 - 红色 */
+	--festival-lunar-color: #e8a041;    /* 农历节日 - 橙色 */
+	--festival-solar-term-color: #52c41a; /* 节气 - 绿色 */
+}
+
+/* ========================================
+   2. 通用样式
+   ======================================== */
+
 .calendar-day-task-count {
 	font-size: 10px;
 	color: var(--text-muted);
@@ -53,16 +74,10 @@
 .calendar-day.heatmap-yellow-3 { background-image: none; background-color: rgba(255, 193, 7, 0.32) !important; }
 .calendar-day.heatmap-yellow-4 { background-image: none; background-color: rgba(255, 193, 7, 0.44) !important; }
 .calendar-day.heatmap-yellow-5 { background-image: none; background-color: rgba(255, 193, 7, 0.58) !important; }
-/*
-Gantt Calendar Plugin Styles - 甘特日历
-*/
 
-/* CSS Variables for Festival Colors */
-:root {
-	--festival-solar-color: #e74c3c;    /* 阳历节日 - 红色 */
-	--festival-lunar-color: #e8a041;    /* 农历节日 - 橙色 */
-	--festival-solar-term-color: #52c41a; /* 节气 - 绿色 */
-}
+/* ========================================
+   3. 设置相关样式
+   ======================================== */
 
 /* Calendar View Container */
 .calendar-toolbar {
@@ -122,6 +137,14 @@ Gantt Calendar Plugin Styles - 甘特日历
 }
 
 .calendar-toggle-btn.active {
+	background-color: var(--interactive-accent);
+	border-color: var(--interactive-accent);
+	color: white;
+}
+
+.calendar-toggle-btn:hover {
+	background-color: var(--background-modifier-border);
+}
 
 /* Icon-only button variant */
 .calendar-view-btn.icon-btn {
@@ -136,10 +159,6 @@ Gantt Calendar Plugin Styles - 甘特日历
 .calendar-view-btn.icon-btn svg {
 	width: 18px;
 	height: 18px;
-}
-	background-color: var(--interactive-accent);
-	border-color: var(--interactive-accent);
-	color: white;
 }
 
 .calendar-nav-buttons {
