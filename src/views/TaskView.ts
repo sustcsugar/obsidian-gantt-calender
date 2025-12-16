@@ -41,6 +41,27 @@ export class TaskViewRenderer extends BaseCalendarRenderer {
 		this.timeValueFilter = date;
 	}
 
+	/**
+	 * 创建状态筛选组（在工具栏右侧功能区调用）
+	 */
+	public createStatusFilterGroup(container: HTMLElement, onFilterChange: () => void): void {
+		const statusFilterGroup = container.createDiv('gantt-filter-group');
+		const statusLabel = statusFilterGroup.createEl('span', { text: '状态', cls: 'gantt-filter-group-label' });
+		
+		const statusSelect = statusFilterGroup.createEl('select', { cls: 'gantt-filter-select' });
+		statusSelect.innerHTML = `
+			<option value="all">全部</option>
+			<option value="uncompleted">未完成</option>
+			<option value="completed">已完成</option>
+		`;
+		statusSelect.value = this.taskFilter;
+		statusSelect.addEventListener('change', (e) => {
+			const value = (e.target as HTMLSelectElement).value as 'all' | 'completed' | 'uncompleted';
+			this.setTaskFilter(value);
+			onFilterChange();
+		});
+	}
+
 	render(container: HTMLElement, currentDate: Date): void {
 		container.addClass('gantt-task-view');
 

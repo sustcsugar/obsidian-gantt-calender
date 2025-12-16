@@ -1259,7 +1259,6 @@ Gantt Calendar Plugin Styles - 甘特日历
 	font-size: 14px;
 	font-weight: 600;
 	color: var(--text-normal);
-	margin-right: 8px;
 	white-space: nowrap;
 }
 
@@ -1274,7 +1273,7 @@ Gantt Calendar Plugin Styles - 甘特日历
 	font-weight: 600;
 	color: var(--text-muted);
 	white-space: nowrap;
-	margin: 0 4px;
+	margin: 0 0px;
 }
 
 .gantt-filter-divider {

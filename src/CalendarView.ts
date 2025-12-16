@@ -187,22 +187,8 @@ export class CalendarView extends ItemView {
 		const gfText = right.createEl('span', { cls: 'gantt-filter-label' });
 		gfText.setText(`Global Filter: ${this.plugin?.settings?.globalTaskFilter || '（未设置）'}`);
 
-		// ===== 状态筛选 - 单个下拉选择 =====
-		const statusFilterGroup = right.createDiv('gantt-filter-group');
-		const statusLabel = statusFilterGroup.createEl('span', { text: '状态', cls: 'gantt-filter-group-label' });
-		
-		const statusSelect = statusFilterGroup.createEl('select', { cls: 'gantt-filter-select' });
-		statusSelect.innerHTML = `
-			<option value="all">全部</option>
-			<option value="uncompleted">未完成</option>
-			<option value="completed">已完成</option>
-		`;
-		statusSelect.value = this.taskRenderer.getTaskFilter();
-		statusSelect.addEventListener('change', (e) => {
-			const value = (e.target as HTMLSelectElement).value as 'all' | 'completed' | 'uncompleted';
-			this.taskRenderer.setTaskFilter(value);
-			this.render();
-		});
+		// ===== 状态筛选 - 由 TaskViewRenderer 创建 =====
+		this.taskRenderer.createStatusFilterGroup(right, () => this.render());
 
 		// ===== 分割线 =====
 		const divider = right.createDiv('gantt-filter-divider');
