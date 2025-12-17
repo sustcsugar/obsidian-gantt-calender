@@ -76,17 +76,15 @@ export class TaskViewRenderer extends BaseCalendarRenderer {
 	render(container: HTMLElement, currentDate: Date): void {
 		container.addClass('task-view-container');
 
-		const statsContainer = container.createDiv('task-view-stats');
 		const listContainer = container.createDiv('task-view-list');
 
-		this.loadTaskList(statsContainer, listContainer);
+		this.loadTaskList(listContainer);
 	}
 
 	/**
 	 * 加载任务列表
 	 */
-	private async loadTaskList(statsContainer: HTMLElement, listContainer: HTMLElement): Promise<void> {
-		statsContainer.empty();
+	private async loadTaskList(listContainer: HTMLElement): Promise<void> {
 		listContainer.empty();
 		listContainer.createEl('div', { text: '加载中...', cls: 'gantt-task-empty' });
 
@@ -136,11 +134,6 @@ export class TaskViewRenderer extends BaseCalendarRenderer {
 		}
 
 			listContainer.empty();
-
-			const completedCount = tasks.filter(t => t.completed).length;
-			statsContainer.empty();
-			statsContainer.createEl('span', { text: `✓ 已完成: ${completedCount}` });
-			statsContainer.createEl('span', { text: `○ 待完成: ${tasks.length - completedCount}` });
 
 			if (tasks.length === 0) {
 				listContainer.createEl('div', { text: '未找到符合条件的任务', cls: 'gantt-task-empty' });

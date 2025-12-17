@@ -1319,22 +1319,6 @@ Gantt Calendar Plugin Styles - 甘特日历
 	text-align: center;
 }
 
-.task-view-stats {
-	display: flex;
-	gap: 16px;
-	padding: 12px;
-	background-color: var(--background-secondary);
-	border-radius: 4px;
-	margin: 12px 0;
-	font-size: 12px;
-}
-
-.task-view-stats span {
-	flex: 1;
-	text-align: center;
-	color: var(--text-normal);
-}
-
 .task-view-list {
 	display: flex;
 	flex-direction: column;
