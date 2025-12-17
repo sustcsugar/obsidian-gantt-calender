@@ -1,9 +1,9 @@
 {
 	"id": "obsidian-gantt-calendar",
 	"name": "Gantt Calendar",
-	"version": "1.0.0",
-	"minAppVersion": "0.15.0",
-	"description": "This is a plugin that allows you to create and manage a custom calendar in Obsidian. You can add events, set reminders, and view your schedule in a user-friendly interface.",
+	"version": "1.1.2",
+	"minAppVersion": "1.5.0",
+	"description": "Gantt-style calendar with day/week/month/year views and a task board that reads Tasks/Dataview items, supports global filters and date filters for quick scheduling.",
 	"author": "Sugar",
 	"authorUrl": "https://github.com/sustcsugar",
 	"fundingUrl": "https://github.com/sustcsugar",
