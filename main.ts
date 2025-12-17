@@ -1,8 +1,8 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, TFile } from 'obsidian';
+import { App, Plugin, TFile, Notice } from 'obsidian';
 import { CalendarView, CALENDAR_VIEW_ID } from './src/CalendarView';
 import { GanttCalendarSettings, DEFAULT_SETTINGS, GanttCalendarSettingTab } from './src/settings';
-import { searchTasks, TaskCacheManager } from './src/taskManager';
-import { TaskListModal } from './src/taskModal';
+import { TaskCacheManager } from './src/taskManager';
+import { registerAllCommands } from './src/commands';
 
 export default class GanttCalendarPlugin extends Plugin {
     settings: GanttCalendarSettings;
@@ -79,86 +79,8 @@ export default class GanttCalendarPlugin extends Plugin {
         const statusBarItemEl = this.addStatusBarItem();
         statusBarItemEl.setText('Status Bar Text');
 
-        // This adds a simple command that can be triggered anywhere
-        this.addCommand({
-            id: 'gantt-calendar-common',
-            name: 'Open sample modal (simple)',
-            callback: () => {
-                new SampleModal(this.app).open();
-            }
-        });
-        // This adds an editor command that can perform some operation on the current editor instance
-        this.addCommand({
-            id: 'gantt-calendar-editor',
-            name: 'Sample editor command',
-            editorCallback: (editor: Editor, _view: MarkdownView) => {
-                console.log(editor.getSelection());
-                editor.replaceSelection('Sample Editor Command');
-            }
-        });
-        // This adds a complex command that can check whether the current state of the app allows execution of the command
-        this.addCommand({
-            id: 'gantt-calendar-conditional',
-            name: 'Open sample modal (complex)',
-            checkCallback: (checking: boolean) => {
-                // Conditions to check
-                const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
-                if (markdownView) {
-                    // If checking is true, we're simply "checking" if the command can be run.
-                    // If checking is false, then we want to actually perform the operation.
-                    if (!checking) {
-                        new SampleModal(this.app).open();
-                    }
-
-                    // This command will only show up in Command Palette when the check function returns true
-                    return true;
-                }
-            }
-        });
-
-        // Open calendar view (default month view)
-        this.addCommand({
-            id: 'gantt-calendar-open-calendar-view',
-            name: '打开日历视图',
-            callback: async () => {
-                await this.activateView();
-                const leaf = this.app.workspace.getLeavesOfType(CALENDAR_VIEW_ID)[0];
-                const view = leaf?.view as unknown as CalendarView;
-                if (view?.switchView) {
-                    view.switchView('month');
-                }
-            }
-        });
-
-        // Open dedicated task view
-        this.addCommand({
-            id: 'gantt-calendar-open-task-view',
-            name: '打开任务视图',
-            callback: async () => {
-                await this.activateView();
-                const leaf = this.app.workspace.getLeavesOfType(CALENDAR_VIEW_ID)[0];
-                const view = leaf?.view as unknown as CalendarView;
-                if (view?.switchView) {
-                    view.switchView('task');
-                }
-            }
-        });
-
-        // Search all tasks with global filter
-        this.addCommand({
-            id: 'gantt-calendar-search-tasks',
-            name: '搜索所有任务',
-            callback: async () => {
-                try {
-                    const tasks = await searchTasks(this.app, this.settings.globalTaskFilter, this.settings.enabledTaskFormats);
-                    new TaskListModal(this.app, tasks).open();
-                    new Notice(`找到 ${tasks.length} 个任务`);
-                } catch (error) {
-                    console.error('Error searching tasks:', error);
-                    new Notice('搜索任务时出错');
-                }
-            }
-        });
+        // Register all commands
+        registerAllCommands(this);
 
         // This adds a settings tab so the user can configure various aspects of the plugin
         this.addSettingTab(new GanttCalendarSettingTab(this.app, this));
@@ -234,20 +156,4 @@ export default class GanttCalendarPlugin extends Plugin {
     }
 
     // 仅保留日历视图刷新（任务子模式包含在 CalendarView 内）
-}
-
-class SampleModal extends Modal {
-    constructor(app: App) {
-        super(app);
-    }
-
-    onOpen() {
-        const {contentEl} = this;
-        contentEl.setText('Woah!');
-    }
-
-    onClose() {
-        const {contentEl} = this;
-        contentEl.empty();
-    }
 }

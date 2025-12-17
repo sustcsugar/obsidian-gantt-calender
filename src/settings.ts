@@ -40,14 +40,14 @@ export const DEFAULT_SETTINGS: GanttCalendarSettings = {
 	lunarFestivalColor: '#e8a041',  // 农历节日 - 橙色
 	solarTermColor: '#52c41a',      // 节气 - 绿色
 	globalTaskFilter: '🎯 ',        // 全局任务筛选标记
-	enabledTaskFormats: ['tasks', 'dataview'], // 启用的任务格式
+	enabledTaskFormats: ['tasks'], // 启用的任务格式
 	showGlobalFilterInTaskText: true, // 默认显示 global filter
 	dateFilterField: 'dueDate', // 默认使用截止日期作为筛选字段
 	enableDailyNote: true, // 默认在日视图中显示 Daily Note
 	dayViewLayout: 'horizontal', // 默认水平（左右分屏）布局
 	dailyNotePath: 'DailyNotes', // 默认 daily note 文件夹路径
 	dailyNoteNameFormat: 'yyyy-MM-dd', // 默认文件名格式
-	monthViewTaskLimit: 5, // 默认每天显示5个任务
+	monthViewTaskLimit: 3, // 默认每天显示5个任务
 	yearShowTaskCount: true,
 	yearHeatmapEnabled: true,
 	yearHeatmapPalette: 'blue',
@@ -120,7 +120,7 @@ export class GanttCalendarSettingTab extends PluginSettingTab {
 		// 日期筛选字段
 		new Setting(containerEl)
 			.setName('日期筛选字段')
-			.setDesc('选择在任务筛选器中用于日期范围筛选（今日/本周/本月）的日期字段')
+			.setDesc('选择在日历视图中用于日期范围筛选的日期字段')
 			.addDropdown(drop => drop
 				.addOptions({
 					'createdDate': '创建日期',
