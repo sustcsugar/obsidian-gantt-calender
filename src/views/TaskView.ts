@@ -162,7 +162,13 @@ export class TaskViewRenderer extends BaseCalendarRenderer {
 		const cleaned = this.cleanTaskDescription(task.content);
 		const gf = (this.plugin?.settings?.globalTaskFilter || '').trim();
 		const displayText = this.plugin?.settings?.showGlobalFilterInTaskText && gf ? `${gf} ${cleaned}` : cleaned;
-		taskItem.createEl('span', { text: displayText, cls: 'gantt-task-text' });
+		
+		// 使用富文本渲染支持链接
+		const taskTextEl = taskItem.createDiv('gantt-task-text');
+		if (this.plugin?.settings?.showGlobalFilterInTaskText && gf) {
+			taskTextEl.appendText(gf + ' ');
+		}
+		this.renderTaskDescriptionWithLinks(taskTextEl, cleaned);
 
 		// 优先级标记
 		if (task.priority) {

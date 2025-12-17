@@ -1523,12 +1523,51 @@ Gantt Calendar Plugin Styles - 甘特日历
 	word-break: break-word;
 	color: var(--text-normal);
 	font-size: 14px;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	flex-wrap: wrap;
 }
 
 .gantt-task-item.completed .gantt-task-text,
 .calendar-day-task-item.completed .gantt-task-text {
 	text-decoration: line-through;
 	color: var(--text-muted);
+}
+
+/* Task description links */
+.gantt-task-link {
+	color: var(--link-color);
+	text-decoration: none;
+	cursor: pointer;
+	word-break: break-word;
+	padding: 0 2px;
+	border-radius: 2px;
+	transition: background-color 0.15s ease;
+}
+
+.gantt-task-link:hover {
+	background-color: var(--background-modifier-hover);
+	text-decoration: underline;
+}
+
+.gantt-task-link.obsidian-link {
+	color: var(--link-color);
+}
+
+.gantt-task-link.markdown-link {
+	color: var(--link-color);
+}
+
+.gantt-task-link.url-link {
+	color: var(--link-external-color, #0969da);
+	font-family: monospace;
+	font-size: 12px;
+}
+
+.gantt-task-item.completed .gantt-task-link,
+.calendar-day-task-item.completed .gantt-task-link {
+	opacity: 0.7;
 }
 
 /* Priority badge inline */
