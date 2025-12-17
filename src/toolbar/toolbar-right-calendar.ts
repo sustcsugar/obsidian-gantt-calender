@@ -31,16 +31,16 @@ export class ToolbarRightCalendar {
 		// 导航按钮组
 		const navButtons = container.createDiv('calendar-nav-buttons');
 		
-		const prevBtn = navButtons.createEl('button', { text: '◀ 上一个' });
-		prevBtn.addClass('calendar-nav-btn');
+		const prevBtn = navButtons.createEl('button', { text: '◀', attr: { title: '上一个' } });
+		prevBtn.addClass('calendar-nav-compact-btn');
 		prevBtn.onclick = onPrevious;
 
-		const nextBtn = navButtons.createEl('button', { text: '下一个 ▶' });
-		nextBtn.addClass('calendar-nav-btn');
+		const nextBtn = navButtons.createEl('button', { text: '▶', attr: { title: '下一个' } });
+		nextBtn.addClass('calendar-nav-compact-btn');
 		nextBtn.onclick = onNext;
 
-		const todayBtn = navButtons.createEl('button', { text: '今天' });
-		todayBtn.addClass('calendar-nav-btn');
+		const todayBtn = navButtons.createEl('button', { text: '今天', attr: { title: '回到今天' } });
+		todayBtn.addClass('calendar-nav-compact-btn');
 		todayBtn.onclick = onToday;
 
 		// 视图选择器（日/周/月/年）
@@ -54,14 +54,14 @@ export class ToolbarRightCalendar {
 
 		['day', 'week', 'month', 'year'].forEach((type) => {
 			const btn = viewContainer.createEl('button', { text: viewTypes[type] });
-			btn.addClass('calendar-view-btn');
+			btn.addClass('calendar-view-compact-btn');
 			if (type === currentViewType) btn.addClass('active');
 			btn.onclick = () => onViewSwitch(type as CalendarViewType);
 		});
 
 		// 刷新按钮（图标模式 + 悬浮提示）
 		const refreshBtn = container.createEl('button', { 
-			cls: 'calendar-view-btn icon-btn', 
+			cls: 'calendar-view-compact-btn icon-btn', 
 			attr: { title: '刷新任务' } 
 		});
 		setIcon(refreshBtn, 'rotate-ccw');
