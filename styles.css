@@ -87,8 +87,16 @@ Gantt Calendar Plugin Styles - 甘特日历
 	justify-content: flex-start;
 	gap: 12px;
 	padding: 12px 16px;
-	background-color: var(--background-primary);
-	border-bottom: 1px solid var(--background-modifier-border);
+	margin: 8px 12px 16px;
+	position: sticky;
+	top: 8px;
+	border-radius: 14px;
+	background: color-mix(in srgb, var(--background-primary) 82%, transparent);
+	border: 1px solid color-mix(in srgb, var(--background-modifier-border) 70%, transparent);
+	box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
+	backdrop-filter: blur(18px) saturate(1.05);
+	-webkit-backdrop-filter: blur(18px) saturate(1.05);
+	z-index: 100;
 }
 
 .calendar-toolbar-left,
@@ -912,7 +920,7 @@ Gantt Calendar Plugin Styles - 甘特日历
 	grid-template-columns: repeat(7, 1fr);
 	gap: 0;
 	flex-shrink: 0;
-	z-index: 15;
+	z-index: 5;
 	position: sticky;
 	top: 0;
 }
@@ -929,7 +937,7 @@ Gantt Calendar Plugin Styles - 甘特日历
 	background-color: var(--background-primary);
 	position: sticky;
 	top: 0;
-	z-index: 10;
+	z-index: 4;
 }
 
 .calendar-day-header-cell:last-child {
@@ -1003,6 +1011,8 @@ Gantt Calendar Plugin Styles - 甘特日历
 	transition: all 0.15s ease;
 	cursor: pointer;
 	font-size: 13px;
+	position: relative;
+	z-index: 1;
 }
 
 .calendar-week-task-item:hover {
