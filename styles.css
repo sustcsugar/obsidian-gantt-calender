@@ -423,7 +423,8 @@ Gantt Calendar Plugin Styles - 甘特日历
 	flex: 1;
 	display: flex;
 	flex-direction: column;
-	overflow: hidden;
+	overflow-y: auto;
+	overflow-x: hidden;
 }
 
 /* Year View */
@@ -432,7 +433,7 @@ Gantt Calendar Plugin Styles - 甘特日历
 	flex-direction: column;
 	gap: 8px;
 	height: 100%;
-	overflow-y: auto;
+	overflow: hidden;
 }
 
 .calendar-months-grid {
@@ -589,7 +590,7 @@ Gantt Calendar Plugin Styles - 甘特日历
 	flex-direction: column;
 	gap: 8px;
 	height: 100%;
-	overflow-y: auto;
+	overflow: hidden;
 }
 
 .calendar-month-weekdays {
@@ -849,7 +850,7 @@ Gantt Calendar Plugin Styles - 甘特日历
 	margin: 0;
 	height: 100%;
 	flex: 1;
-	overflow: auto;
+	overflow: hidden;
 	padding: 12px;
 }
 
@@ -1385,9 +1386,11 @@ Gantt Calendar Plugin Styles - 甘特日历
 	display: flex;
 	flex-direction: column;
 	gap: 6px;
-	max-height: 400px;
-	overflow-y: auto;
-	padding: 8px 0;
+	padding: 12px;
+	/* 列表不产生内部滚动，由父容器滚动 */
+	height: auto;
+	flex: none;
+	overflow: visible;
 }
 
 .gantt-task-item,
@@ -1405,14 +1408,13 @@ Gantt Calendar Plugin Styles - 甘特日历
 	flex-wrap: wrap;
 }
 
-/* Task View (pane) */
-.task-view-container {
-	display: flex;
-	flex-direction: column;
-	gap: 12px;
-	height: 100%;
-	padding: 12px;
-	overflow: hidden;
+/* Task View */
+.calendar-task-view {
+	display: block; /* 子块级元素，由内容撑高 */
+	flex: none;
+	height: auto;
+	overflow: visible;
+	width: 100%;
 }
 
 .gantt-task-view-header {
@@ -1483,10 +1485,8 @@ Gantt Calendar Plugin Styles - 甘特日历
 	color: white;
 }
 
-.task-view-container .task-view-list {
-	max-height: none;
-	height: 100%;
-	overflow: auto;
+.calendar-task-view .task-view-list {
+	/* 离开 calendar-content 的滚动，整体滚动平台处理 */
 }
 
 /* ========================================

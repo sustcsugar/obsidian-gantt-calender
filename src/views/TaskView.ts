@@ -75,9 +75,10 @@ export class TaskViewRenderer extends BaseCalendarRenderer {
 	}
 
 	render(container: HTMLElement, currentDate: Date): void {
-		container.addClass('task-view-container');
+		// 在 calendar-content 内创建子容器作为任务视图根节点
+		const taskRoot = container.createDiv('calendar-task-view');
 
-		const listContainer = container.createDiv('task-view-list');
+		const listContainer = taskRoot.createDiv('task-view-list');
 
 		this.loadTaskList(listContainer);
 	}
