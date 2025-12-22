@@ -1516,14 +1516,80 @@ Gantt Calendar Plugin Styles - 甘特日历
 	position: relative;
 }
 
-/* 时间刻度：横向滚动，纵向固定 */
+/* 甘特图主体：左右分栏布局 */
+.gantt-view-body {
+	flex: 1 1 auto;
+	min-height: 0;
+	display: flex;
+	gap: 8px;
+	overflow: hidden;
+}
+
+/* 左侧：任务列表区域 */
+.gantt-view-tasks {
+	flex: 0 0 300px;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	overflow: hidden;
+}
+
+.gantt-view-tasks-header {
+	flex: 0 0 auto;
+	padding: 8px 12px;
+	font-weight: 600;
+	font-size: 13px;
+	color: var(--text-normal);
+	background-color: var(--background-secondary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 4px;
+	margin-bottom: 4px;
+}
+
+.gantt-view-task-list {
+	flex: 1 1 auto;
+	overflow-y: auto;
+	overflow-x: hidden;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding-right: 4px;
+}
+
+.gantt-task-card {
+	background-color: var(--background-primary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 4px;
+	padding: 8px 12px;
+	cursor: pointer;
+	transition: transform 0.15s ease, box-shadow 0.15s ease;
+	flex: 0 0 auto;
+	min-height: 40px;
+	display: flex;
+	align-items: center;
+}
+
+.gantt-task-card:hover {
+	transform: translateX(2px);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 右侧：时间轴区域（可横向滚动） */
+.gantt-view-time {
+	flex: 1 1 auto;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	overflow: hidden;
+}
+
 .gantt-view-timeline {
 	flex: 0 0 auto;
-	position: sticky;
-	top: 0;
 	background-color: var(--background-primary);
 	z-index: 10;
-	padding-bottom: 4px;
+	margin-bottom: 4px;
 }
 
 .gantt-timeline-scroll {
@@ -1551,13 +1617,27 @@ Gantt Calendar Plugin Styles - 甘特日历
 	min-width: 100px;
 }
 
-/* 任务主体：左右分栏，内部可滚动 */
-.gantt-view-body {
+.gantt-view-bars {
 	flex: 1 1 auto;
 	min-height: 0;
-	overflow: hidden;
+	overflow-y: auto;
+	overflow-x: hidden;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding-right: 4px;
 }
 
+.gantt-bar-row {
+	position: relative;
+	background-color: var(--background-secondary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 4px;
+	min-height: 40px;
+	flex: 0 0 auto;
+}
+
+/* 兼容旧样式（保留以防其他地方引用） */
 .gantt-body-scroll {
 	display: grid;
 	grid-template-columns: 300px 1fr;

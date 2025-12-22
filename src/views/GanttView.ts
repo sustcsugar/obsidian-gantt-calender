@@ -205,8 +205,24 @@ export class GanttViewRenderer extends BaseCalendarRenderer {
     this.totalUnits = totalUnits;
     this.timelineStart = minStart;
 
-    // 时间刻度区域（横向滚动，纵向固定）
-    const timeline = root.createDiv('gantt-view-timeline');
+    // 主体区域：左右分栏布局
+    const body = root.createDiv('gantt-view-body');
+
+    // 左侧：任务列表区域
+    const tasksSection = body.createDiv('gantt-view-tasks');
+    
+    // 任务列表标题
+    const tasksHeader = tasksSection.createDiv('gantt-view-tasks-header');
+    tasksHeader.setText('任务卡片');
+    
+    // 任务卡片列表容器
+    const taskList = tasksSection.createDiv('gantt-view-task-list');
+
+    // 右侧：时间轴区域（可横向滚动）
+    const timeSection = body.createDiv('gantt-view-time');
+    
+    // 时间刻度行
+    const timeline = timeSection.createDiv('gantt-view-timeline');
     const timelineScroll = timeline.createDiv('gantt-timeline-scroll');
     this.timelineScrollEl = timelineScroll;
     timelineScroll.style.setProperty('--gantt-total-units', String(totalUnits));
@@ -220,30 +236,26 @@ export class GanttViewRenderer extends BaseCalendarRenderer {
       currentDate = this.getNextTimeUnit(currentDate);
     }
 
-    // 任务主体区域（左右分栏，可独立滚动）
-    const body = root.createDiv('gantt-view-body');
-    const bodyScroll = body.createDiv('gantt-body-scroll');
-    this.bodyScrollEl = bodyScroll;
-    bodyScroll.style.setProperty('--gantt-total-units', String(totalUnits));
-    bodyScroll.style.setProperty('--gantt-visible-units', String(this.VISIBLE_UNITS));
+    // 甘特条容器
+    const ganttBars = timeSection.createDiv('gantt-view-bars');
+    this.bodyScrollEl = timelineScroll; // 复用滚动容器
 
     for (const item of withRange) {
-      // 左侧任务列
-      const taskCell = bodyScroll.createDiv('gantt-body-task-cell');
+      // 左侧：任务卡片
+      const taskCard = taskList.createDiv('gantt-task-card');
       const cleaned = this.cleanTaskDescription(item.task.content);
       const gf = (this.plugin?.settings?.globalTaskFilter || '').trim();
       if (this.plugin?.settings?.showGlobalFilterInTaskText && gf) {
-        taskCell.appendText(gf + ' ');
+        taskCard.appendText(gf + ' ');
       }
-      this.renderTaskDescriptionWithLinks(taskCell, cleaned);
+      this.renderTaskDescriptionWithLinks(taskCard, cleaned);
 
-      taskCell.addEventListener('click', async () => {
+      taskCard.addEventListener('click', async () => {
         await this.openTaskFile(item.task);
       });
 
-      // 右侧泳道
-      const laneCell = bodyScroll.createDiv('gantt-body-lane-cell');
-      const lane = laneCell.createDiv('gantt-body-lane');
+      // 右侧：甘特条行
+      const barRow = ganttBars.createDiv('gantt-bar-row');
 
       const { startOffset, duration } = this.calculateTaskPosition(
         item.start,
@@ -255,19 +267,27 @@ export class GanttViewRenderer extends BaseCalendarRenderer {
       const leftPct = (startOffset / totalUnits) * 100;
       const widthPct = (duration / totalUnits) * 100;
 
-      const bar = lane.createDiv('gantt-bar');
+      const bar = barRow.createDiv('gantt-bar');
       bar.style.left = leftPct + '%';
       bar.style.width = widthPct + '%';
       bar.setAttr('title', `${formatDate(item.start, 'YYYY-MM-DD')} → ${formatDate(item.end, 'YYYY-MM-DD')}`);
       if (item.task.completed) bar.addClass('completed');
     }
 
-    // 同步时间刻度与泳道的横向滚动
-    this.syncHorizontalScroll(timelineScroll, bodyScroll);
-    this.syncHorizontalScroll(bodyScroll, timelineScroll);
+    // 同步任务列表和甘特条的垂直滚动
+    taskList.addEventListener('scroll', () => {
+      if (ganttBars.scrollTop !== taskList.scrollTop) {
+        ganttBars.scrollTop = taskList.scrollTop;
+      }
+    });
+    ganttBars.addEventListener('scroll', () => {
+      if (taskList.scrollTop !== ganttBars.scrollTop) {
+        taskList.scrollTop = ganttBars.scrollTop;
+      }
+    });
 
-    // 今天线：放置在根节点覆盖 timeline + body
-    const overlay = root.createDiv('gantt-today-overlay');
+    // 今天线：放置在时间区域内
+    const overlay = timeSection.createDiv('gantt-today-overlay');
     const todayLine = overlay.createDiv('gantt-today-line');
     this.todayLineEl = todayLine;
 
@@ -280,9 +300,6 @@ export class GanttViewRenderer extends BaseCalendarRenderer {
     // 滚动时更新今天线位置
     this.timelineScrollEl?.addEventListener('scroll', () => {
       this.setTodayLinePosition(this.todayOffsetUnits, this.timelineScrollEl?.scrollLeft);
-    });
-    this.bodyScrollEl?.addEventListener('scroll', () => {
-      this.setTodayLinePosition(this.todayOffsetUnits, this.bodyScrollEl?.scrollLeft);
     });
   }
 }
