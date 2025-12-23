@@ -1,151 +1,10 @@
-import { App, TFile, ListItemCache } from 'obsidian';
+import { App, TFile } from 'obsidian';
 import { GanttTask } from './types';
+import { parseTasksFormat, parseDataviewFormat, escapeRegExp, parseTasksFromListItems } from './tasks/parser';
+import { areTasksEqual, dateValue } from './tasks/utils';
 
-/**
- * 从笔记库中搜索所有符合全局筛选条件的任务
- */
-export async function searchTasks(app: App, globalTaskFilter: string, enabledFormats?: string[]): Promise<GanttTask[]> {
-	const tasks: GanttTask[] = [];
-	const markdownFiles = app.vault.getMarkdownFiles();
-	const formats = enabledFormats || ['tasks', 'dataview'];
+// 任务解析与搜索相关功能已迁移至 src/tasks/ 目录
 
-	for (const file of markdownFiles) {
-		const fileCache = app.metadataCache.getFileCache(file);
-		const listItems = fileCache?.listItems;
-		// 没有列表项就不读取文件，跳过
-		if (!listItems || listItems.length === 0) {
-			continue;
-		}
-
-		const content = await app.vault.read(file);
-		const lines = content.split('\n');
-		const parsed = parseTasksFromListItems(file, lines, listItems, formats, globalTaskFilter);
-		tasks.push(...parsed);
-	}
-
-	return tasks.sort((a, b) => {
-		// 按文件名排序，然后按行号排序
-		if (a.fileName !== b.fileName) {
-			return a.fileName.localeCompare(b.fileName);
-		}
-		return a.lineNumber - b.lineNumber;
-	});
-}
-
-/**
- * 解析 Tasks 插件格式日期和优先级（使用emoji表示）
- * 优先级: 🔺 highest, ⏫ high, 🔼 medium, 🔽 low, ⏬ lowest
- * 日期: ➕ 创建日期, 🛫 开始日期, ⏳ 计划日期, 📅 due日期, ❌ 取消日期, ✅ 完成日期
- * @returns 返回true表示匹配到Tasks格式
- */
-function parseTasksFormat(content: string, task: GanttTask): boolean {
-	// 解析优先级（使用emoji）
-	if (content.includes('🔺')) {
-		task.priority = 'highest';
-	} else if (content.includes('⏫')) {
-		task.priority = 'high';
-	} else if (content.includes('🔼')) {
-		task.priority = 'medium';
-	} else if (content.includes('🔽')) {
-		task.priority = 'low';
-	} else if (content.includes('⏬')) {
-		task.priority = 'lowest';
-	}
-	// 如果没有优先级emoji，则为 normal（不设置priority字段）
-
-	// 解析日期
-	const dateRegex = /(➕|🛫|⏳|📅|❌|✅)\s*(\d{4}-\d{2}-\d{2})/g;
-	let match;
-
-	while ((match = dateRegex.exec(content)) !== null) {
-		const [, emoji, dateStr] = match;
-		const date = new Date(dateStr);
-
-		switch (emoji) {
-			case '➕':
-				task.createdDate = date;
-				break;
-			case '🛫':
-				task.startDate = date;
-				break;
-			case '⏳':
-				task.scheduledDate = date;
-				break;
-			case '📅':
-				task.dueDate = date;
-				break;
-			case '❌':
-				task.cancelledDate = date;
-				break;
-			case '✅':
-				task.completionDate = date;
-				break;
-		}
-	}
-
-	// 如果匹配到 Tasks 风格的日期或优先级，标记为 tasks 格式
-	const hasTasksFormat = /([➕🛫⏳📅❌✅])\s*\d{4}-\d{2}-\d{2}/.test(content) || /[🔺⏫🔼🔽⏬]/.test(content);
-	if (hasTasksFormat) {
-		task.format = 'tasks';
-	}
-	return hasTasksFormat;
-}
-
-/**
- * 解析 Dataview 插件格式日期和优先级（使用字段表示）
- * [priority:: ...], [created:: ...], [start:: ...], [scheduled:: ...], [due:: ...], [cancelled:: ...], [completion:: ...]
- * @returns 返回true表示匹配到Dataview格式
- */
-function parseDataviewFormat(content: string, task: GanttTask): boolean {
-	const fieldRegex = /\[(priority|created|start|scheduled|due|cancelled|completion)::\s*([^\]]+)\]/g;
-	let match;
-
-	while ((match = fieldRegex.exec(content)) !== null) {
-		const [, field, value] = match;
-		const trimmedValue = value.trim();
-
-		switch (field) {
-			case 'priority':
-				// 解析优先级
-				const priorityValue = trimmedValue.toLowerCase();
-				if (['highest', 'high', 'medium', 'low', 'lowest'].includes(priorityValue)) {
-					task.priority = priorityValue;
-				}
-				break;
-			case 'created':
-			case 'start':
-			case 'scheduled':
-			case 'due':
-			case 'cancelled':
-			case 'completion':
-				// 尝试解析日期
-				const date = new Date(trimmedValue);
-				if (isNaN(date.getTime())) continue;
-
-				if (field === 'created') task.createdDate = date;
-				else if (field === 'start') task.startDate = date;
-				else if (field === 'scheduled') task.scheduledDate = date;
-				else if (field === 'due') task.dueDate = date;
-				else if (field === 'cancelled') task.cancelledDate = date;
-				else if (field === 'completion') task.completionDate = date;
-				break;
-		}
-	}
-
-	// 如果匙配到 Dataview 风格字段，标记为 dataview 格式
-	const hasDataviewFormat = /\[(priority|created|start|scheduled|due|cancelled|completion)::\s*[^\]]+\]/.test(content);
-	if (hasDataviewFormat) {
-		task.format = 'dataview';
-	}
-	return hasDataviewFormat;
-}
-
-/**
- * 转义正则表达式中的特殊字符
- */
-function escapeRegExp(string: string): string {
-	return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
 
 export type TaskCacheUpdateListener = () => void;
 
@@ -265,7 +124,7 @@ export class TaskCacheManager {
 			const tasks = parseTasksFromListItems(file, lines, listItems, this.enabledFormats, this.globalTaskFilter);
 
 			const prev = this.cache.get(file.path) || [];
-			if (this.areTasksEqual(prev, tasks)) {
+			if (areTasksEqual(prev, tasks)) {
 				// 无变化不通知
 				return { taskCount: tasks.length };
 			}
@@ -293,26 +152,7 @@ export class TaskCacheManager {
 	/**
 	 * 解析单个文件的所有任务
 	 */
-	private areTasksEqual(a: GanttTask[], b: GanttTask[]): boolean {
-		if (a.length !== b.length) return false;
-		for (let i = 0; i < a.length; i++) {
-			const ta = a[i];
-			const tb = b[i];
-			if (ta.filePath !== tb.filePath) return false;
-			if (ta.lineNumber !== tb.lineNumber) return false;
-			if (ta.content !== tb.content) return false;
-			if (ta.completed !== tb.completed) return false;
-			if ((ta.priority || '') !== (tb.priority || '')) return false;
-			if ((ta.format || '') !== (tb.format || '')) return false;
-			if (dateValue(ta.createdDate) !== dateValue(tb.createdDate)) return false;
-			if (dateValue(ta.startDate) !== dateValue(tb.startDate)) return false;
-			if (dateValue(ta.scheduledDate) !== dateValue(tb.scheduledDate)) return false;
-			if (dateValue(ta.dueDate) !== dateValue(tb.dueDate)) return false;
-			if (dateValue(ta.cancelledDate) !== dateValue(tb.cancelledDate)) return false;
-			if (dateValue(ta.completionDate) !== dateValue(tb.completionDate)) return false;
-		}
-		return true;
-	}
+	// areTasksEqual 已迁移至 tasks/utils.ts
 	/**
 	 * 移除文件的缓存
 	 */
@@ -402,66 +242,9 @@ export class TaskCacheManager {
 	}
 }
 
-	function dateValue(d?: Date): number | undefined {
-		return d ? d.getTime() : undefined;
-	}
+	// dateValue 已迁移至 tasks/utils.ts
 
-	function parseTasksFromListItems(
-		file: TFile,
-		lines: string[],
-		listItems: ListItemCache[],
-		enabledFormats: string[],
-		globalTaskFilter: string
-	): GanttTask[] {
-		const tasks: GanttTask[] = [];
-
-		for (const item of listItems) {
-			const lineNumber = item.position.start.line;
-			const line = lines[lineNumber];
-			if (!line) continue;
-
-			const taskMatch = line.match(/^\s*[-*]\s*\[([ xX])\]\s*(.*)/);
-			if (!taskMatch) continue;
-
-			const [, checkedStatus, taskContent] = taskMatch;
-			const isCompleted = checkedStatus.toLowerCase() === 'x';
-
-			if (globalTaskFilter) {
-				const trimmedContent = taskContent.trim();
-				if (!trimmedContent.startsWith(globalTaskFilter)) {
-					continue;
-				}
-			}
-
-			const contentWithoutFilter = globalTaskFilter
-				? taskContent.replace(new RegExp(`^\s*${escapeRegExp(globalTaskFilter)}\s*`), '')
-				: taskContent;
-
-			const task: GanttTask = {
-				filePath: file.path,
-				fileName: file.basename,
-				lineNumber: lineNumber + 1, // convert to 1-based
-				content: contentWithoutFilter,
-				completed: isCompleted,
-			};
-
-			const hasTasksFormat = enabledFormats.includes('tasks') ? parseTasksFormat(contentWithoutFilter, task) : false;
-			const hasDataviewFormat = enabledFormats.includes('dataview') ? parseDataviewFormat(contentWithoutFilter, task) : false;
-
-			// 检测混用格式或缺少属性
-			if (hasTasksFormat && hasDataviewFormat) {
-				task.warning = '混用任务格式，请修改';
-			} else if (!task.priority && !task.createdDate && !task.startDate &&
-			           !task.scheduledDate && !task.dueDate && !task.cancelledDate && !task.completionDate) {
-				task.warning = '未规划任务时间，请设置';
-			}
-
-			tasks.push(task);
-		}
-
-		// 保持排序：按文件内行号
-		return tasks.sort((a, b) => a.lineNumber - b.lineNumber);
-	}
+	// parseTasksFromListItems 已迁移至 tasks/parser.ts
 
 /**
  * 更新任务的完成状态

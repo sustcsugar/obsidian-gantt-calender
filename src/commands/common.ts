@@ -1,7 +1,4 @@
-import { Notice } from 'obsidian';
 import { CALENDAR_VIEW_ID } from '../CalendarView';
-import { searchTasks } from '../taskManager';
-import { TaskListModal } from '../taskModal';
 import type GanttCalendarPlugin from '../../main';
 
 /**
@@ -37,23 +34,4 @@ export function registerCommonCommands(plugin: GanttCalendarPlugin): void {
 		}
 	});
 
-	// 搜索所有任务
-	plugin.addCommand({
-		id: 'gantt-calendar-search-tasks',
-		name: '搜索所有任务',
-		callback: async () => {
-			try {
-				const tasks = await searchTasks(
-					plugin.app,
-					plugin.settings.globalTaskFilter,
-					plugin.settings.enabledTaskFormats
-				);
-				new TaskListModal(plugin.app, tasks).open();
-				new Notice(`找到 ${tasks.length} 个任务`);
-			} catch (error) {
-				console.error('Error searching tasks:', error);
-				new Notice('搜索任务时出错');
-			}
-		}
-	});
 }
