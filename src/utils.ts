@@ -1,6 +1,6 @@
 import { App, MarkdownView, TFile } from 'obsidian';
 import { CalendarDay, CalendarMonth, CalendarWeek } from './types';
-import { getShortLunarText, solarToLunar } from './lunar';
+import { getShortLunarText, solarToLunar } from './lunar/lunar';
 
 // Open file in existing leaf if already open, otherwise create a new tab
 export async function openFileInExistingLeaf(app: App, filePath: string, lineNumber?: number) {

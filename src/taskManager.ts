@@ -1,7 +1,7 @@
 import { App, TFile } from 'obsidian';
 import { GanttTask } from './types';
 import { parseTasksFormat, parseDataviewFormat, escapeRegExp, parseTasksFromListItems } from './tasks/parser';
-import { areTasksEqual, dateValue } from './tasks/utils';
+import { areTasksEqual, dateValue } from './tasks/taskUtils';
 
 // 任务解析与搜索相关功能已迁移至 src/tasks/ 目录
 

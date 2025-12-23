@@ -1,3 +1,12 @@
+/**
+ * 任务工具函数模块
+ *
+ * 提供任务对象的比较与日期处理工具：
+ * - dateValue: 获取日期的时间戳（用于比较）
+ * - areTasksEqual: 判断两个任务数组内容是否完全一致（用于缓存、变更检测）
+ *
+ * 适用于甘特任务、任务缓存等场景。
+ */
 import { GanttTask } from '../types';
 
 export function dateValue(d?: Date): number | undefined {

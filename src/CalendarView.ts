@@ -2,7 +2,7 @@ import { ItemView, WorkspaceLeaf, setIcon, Notice } from 'obsidian';
 import { CalendarViewType } from './types';
 import { getWeekOfDate, formatDate, formatMonth } from './utils';
 import { getTodayDate } from './utils/today';
-import { solarToLunar, getShortLunarText } from './lunar';
+import { solarToLunar, getShortLunarText } from './lunar/lunar';
 import { YearViewRenderer } from './views/YearView';
 import { MonthViewRenderer } from './views/MonthView';
 import { WeekViewRenderer } from './views/WeekView';

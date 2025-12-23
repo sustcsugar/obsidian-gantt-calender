@@ -1,5 +1,5 @@
 import type { CalendarViewType } from '../types';
-import { solarToLunar, getShortLunarText } from '../lunar';
+import { solarToLunar, getShortLunarText } from '../lunar/lunar';
 
 /**
  * 工具栏中间区域 - 信息展示区
