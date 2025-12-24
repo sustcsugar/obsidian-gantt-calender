@@ -1,7 +1,7 @@
 import { App, Notice } from 'obsidian';
 import type { GanttTask } from '../types';
 import { formatDate, openFileInExistingLeaf } from '../utils/calendar';
-import { updateTaskCompletion } from '../taskManager';
+import { updateTaskCompletion } from '../tasks/taskUpdater';
 
 /**
  * 日历渲染器基类

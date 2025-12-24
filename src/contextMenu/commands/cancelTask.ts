@@ -1,6 +1,6 @@
 import { App } from 'obsidian';
 import type { GanttTask } from '../../types';
-import { updateTaskDateField } from '../../taskManager';
+import { updateTaskDateField } from '../../tasks/taskUpdater';
 
 /**
  * 取消任务（设置取消日期为今天）

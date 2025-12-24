@@ -1,6 +1,6 @@
 import { App, Modal, Setting, Notice } from 'obsidian';
 import type { GanttTask } from '../../types';
-import { updateTaskProperties } from '../../taskManager';
+import { updateTaskProperties } from '../../tasks/taskUpdater';
 
 
 export function openEditTaskModal(

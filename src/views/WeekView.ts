@@ -1,7 +1,7 @@
 import { Notice } from 'obsidian';
 import { BaseCalendarRenderer } from './BaseCalendarRenderer';
 import { getWeekOfDate } from '../calendarUtils';
-import { updateTaskDateField } from '../taskManager';
+import { updateTaskDateField } from '../tasks/taskUpdater';
 import type { GanttTask } from '../types';
 
 /**
