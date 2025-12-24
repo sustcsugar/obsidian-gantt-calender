@@ -1,5 +1,5 @@
 import { BaseCalendarRenderer } from './BaseCalendarRenderer';
-import { generateMonthCalendar } from '../utils';
+import { generateMonthCalendar } from '../utils/calendar';
 import type { GanttTask } from '../types';
 
 /**

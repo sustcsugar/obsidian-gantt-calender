@@ -1,6 +1,6 @@
 import { ItemView, WorkspaceLeaf, setIcon, Notice } from 'obsidian';
 import { CalendarViewType } from './types';
-import { getWeekOfDate, formatDate, formatMonth } from './utils';
+import { getWeekOfDate, formatDate, formatMonth } from './utils/calendar';
 import { getTodayDate } from './utils/today';
 import { solarToLunar, getShortLunarText } from './lunar/lunar';
 import { YearViewRenderer } from './views/YearView';

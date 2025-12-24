@@ -1,6 +1,6 @@
 import { TFile, MarkdownRenderer } from 'obsidian';
 import { BaseCalendarRenderer } from './BaseCalendarRenderer';
-import { formatDate } from '../utils';
+import { formatDate } from '../calendarUtils';
 import type { GanttTask } from '../types';
 
 /**

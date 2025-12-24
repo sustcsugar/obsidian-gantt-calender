@@ -1,6 +1,6 @@
 import { BaseCalendarRenderer } from './BaseCalendarRenderer';
 import type { GanttTask, GanttTimeGranularity } from '../types';
-import { formatDate } from '../utils';
+import { formatDate } from '../utils/calendar';
 import { getTodayDate } from '../utils/today';
 
 /**

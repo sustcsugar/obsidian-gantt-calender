@@ -1,5 +1,5 @@
 import { BaseCalendarRenderer } from './BaseCalendarRenderer';
-import { isToday, isThisWeek, isThisMonth } from '../utils';
+import { isToday, isThisWeek, isThisMonth } from '../utils/calendar';
 import type { GanttTask } from '../types';
 import { registerTaskContextMenu } from '../contextMenu';
 

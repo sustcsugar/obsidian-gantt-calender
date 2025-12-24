@@ -1,6 +1,6 @@
 import { Modal, App } from 'obsidian';
 import type { GanttTask } from './types';
-import { openFileInExistingLeaf } from './utils';
+import { openFileInExistingLeaf } from './calendarUtils';
 
 export class TaskListModal extends Modal {
 	tasks: GanttTask[];

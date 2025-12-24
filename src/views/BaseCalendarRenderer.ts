@@ -1,6 +1,6 @@
 import { App, Notice } from 'obsidian';
 import type { GanttTask } from '../types';
-import { formatDate, openFileInExistingLeaf } from '../utils';
+import { formatDate, openFileInExistingLeaf } from '../utils/calendar';
 import { updateTaskCompletion } from '../taskManager';
 
 /**
