@@ -2,7 +2,7 @@ import { App, Plugin, TFile, Notice } from 'obsidian';
 import { CalendarView, CALENDAR_VIEW_ID } from './src/CalendarView';
 import { GanttCalendarSettings, DEFAULT_SETTINGS, GanttCalendarSettingTab } from './src/settings';
 import { TaskCacheManager } from './src/taskManager';
-import { registerAllCommands } from './src/commands';
+import { registerAllCommands } from './src/commands/commandsIndex';
 
 export default class GanttCalendarPlugin extends Plugin {
     settings: GanttCalendarSettings;

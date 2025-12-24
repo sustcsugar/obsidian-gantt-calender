@@ -1,5 +1,5 @@
 import { BaseCalendarRenderer } from './BaseCalendarRenderer';
-import { generateMonthCalendar } from '../utils/calendar';
+import { generateMonthCalendar } from '../calendar/calendarGenerator';
 import type { GanttTask } from '../types';
 
 /**
@@ -146,7 +146,7 @@ export class MonthViewRenderer extends BaseCalendarRenderer {
 		// 注册右键菜单
 		const enabledFormats = this.plugin.settings.enabledTaskFormats || ['tasks'];
 		const taskNotePath = this.plugin.settings.taskNotePath || 'Tasks';
-		const { registerTaskContextMenu } = require('../contextMenu');
+		const { registerTaskContextMenu } = require('../contextMenu/contextMenuIndex');
 		registerTaskContextMenu(
 			taskItem,
 			task,

@@ -1,3 +1,14 @@
+/**
+ * @fileoverview 文件打开工具 - 智能打开 Obsidian 文件
+ *
+ * 提供在 Obsidian 中打开文件的功能，具有以下特性：
+ * - 避免重复打开同一文件的多个标签页
+ * - 如果文件已在其他标签页打开，则聚焦该标签页
+ * - 支持跳转到指定行号（用于定位任务）
+ *
+ * @module utils/fileOpener
+ */
+
 import { App, MarkdownView, TFile } from 'obsidian';
 
 /**

@@ -1,7 +1,6 @@
 import { BaseCalendarRenderer } from './BaseCalendarRenderer';
 import type { GanttTask, GanttTimeGranularity } from '../types';
-import { formatDate } from '../utils/calendar';
-import { getTodayDate } from '../utils/today';
+import { formatDate, getTodayDate } from '../dateUtils/dateUtilsIndex';
 
 /**
  * 甘特图视图渲染器

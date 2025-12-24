@@ -1,5 +1,5 @@
-import { CalendarDay, CalendarWeek } from '../../types';
-import { solarToLunar, getShortLunarText } from '../../lunar/lunar';
+import { CalendarDay, CalendarWeek } from '../types';
+import { solarToLunar, getShortLunarText } from '../lunar/lunar';
 import { isToday } from './dateCompare';
 
 /**

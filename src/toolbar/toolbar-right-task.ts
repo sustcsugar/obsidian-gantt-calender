@@ -1,5 +1,5 @@
 import { setIcon } from 'obsidian';
-import { formatDate } from '../calendarUtils';
+import { formatDate } from '../dateUtils/dateUtilsIndex';
 import type { TaskViewRenderer } from '../views/TaskView';
 import { renderStatusFilter } from './status-filter';
 import { renderRefreshButton } from './refresh-button';

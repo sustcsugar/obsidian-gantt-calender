@@ -1,6 +1,6 @@
 import { Notice } from 'obsidian';
 import { BaseCalendarRenderer } from './BaseCalendarRenderer';
-import { getWeekOfDate } from '../calendarUtils';
+import { getWeekOfDate } from '../dateUtils/dateUtilsIndex';
 import { updateTaskDateField } from '../tasks/taskUpdater';
 import type { GanttTask } from '../types';
 
@@ -187,7 +187,7 @@ export class WeekViewRenderer extends BaseCalendarRenderer {
 		// 注册右键菜单
 		const enabledFormats = this.plugin.settings.enabledTaskFormats || ['tasks'];
 		const taskNotePath = this.plugin.settings.taskNotePath || 'Tasks';
-		const { registerTaskContextMenu } = require('../contextMenu');
+		const { registerTaskContextMenu } = require('../contextMenu/contextMenuIndex');
 		registerTaskContextMenu(
 			taskItem,
 			task,

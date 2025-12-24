@@ -2,8 +2,8 @@
 
 <div align="center" style="padding: 20px; border: 2px solid #8b5cf6; border-radius: 12px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%); margin: 20px 0;">
 
-📅 一个强大的 Obsidian 任务管理和日历插件 ✨  
-集成日历视图与任务列表 📋 支持农历节日 🏮 任务热力图 🔥  
+📅 一个强大的 Obsidian 任务管理和日历插件 ✨
+集成日历视图与任务列表 📋 支持农历节日 🏮 任务热力图 🔥
 Daily Note 联动 📝 兼容 Tasks 和 Dataview 双格式 🔗
 
 </div>
@@ -12,11 +12,11 @@ Daily Note 联动 📝 兼容 Tasks 和 Dataview 双格式 🔗
 
 ## ✨ 功能特性
 
-🗓️ **多视图日历** - 年/月/周/日四种视图自由切换，支持农历节日节气显示  
-✅ **智能任务管理** - 全局筛选、优先级标记、6种时间属性、实时缓存更新  
-📊 **数据可视化** - 任务热力图、数量统计、8种配色方案  
-🔗 **双格式兼容** - 完美支持 Tasks 插件（emoji）与 Dataview 插件（字段）格式  
-📝 **Daily Note 集成** - 日视图支持显示当天笔记，水平/垂直布局可选  
+🗓️ **多视图日历** - 年/月/周/日/甘特图五种视图自由切换，支持农历节日节气显示
+✅ **智能任务管理** - 全局筛选、优先级标记、6种时间属性、实时缓存更新
+📊 **数据可视化** - 任务热力图、数量统计、8种配色方案
+🔗 **双格式兼容** - 完美支持 Tasks 插件（emoji）与 Dataview 插件（字段）格式
+📝 **Daily Note 集成** - 日视图支持显示当天笔记，水平/垂直布局可选
 🎨 **高度可定制** - 节日颜色、热力图配色、任务显示数量等全面配置
 
 
@@ -95,6 +95,7 @@ Daily Note 联动 📝 兼容 Tasks 和 Dataview 双格式 🔗
 
 #### 任务交互
 - **点击任务** → 跳转到源文件位置
+- **右键任务** → 打开上下文菜单（编辑任务、创建任务笔记等）
 - **优先级颜色**：
   - 🔴 highest | 🟠 high | 🟡 medium
   - ⚪ normal | 🟢 low | 🔵 lowest
@@ -172,6 +173,12 @@ Daily Note 联动 📝 兼容 Tasks 和 Dataview 双格式 🔗
 - **农历信息栏**：显示农历日期、节日、节气
 - **任务跳转**：点击任务直接定位到源文件
 
+#### 甘特图视图
+- **时间线可视化**：横向时间轴展示任务时间跨度
+- **时间颗粒度切换**：支持日/周/月/年四种时间刻度
+- **任务筛选**：按完成状态和优先级筛选
+- **颜色标识**：优先级和状态通过颜色区分
+
 
 
 ## ⚙️ 插件设置
@@ -237,39 +244,29 @@ Daily Note 联动 📝 兼容 Tasks 和 Dataview 双格式 🔗
 - ✅ 全局筛选支持开头匹配
 - ✅ 自定义节日颜色配置
 
-### 🔜 计划中（v1.1.0）
-- [ ] 任务解析增强完善
-    - [ ] 优化任务解析方法
-        - [ ] 当前方法为全局正则匹配,遍历整个库每个文件的每一行,性能极弱无比
-        - [ ] 改进方案一: 修改为通过网页元素属性获取,提升插件性能.
-        - [ ] 改进方案二: 参考tasks插件,利用MetadataCache等obsidian官方api来索引任务
-    - [ ] 判断行首行尾
-    - [x] dataview格式任务添加约束条件,更加严格的解析(bug)
-    - [ ] tasks格式跨行任务解析
-    - [ ] 不规范的任务格式警告
-        - [ ] 混用任务格式,正常解析,但添加warning提示
-        - [ ] 不含任何属性的空任务,根据当前任务格式设置,正常解析,但添加warning提示.
+### ✅ 已完成（v1.1.0）
+- ✅ 任务右键菜单（编辑任务、创建任务笔记）
+- ✅ 任务复选框功能（支持完成状态切换）
+- ✅ 两种任务格式均支持复选框
+- ✅ 甘特图视图（时间线可视化）
+- ✅ 任务属性批量编辑模态框
+- ✅ 代码结构重组优化
+
+### 🔜 计划中（v1.2.0）
+- [ ] 任务解析增强
+    - [ ] Tasks 格式跨行任务解析
     - [ ] 子任务解析
-    - [ ] 任务依赖关系（前置任务设置）
-    - [ ] 任务标签系统（多标签筛选）
     - [ ] 任务描述中超链接与双链渲染
-- [x] 任务视图
-    - [ ] 添加复选框功能
-    - [x] 两种任务格式均支持
-    - [ ] 任务视图,任务排序功能
-    - [ ] 任务鼠标右键菜单
-    - [ ] 批量任务操作（批量修改优先级/日期）
+    - [ ] 不规范任务格式警告提示
+- [ ] 任务视图增强
+    - [ ] 任务排序功能（按优先级/日期/文件名）
+    - [ ] 批量任务操作
     - [ ] 任务统计看板（完成率/逾期任务统计）
-    - [ ] 任务筛选增强,手动选择时间
-    - [ ] 任务排序功能
-- [ ] 日历视图
-    - [ ] 日历视图日视图/周视图复选框
-    - [ ] 周视图月视图拖动任务修改时间
-    - [ ] 日视图: 嵌入dailynote样式优化
-    - [ ] 日视图: 嵌入dailynote编辑优化
+- [ ] 日历视图交互
+    - [ ] 拖动任务修改日期
+    - [ ] 日视图嵌入 Daily Note 样式优化
 
 ### 💡 未来计划（v2.0.0）
-- [ ] 甘特图视图（任务时间线可视化）
 - [ ] 移动端适配优化
 - [ ] 订阅第三方日历
 - [ ] 任务模板功能
@@ -278,14 +275,17 @@ Daily Note 联动 📝 兼容 Tasks 和 Dataview 双格式 🔗
 - [ ] 与 Obsidian Projects 插件集成
 - [ ] 自定义视图布局（拖拽调整）
 
-### 现有bug list
-- [ ] 日历视图的任务悬浮卡片,有概率会不消失,暂时未找到原因.
-    - [ ] 打开插件的情况下,如果点击刷新按钮重新解析任务,会大概率导致悬浮窗问题
-- [ ] 刷新按钮,在打开插件的情况下,点击刷新按钮会造成严重的卡顿,此功能需要优化
+### 现有 bug list
+- ✅ 日历视图的任务悬浮卡片，有概率会不消失
+    - ✅ 打开插件的情况下，如果点击刷新按钮重新解析任务，会大概率导致悬浮窗问题
+- ✅ 刷新按钮，在打开插件的情况下，点击刷新按钮会造成严重的卡顿
+- [ ] 任务卡片右键菜单
+    - ✅ 编辑任务的
+    - [ ] 创建别名笔记
+
+
 
 ---
-
-
 
 ## 🛠️ 开发构建
 
@@ -331,13 +331,75 @@ npm run build
 ### 项目结构
 ```
 src/
-├── CalendarView.ts    # 日历视图（年/月/周/日）
-├── TaskView.ts        # 任务列表视图
-├── taskManager.ts     # 任务缓存与解析
-├── settings.ts        # 插件设置面板
-├── lunar.ts           # 农历节日计算
-├── utils.ts           # 工具函数
-└── types.ts           # TypeScript 类型定义
+├── CalendarView.ts          # 主视图容器，管理所有子视图
+├── calendarGenerator.ts     # 日历数据生成（月历）
+├── calendarUtils.ts         # 日历工具统一导出
+├── taskManager.ts           # 任务缓存管理器（单例模式）
+├── settings.ts              # 插件设置面板
+├── types.ts                 # TypeScript 类型定义
+│
+├── calendar/                # 日历相关模块
+│   ├── calendarGenerator.ts # 月历数据生成
+│   └── calendarIndex.ts     # 统一导出
+│
+├── dateUtils/               # 日期工具模块
+│   ├── dateCompare.ts       # 日期比较（isToday, isThisMonth）
+│   ├── format.ts            # 日期格式化
+│   ├── today.ts             # 获取今天日期
+│   ├── week.ts              # 周相关工具
+│   └── dateUtilsIndex.ts    # 统一导出
+│
+├── utils/                   # 通用工具模块
+│   ├── fileOpener.ts        # 文件打开工具
+│   └── index.ts             # 统一导出
+│
+├── lunar/                   # 农历计算模块
+│   ├── lunar.ts             # 农历转换核心
+│   ├── lunarConvert.ts      # 阴阳历转换
+│   ├── lunarData.ts         # 农历数据
+│   ├── festival.ts          # 节日计算
+│   ├── solarTerm.ts         # 节气计算
+│   └── lunarUtils.ts        # 工具函数
+│
+├── tasks/                   # 任务处理模块
+│   ├── taskParser.ts        # 任务解析（Tasks + Dataview）
+│   ├── taskSearch.ts        # 任务搜索筛选
+│   ├── taskUtils.ts         # 任务工具函数
+│   └── taskUpdater.ts       # 任务属性更新
+│
+├── views/                   # 视图渲染器
+│   ├── BaseCalendarRenderer.ts  # 基类，共享方法
+│   ├── YearView.ts          # 年视图
+│   ├── MonthView.ts         # 月视图
+│   ├── WeekView.ts          # 周视图
+│   ├── DayView.ts           # 日视图
+│   ├── TaskView.ts          # 任务列表视图
+│   └── GanttView.ts         # 甘特图视图
+│
+├── toolbar/                 # 工具栏模块
+│   ├── toolbar.ts           # 工具栏容器
+│   ├── toolbar-left.ts      # 左侧（视图切换）
+│   ├── toolbar-center.ts    # 中间（日期显示）
+│   ├── toolbar-right-calendar.ts  # 右侧（日历导航）
+│   ├── toolbar-right-task.ts      # 右侧（任务筛选）
+│   ├── toolbar-right-gantt.ts     # 右侧（甘特图控制）
+│   ├── time-granularity.ts  # 时间颗粒度选择
+│   ├── status-filter.ts     # 状态筛选
+│   └── refresh-button.ts    # 刷新按钮
+│
+├── commands/                # 命令模块
+│   ├── common.ts            # 通用命令
+│   ├── editor.ts            # 编辑器命令
+│   ├── conditional.ts       # 条件命令
+│   └── commandsIndex.ts     # 统一导出
+│
+└── contextMenu/             # 右键菜单模块
+    ├── contextMenuIndex.ts  # 统一导出
+    └── commands/            # 菜单命令
+        ├── editTask.ts      # 编辑任务
+        ├── createNoteFromTask.ts     # 创建任务笔记（同名）
+        ├── createNoteFromTaskAlias.ts # 创建任务笔记（别名）
+        └── cancelTask.ts    # 取消任务
 ```
 
 ### 贡献指南
@@ -348,8 +410,6 @@ src/
 3. 提交更改：`git commit -m 'Add some AmazingFeature'`
 4. 推送到分支：`git push origin feature/AmazingFeature`
 5. 提交 Pull Request
-
-📖 **详细开发文档**：请参考 [AGENTS.md](AGENTS.md)
 
 ---
 

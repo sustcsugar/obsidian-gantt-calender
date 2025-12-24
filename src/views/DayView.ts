@@ -1,6 +1,6 @@
 import { TFile, MarkdownRenderer } from 'obsidian';
 import { BaseCalendarRenderer } from './BaseCalendarRenderer';
-import { formatDate } from '../calendarUtils';
+import { formatDate } from '../dateUtils/dateUtilsIndex';
 import type { GanttTask } from '../types';
 
 /**
@@ -209,7 +209,7 @@ export class DayViewRenderer extends BaseCalendarRenderer {
 		// 注册右键菜单
 		const enabledFormats = this.plugin.settings.enabledTaskFormats || ['tasks'];
 		const taskNotePath = this.plugin.settings.taskNotePath || 'Tasks';
-		const { registerTaskContextMenu } = require('../contextMenu');
+		const { registerTaskContextMenu } = require('../contextMenu/contextMenuIndex');
 		registerTaskContextMenu(
 			taskItem,
 			task,

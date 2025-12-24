@@ -1,3 +1,8 @@
+/**
+ * @fileoverview 命令注册统一入口
+ * @module commands/commandsIndex
+ */
+
 import type GanttCalendarPlugin from '../../main';
 import { registerCommonCommands } from './common';
 import { registerEditorCommands } from './editor';

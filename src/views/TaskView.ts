@@ -1,7 +1,7 @@
 import { BaseCalendarRenderer } from './BaseCalendarRenderer';
-import { isToday, isThisWeek, isThisMonth } from '../utils/calendar';
+import { isToday, isThisWeek, isThisMonth } from '../dateUtils/dateUtilsIndex';
 import type { GanttTask } from '../types';
-import { registerTaskContextMenu } from '../contextMenu';
+import { registerTaskContextMenu } from '../contextMenu/contextMenuIndex';
 
 /**
  * 任务视图渲染器

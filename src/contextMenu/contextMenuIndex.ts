@@ -1,3 +1,8 @@
+/**
+ * @fileoverview 右键菜单注册
+ * @module contextMenu/contextMenuIndex
+ */
+
 import { App, Menu } from 'obsidian';
 import type { GanttTask } from '../types';
 import { createNoteFromTask } from './commands/createNoteFromTask';
