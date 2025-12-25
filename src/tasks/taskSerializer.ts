@@ -74,7 +74,7 @@ function getDataviewField(field: keyof MergedTask): string {
 /**
  * 获取优先级 emoji（Tasks 格式）
  */
-function getPriorityEmoji(priority: 'highest' | 'high' | 'medium' | 'low' | 'lowest' | 'normal'): string {
+function getPriorityEmoji(priority: 'highest' | 'high' | 'medium' | 'low' | 'lowest' | 'normal' | undefined): string {
 	const map: Record<string, string> = {
 		highest: '🔺',
 		high: '⏫',
@@ -83,7 +83,7 @@ function getPriorityEmoji(priority: 'highest' | 'high' | 'medium' | 'low' | 'low
 		lowest: '⏬',
 		normal: '',
 	};
-	return map[priority] || '';
+	return map[priority || ''] || '';
 }
 
 /**
@@ -109,7 +109,10 @@ export function serializeTask(
 	// 注意：updates 中的日期字段可能是 null（表示清除），task 中的日期字段是 undefined（表示不存在）
 	const merged: MergedTask = {
 		completed: updates.completed !== undefined ? updates.completed : task.completed,
-		priority: updates.priority !== undefined ? getPriorityEmoji(updates.priority) : task.priority,
+		// 修复：统一将 priority 转换为 emoji，避免"不更改"时输出文本值
+		priority: updates.priority !== undefined
+			? getPriorityEmoji(updates.priority)
+			: getPriorityEmoji(task.priority as any),
 		description: updates.content !== undefined ? updates.content : task.description,
 		// 处理日期字段：undefined 使用原始值，null 转为 undefined（表示清除）
 		createdDate: updates.createdDate !== undefined ? (updates.createdDate || undefined) : task.createdDate,
