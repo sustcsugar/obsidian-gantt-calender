@@ -469,4 +469,62 @@ export class RegularExpressions {
          */
         cancelledRegex: /^\[\/\]$/,
     } as const;
+
+    // ==================== 链接解析正则 ====================
+
+    /**
+     * 链接解析正则表达式集合
+     * 用于从任务内容中识别和提取各种类型的链接
+     * 支持任务卡片文本的富链接渲染
+     */
+    public static readonly Links = {
+        /**
+         * Obsidian 双向链接正则
+         * 匹配：[[note]] 或 [[note|alias]]
+         * 捕获组1为链接路径（note）
+         * 捕获组2为可选的显示文本（alias）
+         *
+         * @example
+         * "[[MyNote]]" -> 匹配，捕获组1: "MyNote"，捕获组2: undefined
+         * "[[MyNote|我的笔记]]" -> 匹配，捕获组1: "MyNote"，捕获组2: "我的笔记"
+         * "[[Folder/Note]]" -> 匹配，支持嵌套路径
+         */
+        obsidianLinkRegex: /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g,
+
+        /**
+         * Markdown 格式链接正则
+         * 匹配：[text](url)
+         * 捕获组1为显示文本（text）
+         * 捕获组2为链接地址（url）
+         *
+         * @example
+         * "[Google](https://google.com)" -> 匹配，捕获组1: "Google"，捕获组2: "https://google.com"
+         * "[下载文件](https://example.com/file.pdf)" -> 匹配，捕获组1: "下载文件"，捕获组2: "https://example.com/file.pdf"
+         */
+        markdownLinkRegex: /\[([^\]]+)\]\(([^)]+)\)/g,
+
+        /**
+         * 纯URL链接正则
+         * 匹配：http:// 或 https:// 开头的URL
+         * 捕获组1为完整URL
+         * 排除包含在引号或尖括号中的URL（避免在HTML标签中匹配）
+         *
+         * @example
+         * "https://google.com" -> 匹配，捕获组1: "https://google.com"
+         * "访问 http://example.com 查看" -> 匹配，捕获组1: "http://example.com"
+         * "<a href=\"https://example.com\">" -> 不匹配（在引号中）
+         */
+        urlLinkRegex: /(https?:\/\/[^\s<>"\)]+)/g,
+
+        /**
+         * 综合链接检测正则
+         * 快速检测文本中是否包含任意类型的链接
+         * 用于判断是否需要进行富文本渲染
+         *
+         * @example
+         * "访问 [[首页]] 或 https://example.com" -> 匹配（包含链接）
+         * "普通文本内容" -> 不匹配
+         */
+        anyLinkRegex: /(\[\[([^\]|]+)(?:\|([^\]]+))?\]\]|\[([^\]]+)\]\(([^)]+)\)|https?:\/\/[^\s<>"\)]+)/,
+    } as const;
 }

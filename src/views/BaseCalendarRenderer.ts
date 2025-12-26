@@ -5,6 +5,7 @@ import { openFileInExistingLeaf } from '../utils/fileOpener';
 import { updateTaskCompletion } from '../tasks/taskUpdater';
 import { getStatusColor, DEFAULT_TASK_STATUSES, getStatusByKey } from '../tasks/taskStatus';
 import type { TaskStatus } from '../tasks/taskStatus';
+import { RegularExpressions } from '../utils/RegularExpressions';
 
 /**
  * 日历渲染器基类
@@ -308,10 +309,10 @@ export abstract class BaseCalendarRenderer {
 	 * - 网址链接：http://example.com 或 https://example.com
 	 */
 	protected renderTaskDescriptionWithLinks(container: HTMLElement, text: string): void {
-		// 正则表达式模式
-		const obsidianLinkRegex = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g; // [[note]] 或 [[note|alias]]
-		const markdownLinkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;           // [text](url)
-		const urlRegex = /(https?:\/\/[^\s<>"\)]+)/g;                    // http/https URL
+		// 从统一正则入口获取链接正则表达式
+		const obsidianLinkRegex = RegularExpressions.Links.obsidianLinkRegex;
+		const markdownLinkRegex = RegularExpressions.Links.markdownLinkRegex;
+		const urlRegex = RegularExpressions.Links.urlLinkRegex;
 
 		// 分割文本并处理链接
 		let lastIndex = 0;
