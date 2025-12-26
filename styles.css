@@ -1,85 +1,297 @@
 /*
 ========================================
 Gantt Calendar Plugin Styles - 甘特日历
+Architecture: ITCSS (Inverted Triangle CSS)
+Last Updated: 2025-12-26
+Author: sugar
 ========================================
 */
 
 /* ========================================
-   1. 总体 - 全局变量与样式
+   LAYER 1: Settings (配置层)
+   CSS Variables & Custom Properties
    ======================================== */
 
-/* CSS Variables for Festival Colors */
 :root {
+	/* Festival Colors */
 	--festival-solar-color: #e74c3c;    /* 阳历节日 - 红色 */
 	--festival-lunar-color: #e8a041;    /* 农历节日 - 橙色 */
 	--festival-solar-term-color: #52c41a; /* 节气 - 绿色 */
+
+	/* Task Status Colors */
+	--task-completed-color: #52c41a;
+	--task-pending-color: #ff7a45;
 }
 
 /* ========================================
-   2. 通用样式
+   LAYER 2: Tools (工具层)
+   Not applicable for plain CSS
    ======================================== */
-
-.calendar-day-task-count {
-	font-size: 10px;
-	color: var(--text-muted);
-	margin-top: 2px;
-}
-
-/* 热力图色卡：蓝、绿、红（5级）
-	使用更高的选择器优先级并明确 background-color，避免被主题的 `.calendar-day { background-color: transparent; }` 覆盖。 */
-.calendar-day.heatmap-blue-1 { background-image: none; background-color: rgba(56, 132, 255, 0.12) !important; }
-.calendar-day.heatmap-blue-2 { background-image: none; background-color: rgba(56, 132, 255, 0.22) !important; }
-.calendar-day.heatmap-blue-3 { background-image: none; background-color: rgba(56, 132, 255, 0.32) !important; }
-.calendar-day.heatmap-blue-4 { background-image: none; background-color: rgba(56, 132, 255, 0.44) !important; }
-.calendar-day.heatmap-blue-5 { background-image: none; background-color: rgba(56, 132, 255, 0.58) !important; }
-
-.calendar-day.heatmap-green-1 { background-image: none; background-color: rgba(82, 196, 26, 0.12) !important; }
-.calendar-day.heatmap-green-2 { background-image: none; background-color: rgba(82, 196, 26, 0.22) !important; }
-.calendar-day.heatmap-green-3 { background-image: none; background-color: rgba(82, 196, 26, 0.32) !important; }
-.calendar-day.heatmap-green-4 { background-image: none; background-color: rgba(82, 196, 26, 0.44) !important; }
-.calendar-day.heatmap-green-5 { background-image: none; background-color: rgba(82, 196, 26, 0.58) !important; }
-
-.calendar-day.heatmap-red-1 { background-image: none; background-color: rgba(231, 76, 60, 0.12) !important; }
-.calendar-day.heatmap-red-2 { background-image: none; background-color: rgba(231, 76, 60, 0.22) !important; }
-.calendar-day.heatmap-red-3 { background-image: none; background-color: rgba(231, 76, 60, 0.32) !important; }
-.calendar-day.heatmap-red-4 { background-image: none; background-color: rgba(231, 76, 60, 0.44) !important; }
-.calendar-day.heatmap-red-5 { background-image: none; background-color: rgba(231, 76, 60, 0.58) !important; }
-
-.calendar-day.heatmap-purple-1 { background-image: none; background-color: rgba(142, 68, 173, 0.12) !important; }
-.calendar-day.heatmap-purple-2 { background-image: none; background-color: rgba(142, 68, 173, 0.22) !important; }
-.calendar-day.heatmap-purple-3 { background-image: none; background-color: rgba(142, 68, 173, 0.32) !important; }
-.calendar-day.heatmap-purple-4 { background-image: none; background-color: rgba(142, 68, 173, 0.44) !important; }
-.calendar-day.heatmap-purple-5 { background-image: none; background-color: rgba(142, 68, 173, 0.58) !important; }
-
-.calendar-day.heatmap-orange-1 { background-image: none; background-color: rgba(245, 124, 0, 0.12) !important; }
-.calendar-day.heatmap-orange-2 { background-image: none; background-color: rgba(245, 124, 0, 0.22) !important; }
-.calendar-day.heatmap-orange-3 { background-image: none; background-color: rgba(245, 124, 0, 0.32) !important; }
-.calendar-day.heatmap-orange-4 { background-image: none; background-color: rgba(245, 124, 0, 0.44) !important; }
-.calendar-day.heatmap-orange-5 { background-image: none; background-color: rgba(245, 124, 0, 0.58) !important; }
-
-.calendar-day.heatmap-cyan-1 { background-image: none; background-color: rgba(0, 188, 212, 0.12) !important; }
-.calendar-day.heatmap-cyan-2 { background-image: none; background-color: rgba(0, 188, 212, 0.22) !important; }
-.calendar-day.heatmap-cyan-3 { background-image: none; background-color: rgba(0, 188, 212, 0.32) !important; }
-.calendar-day.heatmap-cyan-4 { background-image: none; background-color: rgba(0, 188, 212, 0.44) !important; }
-.calendar-day.heatmap-cyan-5 { background-image: none; background-color: rgba(0, 188, 212, 0.58) !important; }
-
-.calendar-day.heatmap-pink-1 { background-image: none; background-color: rgba(233, 30, 99, 0.12) !important; }
-.calendar-day.heatmap-pink-2 { background-image: none; background-color: rgba(233, 30, 99, 0.22) !important; }
-.calendar-day.heatmap-pink-3 { background-image: none; background-color: rgba(233, 30, 99, 0.32) !important; }
-.calendar-day.heatmap-pink-4 { background-image: none; background-color: rgba(233, 30, 99, 0.44) !important; }
-.calendar-day.heatmap-pink-5 { background-image: none; background-color: rgba(233, 30, 99, 0.58) !important; }
-
-.calendar-day.heatmap-yellow-1 { background-image: none; background-color: rgba(255, 193, 7, 0.12) !important; }
-.calendar-day.heatmap-yellow-2 { background-image: none; background-color: rgba(255, 193, 7, 0.22) !important; }
-.calendar-day.heatmap-yellow-3 { background-image: none; background-color: rgba(255, 193, 7, 0.32) !important; }
-.calendar-day.heatmap-yellow-4 { background-image: none; background-color: rgba(255, 193, 7, 0.44) !important; }
-.calendar-day.heatmap-yellow-5 { background-image: none; background-color: rgba(255, 193, 7, 0.58) !important; }
 
 /* ========================================
-   3. 设置相关样式
+   LAYER 3: Generic (通用层)
+   Reset & Normalize
+   ======================================== */
+/* Obsidian默认样式，无需额外reset */
+
+/* ========================================
+   LAYER 4: Base (基础层)
+   HTML Element Defaults
+   ======================================== */
+/* 本项目主要使用类名，基础样式较少 */
+
+/* ========================================
+   LAYER 5: Objects (对象层)
+   Layout Structures (No Visuals)
    ======================================== */
 
-/* Calendar View Container */
+/* Main Container */
+.calendar-content {
+	padding: 12px;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+.calendar-content.gantt-mode {
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-height: 0;
+}
+
+.view-content.gantt-root {
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+/* Calendar Grid Layouts */
+.calendar-week-grid {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+	margin-top: 0;
+	flex: 1;
+	overflow: hidden;
+	min-height: 0;
+	position: relative;
+}
+
+.calendar-week-header-row {
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	gap: 0;
+	flex-shrink: 0;
+	z-index: 5;
+	position: sticky;
+	top: 0;
+}
+
+.calendar-week-tasks-grid {
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	gap: 0;
+	overflow-y: auto;
+	overflow-x: hidden;
+	flex: 1 1 auto;
+	min-height: 0;
+	position: relative;
+}
+
+.calendar-time-grid {
+	display: grid;
+	grid-template-columns: 60px repeat(7, 1fr);
+	gap: 0;
+	overflow-y: auto;
+	overflow-x: hidden;
+	flex: 1 1 auto;
+	min-height: 0;
+	position: relative;
+}
+
+.calendar-day-grid {
+	display: grid;
+	grid-template-columns: 60px 1fr;
+	gap: 0;
+	margin: 0;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 6px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	grid-row: 2;
+	position: relative;
+}
+
+/* Gantt Layout Objects */
+.calendar-gantt-view {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+	position: relative;
+}
+
+.gantt-view-body {
+	flex: 1 1 auto;
+	min-height: 0;
+	display: flex;
+	gap: 0;
+	overflow: hidden;
+}
+
+.gantt-view-task-list {
+	flex: 1 1 auto;
+	overflow-y: auto;
+	overflow-x: hidden;
+	min-height: 0;
+	padding-right: 4px;
+	display: grid;
+	grid-auto-rows: 40px;
+	gap: 6px;
+	align-content: start;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.gantt-view-task-list::-webkit-scrollbar {
+	display: none;
+}
+
+.gantt-view-time {
+	flex: 1 1 auto;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	overflow: hidden;
+}
+
+.gantt-bars-grid {
+	display: grid;
+	grid-auto-rows: 40px;
+	gap: 6px;
+	align-content: start;
+}
+
+/* Year/Month Layout */
+.calendar-year-container {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	height: 100%;
+	overflow: hidden;
+}
+
+.calendar-months-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	grid-template-rows: repeat(3, 1fr);
+	gap: 6px;
+	width: 100%;
+	flex: 1;
+}
+
+.calendar-month-view {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	height: 100%;
+	overflow: hidden;
+}
+
+.calendar-week-row {
+	display: grid;
+	grid-template-columns: 40px repeat(7, 1fr);
+	gap: 8px;
+	padding: 8px;
+	background-color: var(--background-secondary);
+	border-radius: 4px;
+}
+
+.calendar-month-weeks {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+/* Week/Day Layout */
+.calendar-week-view {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+	flex: 1;
+	overflow: hidden;
+	height: 100%;
+}
+
+.calendar-week-days-container {
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	gap: 12px;
+}
+
+.calendar-day-view {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	max-width: 100%;
+	margin: 0;
+	height: 100%;
+	flex: 1;
+	overflow: hidden;
+	padding: 12px;
+}
+
+.calendar-day-split-container {
+	display: flex;
+	gap: 0;
+	width: 100%;
+	height: 100%;
+	flex: 1;
+	min-height: 0;
+}
+
+.calendar-day-split-container-vertical {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+	width: 100%;
+	height: 100%;
+	flex: 1;
+	min-height: 0;
+}
+
+/* Task View Layout */
+.calendar-task-view {
+	display: block;
+	flex: none;
+	height: auto;
+	overflow: visible;
+	width: 100%;
+}
+
+.task-view-list {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding: 12px;
+	height: auto;
+	flex: none;
+	overflow: visible;
+}
+
+/* ========================================
+   LAYER 6: Components (组件层)
+   Complete UI Components
+   ======================================== */
+
+/* 6.1 Toolbar Component */
 .calendar-toolbar {
 	display: flex;
 	flex-direction: row;
@@ -124,13 +336,6 @@ Gantt Calendar Plugin Styles - 甘特日历
 	justify-content: flex-end;
 }
 
-/* 甘特视图根容器，禁用外层滚动，限定一屏高度 */
-.view-content.gantt-root {
-	overflow: hidden;
-	display: flex;
-	flex-direction: column;
-}
-
 .calendar-nav {
 	display: flex;
 	align-items: center;
@@ -164,7 +369,6 @@ Gantt Calendar Plugin Styles - 甘特日历
 	background-color: var(--background-modifier-border);
 }
 
-/* Icon-only button variant */
 .toolbar-right-task-refresh-btn {
 	padding: 6px;
 	width: 32px;
@@ -189,7 +393,6 @@ Gantt Calendar Plugin Styles - 甘特日历
 	height: 18px;
 }
 
-/* 任务视图功能区专用样式 */
 .toolbar-right-task {
 	display: flex;
 	align-items: center;
@@ -219,7 +422,6 @@ Gantt Calendar Plugin Styles - 甘特日历
 	border-color: var(--interactive-accent);
 	box-shadow: 0 0 0 2px var(--interactive-accent-rgb, rgba(138, 109, 255, 0.1));
 }
-
 
 .toolbar-right-task-global-filter {
 	font-size: 14px;
@@ -271,7 +473,6 @@ Gantt Calendar Plugin Styles - 甘特日历
 	margin: 0 8px;
 }
 
-/* 日期筛选组 */
 .toolbar-right-task-date-filter-group {
 	display: inline-flex;
 	align-items: center;
@@ -338,7 +539,6 @@ Gantt Calendar Plugin Styles - 甘特日历
 	color: var(--text-normal);
 }
 
-/* Compact navigation buttons for calendar view toolbar */
 .calendar-nav-compact-btn {
 	padding: 2px 6px;
 	border: 1px solid var(--background-modifier-border);
@@ -380,7 +580,6 @@ Gantt Calendar Plugin Styles - 甘特日历
 	color: var(--text-normal);
 }
 
-/* Compact view selector buttons for calendar toolbar */
 .calendar-view-compact-btn {
 	padding: 2px 6px;
 	border: 1px solid var(--background-modifier-border);
@@ -425,41 +624,144 @@ Gantt Calendar Plugin Styles - 甘特日历
 	justify-content: center;
 }
 
-.calendar-content {
-	padding: 12px;
-	flex: 1;
+/* Gantt Toolbar Components */
+.toolbar-right-gantt {
 	display: flex;
-	flex-direction: column;
-	overflow-y: auto;
-	overflow-x: hidden;
-}
-
-.calendar-content.gantt-mode {
-	overflow: hidden;
-	display: flex;
-	flex-direction: column;
-	flex: 1;
-	min-height: 0;
-}
-
-/* Year View */
-.calendar-year-container {
-	display: flex;
-	flex-direction: column;
+	align-items: center;
 	gap: 8px;
-	height: 100%;
-	overflow: hidden;
+	flex-wrap: wrap;
 }
 
-.calendar-months-grid {
-	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	grid-template-rows: repeat(3, 1fr);
+.toolbar-time-granularity-group {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 6px;
+	padding: 2px;
+	background-color: var(--background-secondary);
+}
+
+.time-today-btn {
+	padding: 4px 10px;
+	border: none;
+	border-radius: 4px;
+	background-color: var(--background-modifier-hover);
+	color: var(--text-normal);
+	font-size: 13px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.time-today-btn:hover {
+	background-color: var(--interactive-accent);
+	color: var(--text-on-accent);
+}
+
+.time-granularity-btn {
+	padding: 4px 12px;
+	border: none;
+	border-radius: 4px;
+	background-color: transparent;
+	color: var(--text-muted);
+	font-size: 13px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.time-granularity-btn:hover {
+	background-color: var(--background-modifier-hover);
+	color: var(--text-normal);
+}
+
+.time-granularity-btn.active {
+	background-color: var(--interactive-accent);
+	color: var(--text-on-accent);
+	font-weight: 600;
+}
+
+.toolbar-gantt-field-group {
+	display: inline-flex;
+	align-items: center;
 	gap: 6px;
-	width: 100%;
-	flex: 1;
 }
 
+.toolbar-gantt-field-label {
+	font-size: 13px;
+	color: var(--text-muted);
+}
+
+.toolbar-gantt-field-select {
+	padding: 4px 8px;
+	border: 1px solid var(--input-border-color);
+	border-radius: 4px;
+	background-color: var(--background-secondary);
+	color: var(--text-normal);
+	font-size: 12px;
+}
+
+/* 6.2 Task Card Component (统一任务卡片) */
+.calendar-task-card {
+	display: flex;
+	align-items: center;
+	padding: 8px;
+	border-left: 3px solid transparent;
+	background-color: var(--background-secondary);
+	border-radius: 4px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.calendar-task-card:hover {
+	background-color: var(--background-modifier-hover);
+}
+
+.calendar-task-card-text {
+	flex: 1;
+	word-break: break-word;
+	line-height: 1.4;
+	color: var(--text-normal);
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* Task Card Modifiers */
+.calendar-task-card--day {
+	padding: 10px;
+	gap: 8px;
+	flex-wrap: wrap;
+	font-size: 13px;
+}
+
+.calendar-task-card--week {
+	padding: 8px;
+	gap: 8px;
+	font-size: 13px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-task-card--month {
+	padding: 4px 6px;
+	font-size: 11px;
+	line-height: 1.3;
+	border-left-width: 2px;
+	border-radius: 3px;
+}
+
+.calendar-task-card--gantt {
+	padding: 8px 12px;
+	border-left: 3px solid var(--interactive-accent);
+	border-top: 1px solid var(--background-modifier-border);
+	border-right: 1px solid var(--background-modifier-border);
+	border-bottom: 1px solid var(--background-modifier-border);
+	display: flex;
+	align-items: center;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* 6.3 Year View Components */
 .calendar-month-card {
 	background-color: var(--background-primary);
 	border: 1px solid var(--background-modifier-border);
@@ -539,54 +841,10 @@ Gantt Calendar Plugin Styles - 甘特日历
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
+
 /* 年视图月卡片中的农历字体大小可调 */
 .calendar-month-card .calendar-lunar-text {
 	font-size: var(--year-lunar-font-size, 10px);
-}
-
-.calendar-lunar-text.festival {
-	font-weight: 600;
-}
-
-/* 阳历节日 - 使用CSS变量 */
-.calendar-lunar-text.festival-solar {
-	color: var(--festival-solar-color);
-}
-
-/* 农历传统节日 - 使用CSS变量 */
-.calendar-lunar-text.festival-lunar {
-	color: var(--festival-lunar-color);
-}
-
-/* 二十四节气 - 使用CSS变量 */
-.calendar-lunar-text.festival-solarTerm {
-	color: var(--festival-solar-term-color);
-}
-
-.calendar-day:hover {
-	background-color: var(--background-secondary);
-}
-
-.calendar-day.outside-month {
-	opacity: 0.4;
-}
-
-.calendar-day.outside-month .calendar-day-number {
-	color: var(--text-faint);
-}
-
-.calendar-day.today {
-	background-color: #ff6b6b;
-	border-radius: 2px;
-}
-
-.calendar-day.today .calendar-day-number {
-	color: red;
-	font-weight: 600;
-}
-
-.calendar-day.today .calendar-lunar-text {
-	color: rgba(255, 255, 255, 0.9);
 }
 
 /* Hide lunar text in year view by default */
@@ -599,15 +857,7 @@ Gantt Calendar Plugin Styles - 甘特日历
 	display: block;
 }
 
-/* Month View */
-.calendar-month-view {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-	height: 100%;
-	overflow: hidden;
-}
-
+/* 6.4 Month View Components */
 .calendar-month-weekdays {
 	display: grid !important;
 	grid-template-columns: 40px repeat(7, 1fr);
@@ -623,21 +873,6 @@ Gantt Calendar Plugin Styles - 甘特日历
 	font-weight: 600;
 	color: var(--text-muted);
 	text-align: center;
-}
-
-.calendar-month-weeks {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-}
-
-.calendar-week-row {
-	display: grid;
-	grid-template-columns: 40px repeat(7, 1fr);
-	gap: 8px;
-	padding: 8px;
-	background-color: var(--background-secondary);
-	border-radius: 4px;
 }
 
 .calendar-week-number {
@@ -682,7 +917,6 @@ Gantt Calendar Plugin Styles - 甘特日历
 	align-self: center;
 }
 
-/* Month View Tasks */
 .calendar-month-tasks {
 	display: flex;
 	flex-direction: column;
@@ -693,218 +927,13 @@ Gantt Calendar Plugin Styles - 甘特日历
 	overflow: hidden;
 }
 
-/* ========================================
-   统一任务卡片样式 (v2.0重构)
-   ======================================== */
-
-/* 任务状态颜色变量 */
-:root {
-	--task-completed-color: #52c41a;
-	--task-pending-color: #ff7a45;
-}
-
-/* 基础样式 */
-.calendar-task-card {
-	display: flex;
-	align-items: center;
-	padding: 8px;
-	border-left: 3px solid transparent;
-	background-color: var(--background-secondary);
-	border-radius: 4px;
-	cursor: pointer;
-	transition: all 0.2s ease;
-}
-
-.calendar-task-card:hover {
-	background-color: var(--background-modifier-hover);
-}
-
-/* 任务卡片文本（通用） */
-.calendar-task-card-text {
-	flex: 1;
-	word-break: break-word;
-	line-height: 1.4;
-	color: var(--text-normal);
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-/* ========================================
-   视图特定样式
-   ======================================== */
-
-/* Day/Task View */
-.calendar-task-card--day {
-	padding: 10px;
-	gap: 8px;
-	flex-wrap: wrap;
-	font-size: 13px;
-}
-
-.calendar-task-card--day:hover {
-	transform: translateX(4px);
-}
-
-/* Week View */
-.calendar-task-card--week {
-	padding: 8px;
-	gap: 8px;
-	font-size: 13px;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.calendar-task-card--week:hover {
-	transform: translateX(2px);
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Month View */
-.calendar-task-card--month {
-	padding: 4px 6px;
-	font-size: 11px;
-	line-height: 1.3;
-	border-left-width: 2px;
-	border-radius: 3px;
-}
-
-.calendar-task-card--month:hover {
-	transform: translateX(1px);
-}
-
-/* Gantt View */
-.calendar-task-card--gantt {
-	padding: 8px 12px;
-	border-left: 3px solid var(--interactive-accent);
-	border-top: 1px solid var(--background-modifier-border);
-	border-right: 1px solid var(--background-modifier-border);
-	border-bottom: 1px solid var(--background-modifier-border);
-	display: flex;
-	align-items: center;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-.calendar-task-card--gantt:hover {
-	transform: translateX(2px);
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* ========================================
-   兼容旧类名（向后兼容）
-   ======================================== */
-
-.calendar-month-task-item {
-	display: flex;
-	align-items: center;
-	padding: 4px 6px;
-	background-color: var(--background-secondary);
-	border-radius: 3px;
-	border-left: 2px solid var(--color-orange);
-	font-size: 11px;
-	line-height: 1.3;
-	cursor: pointer;
-	transition: all 0.1s ease;
-}
-
-.calendar-month-task-item:hover {
-	background-color: var(--background-modifier-hover);
-	transform: translateX(1px);
-}
-
-.calendar-month-task-item.completed {
-	opacity: 0.5;
-	border-left-color: var(--color-green);
-}
-
-.calendar-month-tasks .calendar-month-task-item.pending {
-	border-left-color: #ff7a45;
-}
-
-.calendar-month-task-text {
-	flex: 1;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	color: var(--text-normal);
-}
-
-.calendar-month-task-item.completed .calendar-month-task-text {
-	text-decoration: line-through;
-	color: var(--text-muted);
-}
-
-.calendar-month-task-more {
-	padding: 2px 6px;
+.calendar-day-task-count {
 	font-size: 10px;
 	color: var(--text-muted);
-	text-align: center;
-	font-style: italic;
+	margin-top: 2px;
 }
 
-.calendar-day-cell .calendar-lunar-text.festival {
-	font-weight: 600;
-}
-
-/* 月视图：阳历节日 - 使用CSS变量 */
-.calendar-day-cell .calendar-lunar-text.festival-solar {
-	color: var(--festival-solar-color);
-}
-
-/* 月视图：农历传统节日 - 使用CSS变量 */
-.calendar-day-cell .calendar-lunar-text.festival-lunar {
-	color: var(--festival-lunar-color);
-}
-
-/* 月视图：二十四节气 - 使用CSS变量 */
-.calendar-day-cell .calendar-lunar-text.festival-solarTerm {
-	color: var(--festival-solar-term-color);
-}
-
-.calendar-day-cell:hover {
-	background-color: var(--background-modifier-hover);
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.calendar-day-cell.outside-month {
-	background-color: var(--background-secondary);
-	opacity: 0.5;
-}
-
-.calendar-day-cell.outside-month .calendar-day-number {
-	color: var(--text-faint);
-}
-
-.calendar-day-cell.today {
-	background-color: #ff6b6b;
-	border-color: #ff6b6b;
-}
-
-.calendar-day-cell.today .calendar-day-number {
-	color: white;
-	font-weight: 700;
-}
-
-.calendar-day-cell.today .calendar-lunar-text {
-	color: rgba(255, 255, 255, 0.9);
-}
-
-/* Week View */
-.calendar-week-view {
-	display: flex;
-	flex-direction: column;
-	gap: 0;
-	flex: 1;
-	overflow: hidden;
-	height: 100%;
-}
-
-.calendar-week-days-container {
-	display: grid;
-	grid-template-columns: repeat(7, 1fr);
-	gap: 12px;
-}
-
+/* 6.5 Week View Components */
 .calendar-day-column {
 	background-color: var(--background-secondary);
 	border: 1px solid var(--divider-color);
@@ -920,12 +949,6 @@ Gantt Calendar Plugin Styles - 甘特日历
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.calendar-day-column.today {
-	background-color: var(--interactive-accent);
-	background-image: linear-gradient(135deg, var(--interactive-accent) 0%, rgba(0, 0, 0, 0.1) 100%);
-	border-color: var(--interactive-accent);
-}
-
 .calendar-day-header {
 	display: flex;
 	flex-direction: column;
@@ -936,114 +959,76 @@ Gantt Calendar Plugin Styles - 甘特日历
 	border-bottom: 1px solid var(--divider-color);
 }
 
-.calendar-day-column.today .calendar-day-header {
-	border-bottom-color: rgba(255, 255, 255, 0.3);
-	color: white;
-}
-
 .calendar-day-name {
 	font-size: 12px;
 	font-weight: 600;
 	color: var(--text-muted);
 }
 
-.calendar-day-column.today .calendar-day-name {
-	color: rgba(255, 255, 255, 0.9);
-}
-
-.calendar-day-number {
-	font-size: 20px;
-	font-weight: 700;
-	color: var(--text-normal);
-}
-
-.calendar-day-column.today .calendar-day-number {
-	color: white;
-}
-
-/* Day View */
-.calendar-day-view {
+.calendar-day-column-time {
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
-	max-width: 100%;
-	margin: 0;
-	height: 100%;
-	flex: 1;
-	overflow: hidden;
-	padding: 12px;
+	border-right: 1px solid var(--background-modifier-border);
+	cursor: pointer;
+	transition: background-color 0.15s ease;
 }
 
-.calendar-day-details {
-	background-color: var(--background-secondary);
-	border-radius: 6px;
-	padding: 16px;
-	display: flex;
-	flex-direction: column;
-	gap: 12px;
+.calendar-day-column-time:last-child {
+	border-right: none;
 }
 
-.calendar-info-group {
-	display: flex;
-	align-items: center;
-	gap: 12px;
-	padding: 8px;
-	background-color: var(--background-primary);
-	border-radius: 4px;
+.calendar-day-column-time:hover {
+	background-color: var(--background-modifier-hover);
 }
 
-.calendar-info-group label {
-	font-weight: 600;
-	min-width: 120px;
-	color: var(--text-muted);
-}
-
-.calendar-info-group span {
-	color: var(--text-normal);
-	font-weight: 500;
-}
-
-.calendar-event-section {
-	margin-top: 8px;
-}
-
-.calendar-event-section h3 {
-	font-size: 14px;
-	font-weight: 600;
-	margin: 0 0 12px 0;
-	color: var(--text-normal);
-}
-
-.calendar-event-placeholder {
-	padding: 16px;
-	text-align: center;
-	color: var(--text-muted);
-	background-color: var(--background-primary);
-	border-radius: 4px;
-	border: 1px dashed var(--divider-color);
-	font-size: 13px;
-}
-
-/* Week View with Time Grid */
-.calendar-week-grid {
-	display: flex;
-	flex-direction: column;
-	gap: 0;
-	margin-top: 0;
-	flex: 1;
-	overflow: hidden;
-	min-height: 0; /* 允许子元素在flex容器内滚动 */
+.calendar-hour-slot {
+	height: 60px;
+	border-bottom: 1px solid var(--background-modifier-border);
 	position: relative;
 }
 
-.calendar-week-header-row {
+.calendar-hour-slot.even-hour {
+	background-color: var(--background-primary);
+}
+
+.calendar-time-axis {
+	grid-column: 1 / 2;
+	display: flex;
+	flex-direction: column;
+	border-right: 1px solid var(--background-modifier-border);
+}
+
+.calendar-time-slot {
+	height: 60px;
+	padding: 4px 8px;
+	font-size: 11px;
+	color: var(--text-muted);
+	border-bottom: 1px solid var(--background-modifier-border);
+	display: flex;
+	align-items: flex-start;
+}
+
+.calendar-days-grid {
+	grid-column: 2 / -1;
 	display: grid;
 	grid-template-columns: repeat(7, 1fr);
 	gap: 0;
-	flex-shrink: 0;
-	z-index: 5;
-	position: sticky;
-	top: 0;
+	min-height: min-content;
+}
+
+.calendar-week-tasks-column {
+	border-right: 1px solid var(--background-modifier-border);
+	padding: 8px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	background-color: var(--background-primary);
+}
+
+.calendar-week-tasks-column:last-child {
+	border-right: none;
 }
 
 .calendar-day-header-cell {
@@ -1082,100 +1067,6 @@ Gantt Calendar Plugin Styles - 甘特日历
 	color: var(--text-muted);
 }
 
-.calendar-day-header-cell.today {
-	background-color: rgba(255, 107, 107, 0.1);
-}
-
-.calendar-day-header-cell.today .day-number {
-	color: #ff6b6b;
-}
-
-/* Week View Tasks Grid */
-.calendar-week-tasks-grid {
-	display: grid;
-	grid-template-columns: repeat(7, 1fr);
-	gap: 0;
-	overflow-y: auto;
-	overflow-x: hidden;
-	flex: 1 1 auto;
-	min-height: 0;
-	position: relative;
-}
-
-.calendar-week-tasks-column {
-	border-right: 1px solid var(--background-modifier-border);
-	padding: 8px;
-	overflow-y: auto;
-	overflow-x: hidden;
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-	background-color: var(--background-primary);
-}
-
-.calendar-week-tasks-column:last-child {
-	border-right: none;
-}
-
-.calendar-week-tasks-column.today {
-	background-color: rgba(255, 107, 107, 0.03);
-}
-
-.calendar-week-task-item {
-	display: flex;
-	align-items: flex-start;
-	gap: 8px;
-	padding: 8px;
-	background-color: var(--background-secondary);
-	border-radius: 4px;
-	border-left: 3px solid var(--color-orange);
-	transition: all 0.15s ease;
-	cursor: pointer;
-	font-size: 13px;
-	position: relative;
-	z-index: 1;
-}
-
-.calendar-week-task-item:hover {
-	transform: translateX(2px);
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.calendar-week-task-item.completed {
-	opacity: 0.6;
-	border-left-color: var(--color-green);
-}
-
-.calendar-week-tasks-grid .calendar-week-task-item.pending {
-	border-left-color: #ff7a45;
-}
-
-.calendar-week-task-checkbox {
-	flex-shrink: 0;
-	margin-top: 2px;
-	cursor: pointer;
-}
-
-.calendar-week-task-text {
-	flex: 1;
-	word-break: break-word;
-	line-height: 1.4;
-	color: var(--text-normal);
-}
-
-.calendar-week-task-item.completed .calendar-week-task-text {
-	text-decoration: line-through;
-	color: var(--text-muted);
-}
-
-.calendar-week-task-empty {
-	padding: 16px 8px;
-	text-align: center;
-	color: var(--text-muted);
-	font-size: 12px;
-}
-
-/* Week View Task Tooltip */
 .calendar-week-task-tooltip {
 	position: fixed;
 	z-index: 1000;
@@ -1271,104 +1162,62 @@ Gantt Calendar Plugin Styles - 甘特日历
 	font-family: var(--font-monospace);
 }
 
-.calendar-time-grid {
-	display: grid;
-	grid-template-columns: 60px repeat(7, 1fr);
-	gap: 0;
-	overflow-y: auto;
-	overflow-x: hidden;
-	flex: 1 1 auto; /* 在父flex中占据剩余空间并允许滚动 */
-	min-height: 0; /* 确保在父容器限制高度时可滚动 */
-	position: relative;
-}
-
-/* 自定义滚动条样式 */
-.calendar-time-grid::-webkit-scrollbar {
-	width: 10px;
-}
-
-.calendar-time-grid::-webkit-scrollbar-track {
-	background: var(--background-primary);
-	border-radius: 5px;
-}
-
-.calendar-time-grid::-webkit-scrollbar-thumb {
-	background: var(--scrollbar-thumb-bg, var(--background-modifier-border));
-	border-radius: 5px;
-	border: 2px solid var(--background-primary);
-}
-
-.calendar-time-grid::-webkit-scrollbar-thumb:hover {
-	background: var(--scrollbar-thumb-hover, var(--text-muted));
-}
-
-.calendar-time-axis {
-	grid-column: 1 / 2;
-	display: flex;
-	flex-direction: column;
-	border-right: 1px solid var(--background-modifier-border);
-}
-
-.calendar-time-slot {
-	height: 60px;
-	padding: 4px 8px;
-	font-size: 11px;
+.calendar-week-task-empty {
+	padding: 16px 8px;
+	text-align: center;
 	color: var(--text-muted);
-	border-bottom: 1px solid var(--background-modifier-border);
-	display: flex;
-	align-items: flex-start;
+	font-size: 12px;
 }
 
-.calendar-days-grid {
-	grid-column: 2 / -1;
-	display: grid;
-	grid-template-columns: repeat(7, 1fr);
-	gap: 0;
-	min-height: min-content;
-}
-
-.calendar-day-column-time {
+/* 6.6 Day View Components */
+.calendar-day-details {
+	background-color: var(--background-secondary);
+	border-radius: 6px;
+	padding: 16px;
 	display: flex;
 	flex-direction: column;
-	border-right: 1px solid var(--background-modifier-border);
-	cursor: pointer;
-	transition: background-color 0.15s ease;
+	gap: 12px;
 }
 
-.calendar-day-column-time:last-child {
-	border-right: none;
-}
-
-.calendar-day-column-time:hover {
-	background-color: var(--background-modifier-hover);
-}
-
-.calendar-day-column-time.today {
-	background-color: rgba(255, 107, 107, 0.05);
-}
-
-.calendar-hour-slot {
-	height: 60px;
-	border-bottom: 1px solid var(--background-modifier-border);
-	position: relative;
-}
-
-.calendar-hour-slot.even-hour {
+.calendar-info-group {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 8px;
 	background-color: var(--background-primary);
+	border-radius: 4px;
 }
 
-/* Day View with Time Grid */
-.calendar-day-grid {
-	display: grid;
-	grid-template-columns: 60px 1fr;
-	gap: 0;
-	margin: 0;
-	border: 1px solid var(--background-modifier-border);
-	border-radius: 6px;
-	overflow-y: auto;
-	overflow-x: hidden;
-	grid-row: 2;
-	position: relative;
+.calendar-info-group label {
+	font-weight: 600;
+	min-width: 120px;
+	color: var(--text-muted);
+}
+
+.calendar-info-group span {
+	color: var(--text-normal);
+	font-weight: 500;
+}
+
+.calendar-event-section {
+	margin-top: 8px;
+}
+
+.calendar-event-section h3 {
+	font-size: 14px;
+	font-weight: 600;
+	margin: 0 0 12px 0;
+	color: var(--text-normal);
+}
+
+.calendar-event-placeholder {
+	padding: 16px;
+	text-align: center;
+	color: var(--text-muted);
+	background-color: var(--background-primary);
+	border-radius: 4px;
+	border: 1px dashed var(--divider-color);
+	font-size: 13px;
 }
 
 .calendar-day-column-full {
@@ -1423,124 +1272,149 @@ Gantt Calendar Plugin Styles - 甘特日历
 	border-radius: 50%;
 }
 
-/* Ribbon Icon */
-.gantt-calendar-ribbon {
-	transition: all 0.2s ease;
-}
-
-.gantt-calendar-ribbon:hover {
-	transform: scale(1.1);
-	opacity: 0.8;
-}
-
-/* Festival Color Settings */
-.festival-color-settings-container {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 16px;
-	padding: 12px 0;
-	margin-bottom: 16px;
-}
-
-.festival-color-setting {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
+.calendar-day-tasks-section {
+	margin-top: 16px;
 	padding: 12px;
-	background: var(--background-secondary);
-	border-radius: 8px;
+	background-color: var(--background-secondary);
+	border-radius: 6px;
+	border-top: 2px solid var(--interactive-accent);
 }
 
-.festival-color-label {
-	padding: 0 10px;
-}
-
-.festival-color-name {
+.calendar-day-tasks-title {
+	margin: 0 0 12px 0;
+	font-size: 14px;
 	font-weight: 600;
 	color: var(--text-normal);
-	margin-bottom: 4px;
-}
-
-.festival-color-desc {
-	font-size: 12px;
-	color: var(--text-muted);
-}
-
-.festival-color-picker {
 	display: flex;
 	align-items: center;
 	gap: 8px;
-	padding: 8px 10px;
-	flex-wrap: wrap;
-}
-
-.festival-color-input {
-	display: none;
-}
-
-.festival-color-swatch {
-	width: 14px;
-	height: 14px;
-	border-radius: 2px;
-	cursor: pointer;
-	transition: all 0.2s ease;
 	flex-shrink: 0;
 }
 
-.festival-color-swatch:hover {
-	transform: scale(1.1);
-	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
-}
-
-/* Task modal sizing */
-.gantt-task-modal.modal {
-	width: 640px;
-	max-width: 90vw;
-	max-height: 80vh;
-}
-
-/* Task List Modal Styles */
-.gantt-task-empty {
-	padding: 16px;
-	color: var(--text-muted);
-	text-align: center;
-}
-
-.task-view-list {
+.calendar-day-tasks-list {
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
-	padding: 12px;
-	/* 列表不产生内部滚动，由父容器滚动 */
-	height: auto;
-	flex: none;
-	overflow: visible;
+	gap: 8px;
+	overflow-y: auto;
+	flex: 1;
+	min-height: 0;
 }
 
-.gantt-task-item,
-.calendar-day-task-item {
-	flex-direction: row;
+.calendar-day-split-container .calendar-day-tasks-section {
+	flex: 1 1 50%;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	padding-right: 8px;
+	border-right: 1px solid var(--divider-color);
+	min-height: 0;
+}
+
+.calendar-day-tasks-section-full {
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+}
+
+.calendar-day-split-container .calendar-day-notes-section {
+	flex: 1 1 50%;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	padding-left: 8px;
+	min-height: 0;
+}
+
+.calendar-day-divider {
+	width: 8px;
+	background-color: transparent;
+	cursor: col-resize;
+	transition: background-color 0.2s;
+	flex-shrink: 0;
+}
+
+.calendar-day-divider:hover {
+	background-color: var(--interactive-accent);
+}
+
+.calendar-day-tasks-section-vertical {
+	flex: 1 1 50%;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	padding-bottom: 8px;
+	border-bottom: 1px solid var(--divider-color);
+	min-height: 0;
+}
+
+.calendar-day-tasks-section-vertical .calendar-day-tasks-title {
+	margin: 0 0 12px 0;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--text-normal);
+	display: flex;
 	align-items: center;
 	gap: 8px;
-	padding: 10px;
-	border-radius: 4px;
-	background-color: var(--background-secondary);
-	cursor: pointer;
-	transition: all 0.2s ease;
-	border-left: 3px solid transparent;
+	flex-shrink: 0;
+}
+
+.calendar-day-tasks-section-vertical .calendar-day-tasks-list {
 	display: flex;
-	flex-wrap: wrap;
+	flex-direction: column;
+	gap: 8px;
+	overflow-y: auto;
+	flex: 1;
+	min-height: 0;
 }
 
-/* Task View */
-.calendar-task-view {
-	display: block; /* 子块级元素，由内容撑高 */
-	flex: none;
-	height: auto;
-	overflow: visible;
-	width: 100%;
+.calendar-day-notes-section-vertical {
+	flex: 1 1 50%;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	padding-top: 8px;
+	min-height: 0;
 }
 
+.calendar-day-divider-vertical {
+	height: 8px;
+	background-color: transparent;
+	cursor: row-resize;
+	transition: background-color 0.2s;
+	flex-shrink: 0;
+}
+
+.calendar-day-divider-vertical:hover {
+	background-color: var(--interactive-accent);
+}
+
+.calendar-day-notes-title {
+	margin: 0 0 12px 0;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--text-normal);
+	flex-shrink: 0;
+}
+
+.calendar-day-notes-content {
+	flex: 1;
+	overflow-y: auto;
+	padding: 8px;
+	background-color: var(--background-primary);
+	border-radius: 4px;
+	min-height: 0;
+}
+
+.calendar-day-notes-markdown {
+	font-size: 12px;
+	line-height: 1.6;
+	color: var(--text-normal);
+}
+
+/* 6.7 Task View Components */
 .gantt-task-view-header {
 	display: flex;
 	justify-content: space-between;
@@ -1586,7 +1460,6 @@ Gantt Calendar Plugin Styles - 甘特日历
 	margin: 0;
 }
 
-
 .gantt-filter-btn {
 	padding: 4px 12px;
 	border: 1px solid var(--background-modifier-border);
@@ -1609,32 +1482,17 @@ Gantt Calendar Plugin Styles - 甘特日历
 	color: white;
 }
 
-.calendar-task-view .task-view-list { margin: 0; }
-
-/* ========================================
-	 Gantt View
-	 ======================================== */
-
-.calendar-gantt-view {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-	width: 100%;
-	height: 100%;
-	min-height: 0;
-	position: relative;
+.calendar-task-view .task-view-list {
+	margin: 0;
 }
 
-/* 甘特图主体：左右分栏布局 */
-.gantt-view-body {
-	flex: 1 1 auto;
-	min-height: 0;
-	display: flex;
-	gap: 0;
-	overflow: hidden;
+.gantt-task-empty {
+	padding: 16px;
+	color: var(--text-muted);
+	text-align: center;
 }
 
-/* 左侧：任务列表区域 */
+/* 6.8 Gantt View Components */
 .gantt-view-tasks {
 	flex: 0 0 300px;
 	display: flex;
@@ -1643,7 +1501,6 @@ Gantt Calendar Plugin Styles - 甘特日历
 	overflow: hidden;
 }
 
-/* 分割线：可拖动调整宽度 */
 .gantt-view-resizer {
 	flex: 0 0 4px;
 	cursor: col-resize;
@@ -1680,69 +1537,6 @@ Gantt Calendar Plugin Styles - 甘特日历
 	align-items: center;
 }
 
-.gantt-view-task-list {
-	flex: 1 1 auto;
-	overflow-y: auto;
-	overflow-x: hidden;
-	min-height: 0;
-	padding-right: 4px;
-	/* 使用grid布局，与右侧甘特条保持相同的行结构 */
-	display: grid;
-	grid-auto-rows: 40px;
-	gap: 6px;
-	align-content: start;
-	/* 隐藏滚动条 */
-	scrollbar-width: none; /* Firefox */
-	-ms-overflow-style: none; /* IE/Edge */
-}
-
-.gantt-view-task-list::-webkit-scrollbar {
-	display: none; /* Chrome/Safari/Opera */
-}
-
-.gantt-task-card {
-	background-color: var(--background-primary);
-	border-left: 3px solid var(--interactive-accent);
-	border-top: 1px solid var(--background-modifier-border);
-	border-right: 1px solid var(--background-modifier-border);
-	border-bottom: 1px solid var(--background-modifier-border);
-	border-radius: 4px;
-	padding: 8px 12px;
-	cursor: pointer;
-	transition: transform 0.15s ease, box-shadow 0.15s ease;
-	/* grid子项，自动占据一行 */
-	display: flex;
-	align-items: center;
-	/* 单行显示，超出省略 */
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-.gantt-task-card:hover {
-	transform: translateX(2px);
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.gantt-view-task-list .gantt-task-card.completed {
-	border-left-color: #52c41a;
-	opacity: 0.7;
-}
-
-.gantt-view-task-list .gantt-task-card.pending {
-	border-left-color: #ff7a45;
-}
-
-/* 右侧：时间轴区域（可横向滚动） */
-.gantt-view-time {
-	flex: 1 1 auto;
-	min-width: 0;
-	display: flex;
-	flex-direction: column;
-	position: relative;
-	overflow: hidden;
-}
-
 .gantt-view-timeline {
 	flex: 0 0 auto;
 	background-color: var(--background-primary);
@@ -1754,13 +1548,12 @@ Gantt Calendar Plugin Styles - 甘特日历
 	overflow-x: auto;
 	overflow-y: hidden;
 	padding-right: 12px;
-	/* 隐藏滚动条 */
-	scrollbar-width: none; /* Firefox */
-	-ms-overflow-style: none; /* IE/Edge */
+	scrollbar-width: none;
+	-ms-overflow-style: none;
 }
 
 .gantt-timeline-scroll::-webkit-scrollbar {
-	display: none; /* Chrome/Safari/Opera */
+	display: none;
 }
 
 .gantt-timeline-row {
@@ -1792,34 +1585,24 @@ Gantt Calendar Plugin Styles - 甘特日历
 	overflow-y: auto;
 	overflow-x: hidden;
 	padding-right: 4px;
-	/* 隐藏滚动条 */
-	scrollbar-width: none; /* Firefox */
-	-ms-overflow-style: none; /* IE/Edge */
+	scrollbar-width: none;
+	-ms-overflow-style: none;
 }
 
 .gantt-view-bars::-webkit-scrollbar {
-	display: none; /* Chrome/Safari/Opera */
+	display: none;
 }
 
 .gantt-bars-scroll {
 	overflow-x: auto;
 	overflow-y: hidden;
 	min-height: fit-content;
-	/* 隐藏滚动条 */
-	scrollbar-width: none; /* Firefox */
-	-ms-overflow-style: none; /* IE/Edge */
+	scrollbar-width: none;
+	-ms-overflow-style: none;
 }
 
 .gantt-bars-scroll::-webkit-scrollbar {
-	display: none; /* Chrome/Safari/Opera */
-}
-
-.gantt-bars-grid {
-	/* 使用grid布局，与左侧任务列表保持相同的行结构 */
-	display: grid;
-	grid-auto-rows: 40px;
-	gap: 6px;
-	align-content: start;
+	display: none;
 }
 
 .gantt-bar-row {
@@ -1827,12 +1610,38 @@ Gantt Calendar Plugin Styles - 甘特日历
 	background-color: var(--background-secondary);
 	border: 1px solid var(--background-modifier-border);
 	border-radius: 4px;
-	/* 使用与时间刻度相同的grid布局 */
 	display: grid;
 	grid-template-columns: repeat(var(--gantt-total-units, 30), minmax(100px, 1fr));
 	gap: 2px;
 	min-width: fit-content;
 	align-items: center;
+}
+
+.gantt-today-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	pointer-events: none;
+	z-index: 20;
+}
+
+.gantt-today-line {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 2px;
+	background: #e74c3c;
+	box-shadow: 0 0 0 1px rgba(231, 76, 60, 0.35);
+}
+
+.gantt-bar {
+	height: 20px;
+	border-radius: 10px;
+	background-color: var(--interactive-accent);
+	opacity: 0.9;
+	margin: 0 1px;
 }
 
 /* 兼容旧样式（保留以防其他地方引用） */
@@ -1874,171 +1683,6 @@ Gantt Calendar Plugin Styles - 甘特日历
 	min-width: calc(var(--gantt-total-units, 30) * 100px);
 }
 
-.gantt-today-overlay {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	pointer-events: none;
-	z-index: 20;
-}
-
-.gantt-today-line {
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	width: 2px;
-	background: #e74c3c;
-	box-shadow: 0 0 0 1px rgba(231, 76, 60, 0.35);
-}
-
-.gantt-bar {
-	/* 不再使用absolute定位，使用grid定位 */
-	height: 20px;
-	border-radius: 10px;
-	background-color: var(--interactive-accent);
-	opacity: 0.9;
-	margin: 0 1px;
-}
-
-.gantt-bar.completed {
-	background-color: #52c41a;
-}
-
-/* Toolbar Right - Gantt */
-.toolbar-right-gantt {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	flex-wrap: wrap;
-}
-
-/* 时间颗粒度按钮组 */
-.toolbar-time-granularity-group {
-	display: inline-flex;
-	align-items: center;
-	gap: 4px;
-	border: 1px solid var(--background-modifier-border);
-	border-radius: 6px;
-	padding: 2px;
-	background-color: var(--background-secondary);
-}
-
-.time-today-btn {
-	padding: 4px 10px;
-	border: none;
-	border-radius: 4px;
-	background-color: var(--background-modifier-hover);
-	color: var(--text-normal);
-	font-size: 13px;
-	cursor: pointer;
-	transition: all 0.2s ease;
-}
-
-.time-today-btn:hover {
-	background-color: var(--interactive-accent);
-	color: var(--text-on-accent);
-}
-
-.time-granularity-btn {
-	padding: 4px 12px;
-	border: none;
-	border-radius: 4px;
-	background-color: transparent;
-	color: var(--text-muted);
-	font-size: 13px;
-	cursor: pointer;
-	transition: all 0.2s ease;
-}
-
-.time-granularity-btn:hover {
-	background-color: var(--background-modifier-hover);
-	color: var(--text-normal);
-}
-
-.time-granularity-btn.active {
-	background-color: var(--interactive-accent);
-	color: var(--text-on-accent);
-	font-weight: 600;
-}
-
-.toolbar-gantt-field-group {
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-}
-
-.toolbar-gantt-field-label {
-	font-size: 13px;
-	color: var(--text-muted);
-}
-
-.toolbar-gantt-field-select {
-	padding: 4px 8px;
-	border: 1px solid var(--input-border-color);
-	border-radius: 4px;
-	background-color: var(--background-secondary);
-	color: var(--text-normal);
-	font-size: 12px;
-}
-
-/* ========================================
-   Legacy/Shared Task Item Styles
-   These are used by both task view and calendar day views
-   ======================================== */
-.gantt-task-item:hover,
-.calendar-day-task-item:hover {
-	background-color: var(--background-modifier-hover);
-	transform: translateX(4px);
-}
-
-.gantt-task-item.completed,
-.calendar-day-task-item.completed {
-	border-left-color: #52c41a;
-	opacity: 0.7;
-}
-
-.gantt-task-item.pending,
-.calendar-day-task-item.pending {
-	border-left-color: #f5a623;
-}
-
-.gantt-task-content {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	flex: 1;
-	min-width: 0;
-}
-
-.gantt-task-checkbox {
-	flex-shrink: 0;
-	cursor: pointer;
-	width: 18px;
-	height: 18px;
-	pointer-events: auto;
-	margin: 0;
-	z-index: 10;
-}
-
-.gantt-task-text {
-	flex-shrink: 0;
-	word-break: break-word;
-	color: var(--text-normal);
-	font-size: 14px;
-	display: flex;
-	align-items: center;
-	gap: 4px;
-	flex-wrap: wrap;
-}
-
-.gantt-task-item.completed .gantt-task-text,
-.calendar-day-task-item.completed .gantt-task-text {
-	text-decoration: line-through;
-	color: var(--text-muted);
-}
-
 /* Task description links */
 .gantt-task-link {
 	color: var(--link-color);
@@ -2067,11 +1711,6 @@ Gantt Calendar Plugin Styles - 甘特日历
 	color: var(--link-external-color, #0969da);
 	font-family: monospace;
 	font-size: 12px;
-}
-
-.gantt-task-item.completed .gantt-task-link,
-.calendar-day-task-item.completed .gantt-task-link {
-	opacity: 0.7;
 }
 
 /* Priority badge inline */
@@ -2163,251 +1802,66 @@ Gantt Calendar Plugin Styles - 甘特日历
 	transform: scale(1.2);
 }
 
-/* Day View Tasks Section */
-.calendar-day-tasks-section {
-	margin-top: 16px;
-	padding: 12px;
-	background-color: var(--background-secondary);
-	border-radius: 6px;
-	border-top: 2px solid var(--interactive-accent);
+/* Ribbon Icon */
+.gantt-calendar-ribbon {
+	transition: all 0.2s ease;
 }
 
-.calendar-day-tasks-title {
-	margin: 0 0 12px 0;
-	font-size: 14px;
-	font-weight: 600;
-	color: var(--text-normal);
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	flex-shrink: 0;
+.gantt-calendar-ribbon:hover {
+	transform: scale(1.1);
+	opacity: 0.8;
 }
 
-.calendar-day-tasks-list {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-	overflow-y: auto;
-	flex: 1;
-	min-height: 0;
-}
+/* 6.9 Heatmap Components */
+/* 热力图色卡：蓝、绿、红（5级）
+	使用更高的选择器优先级并明确 background-color，避免被主题的 `.calendar-day { background-color: transparent; }` 覆盖。 */
+.calendar-day.heatmap-blue-1 { background-image: none; background-color: rgba(56, 132, 255, 0.12) !important; }
+.calendar-day.heatmap-blue-2 { background-image: none; background-color: rgba(56, 132, 255, 0.22) !important; }
+.calendar-day.heatmap-blue-3 { background-image: none; background-color: rgba(56, 132, 255, 0.32) !important; }
+.calendar-day.heatmap-blue-4 { background-image: none; background-color: rgba(56, 132, 255, 0.44) !important; }
+.calendar-day.heatmap-blue-5 { background-image: none; background-color: rgba(56, 132, 255, 0.58) !important; }
 
-.calendar-day-tasks-list .calendar-day-task-item {
-	padding: 8px 10px;
-	background-color: var(--background-primary);
-	border-left: 3px solid var(--interactive-accent);
-	border-radius: 4px;
-	font-size: 12px;
-}
+.calendar-day.heatmap-green-1 { background-image: none; background-color: rgba(82, 196, 26, 0.12) !important; }
+.calendar-day.heatmap-green-2 { background-image: none; background-color: rgba(82, 196, 26, 0.22) !important; }
+.calendar-day.heatmap-green-3 { background-image: none; background-color: rgba(82, 196, 26, 0.32) !important; }
+.calendar-day.heatmap-green-4 { background-image: none; background-color: rgba(82, 196, 26, 0.44) !important; }
+.calendar-day.heatmap-green-5 { background-image: none; background-color: rgba(82, 196, 26, 0.58) !important; }
 
-.calendar-day-tasks-list .calendar-day-task-item.completed {
-	opacity: 0.65;
-	border-left-color: #52c41a;
-}
+.calendar-day.heatmap-red-1 { background-image: none; background-color: rgba(231, 76, 60, 0.12) !important; }
+.calendar-day.heatmap-red-2 { background-image: none; background-color: rgba(231, 76, 60, 0.22) !important; }
+.calendar-day.heatmap-red-3 { background-image: none; background-color: rgba(231, 76, 60, 0.32) !important; }
+.calendar-day.heatmap-red-4 { background-image: none; background-color: rgba(231, 76, 60, 0.44) !important; }
+.calendar-day.heatmap-red-5 { background-image: none; background-color: rgba(231, 76, 60, 0.58) !important; }
 
-.calendar-day-tasks-list .calendar-day-task-item.pending {
-	border-left-color: #ff7a45;
-}
+.calendar-day.heatmap-purple-1 { background-image: none; background-color: rgba(142, 68, 173, 0.12) !important; }
+.calendar-day.heatmap-purple-2 { background-image: none; background-color: rgba(142, 68, 173, 0.22) !important; }
+.calendar-day.heatmap-purple-3 { background-image: none; background-color: rgba(142, 68, 173, 0.32) !important; }
+.calendar-day.heatmap-purple-4 { background-image: none; background-color: rgba(142, 68, 173, 0.44) !important; }
+.calendar-day.heatmap-purple-5 { background-image: none; background-color: rgba(142, 68, 173, 0.58) !important; }
 
-/* ========================================
-   统一任务卡片状态样式 (v2.0重构)
-   高特指性选择器，确保不被task-with-status覆盖
-   ======================================== */
+.calendar-day.heatmap-orange-1 { background-image: none; background-color: rgba(245, 124, 0, 0.12) !important; }
+.calendar-day.heatmap-orange-2 { background-image: none; background-color: rgba(245, 124, 0, 0.22) !important; }
+.calendar-day.heatmap-orange-3 { background-image: none; background-color: rgba(245, 124, 0, 0.32) !important; }
+.calendar-day.heatmap-orange-4 { background-image: none; background-color: rgba(245, 124, 0, 0.44) !important; }
+.calendar-day.heatmap-orange-5 { background-image: none; background-color: rgba(245, 124, 0, 0.58) !important; }
 
-/* Day/Task View */
-/* Day View 容器 */
-.calendar-day-tasks-list .calendar-task-card--day.completed {
-	opacity: 0.65;
-	border-left-color: var(--task-completed-color);
-}
+.calendar-day.heatmap-cyan-1 { background-image: none; background-color: rgba(0, 188, 212, 0.12) !important; }
+.calendar-day.heatmap-cyan-2 { background-image: none; background-color: rgba(0, 188, 212, 0.22) !important; }
+.calendar-day.heatmap-cyan-3 { background-image: none; background-color: rgba(0, 188, 212, 0.32) !important; }
+.calendar-day.heatmap-cyan-4 { background-image: none; background-color: rgba(0, 188, 212, 0.44) !important; }
+.calendar-day.heatmap-cyan-5 { background-image: none; background-color: rgba(0, 188, 212, 0.58) !important; }
 
-.calendar-day-tasks-list .calendar-task-card--day.pending {
-	border-left-color: var(--task-pending-color);
-}
+.calendar-day.heatmap-pink-1 { background-image: none; background-color: rgba(233, 30, 99, 0.12) !important; }
+.calendar-day.heatmap-pink-2 { background-image: none; background-color: rgba(233, 30, 99, 0.22) !important; }
+.calendar-day.heatmap-pink-3 { background-image: none; background-color: rgba(233, 30, 99, 0.32) !important; }
+.calendar-day.heatmap-pink-4 { background-image: none; background-color: rgba(233, 30, 99, 0.44) !important; }
+.calendar-day.heatmap-pink-5 { background-image: none; background-color: rgba(233, 30, 99, 0.58) !important; }
 
-/* Task View 容器 */
-.task-view-list .calendar-task-card--day.completed {
-	opacity: 0.65;
-	border-left-color: var(--task-completed-color);
-}
-
-.task-view-list .calendar-task-card--day.pending {
-	border-left-color: var(--task-pending-color);
-}
-
-/* Week View */
-.calendar-week-tasks-grid .calendar-task-card--week.completed {
-	opacity: 0.6;
-	border-left-color: var(--task-completed-color);
-}
-
-.calendar-week-tasks-grid .calendar-task-card--week.pending {
-	border-left-color: var(--task-pending-color);
-}
-
-/* Month View */
-.calendar-month-tasks .calendar-task-card--month.completed {
-	opacity: 0.5;
-	border-left-color: var(--task-completed-color);
-}
-
-.calendar-month-tasks .calendar-task-card--month.pending {
-	border-left-color: var(--task-pending-color);
-}
-
-/* Gantt View */
-.gantt-view-task-list .calendar-task-card--gantt.completed {
-	opacity: 0.7;
-	border-left-color: var(--task-completed-color);
-}
-
-.gantt-view-task-list .calendar-task-card--gantt.pending {
-	border-left-color: var(--task-pending-color);
-}
-
-/* 文本装饰（已完成任务） */
-.calendar-day-tasks-list .calendar-task-card--day.completed .gantt-task-text,
-.calendar-week-tasks-grid .calendar-task-card--week.completed .calendar-week-task-text,
-.calendar-month-tasks .calendar-task-card--month.completed .calendar-task-card-text,
-.gantt-view-task-list .calendar-task-card--gantt.completed {
-	text-decoration: line-through;
-	color: var(--text-muted);
-}
-
-/* Day View Split Screen Layout */
-.calendar-day-split-container {
-	display: flex;
-	gap: 0;
-	width: 100%;
-	height: 100%;
-	flex: 1;
-	min-height: 0;
-}
-
-.calendar-day-split-container .calendar-day-tasks-section {
-	flex: 1 1 50%;
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
-	padding-right: 8px;
-	border-right: 1px solid var(--divider-color);
-	min-height: 0;
-}
-
-.calendar-day-tasks-section-full {
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
-	width: 100%;
-	height: 100%;
-	min-height: 0;
-}
-
-.calendar-day-split-container .calendar-day-notes-section {
-	flex: 1 1 50%;
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
-	padding-left: 8px;
-	min-height: 0;
-}
-
-.calendar-day-divider {
-	width: 8px;
-	background-color: transparent;
-	cursor: col-resize;
-	transition: background-color 0.2s;
-	flex-shrink: 0;
-}
-
-.calendar-day-divider:hover {
-	background-color: var(--interactive-accent);
-}
-
-/* Vertical Layout Styles */
-.calendar-day-split-container-vertical {
-	display: flex;
-	flex-direction: column;
-	gap: 0;
-	width: 100%;
-	height: 100%;
-	flex: 1;
-	min-height: 0;
-}
-
-.calendar-day-tasks-section-vertical {
-	flex: 1 1 50%;
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
-	padding-bottom: 8px;
-	border-bottom: 1px solid var(--divider-color);
-	min-height: 0;
-}
-
-.calendar-day-tasks-section-vertical .calendar-day-tasks-title {
-	margin: 0 0 12px 0;
-	font-size: 14px;
-	font-weight: 600;
-	color: var(--text-normal);
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	flex-shrink: 0;
-}
-
-.calendar-day-tasks-section-vertical .calendar-day-tasks-list {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-	overflow-y: auto;
-	flex: 1;
-	min-height: 0;
-}
-
-.calendar-day-notes-section-vertical {
-	flex: 1 1 50%;
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
-	padding-top: 8px;
-	min-height: 0;
-}
-
-.calendar-day-divider-vertical {
-	height: 8px;
-	background-color: transparent;
-	cursor: row-resize;
-	transition: background-color 0.2s;
-	flex-shrink: 0;
-}
-
-.calendar-day-divider-vertical:hover {
-	background-color: var(--interactive-accent);
-}
-
-.calendar-day-notes-title {
-	margin: 0 0 12px 0;
-	font-size: 14px;
-	font-weight: 600;
-	color: var(--text-normal);
-	flex-shrink: 0;
-}
-
-.calendar-day-notes-content {
-	flex: 1;
-	overflow-y: auto;
-	padding: 8px;
-	background-color: var(--background-primary);
-	border-radius: 4px;
-	min-height: 0;
-}
-
-.calendar-day-notes-markdown {
-	font-size: 12px;
-	line-height: 1.6;
-	color: var(--text-normal);
-}
+.calendar-day.heatmap-yellow-1 { background-image: none; background-color: rgba(255, 193, 7, 0.12) !important; }
+.calendar-day.heatmap-yellow-2 { background-image: none; background-color: rgba(255, 193, 7, 0.22) !important; }
+.calendar-day.heatmap-yellow-3 { background-image: none; background-color: rgba(255, 193, 7, 0.32) !important; }
+.calendar-day.heatmap-yellow-4 { background-image: none; background-color: rgba(255, 193, 7, 0.44) !important; }
+.calendar-day.heatmap-yellow-5 { background-image: none; background-color: rgba(255, 193, 7, 0.58) !important; }
 
 /* Heatmap palette setting (tiled single-select) */
 .heatmap-palette-setting {
@@ -2479,10 +1933,8 @@ Gantt Calendar Plugin Styles - 甘特日历
 	font-size: 12px;
 	color: var(--text-muted);
 }
-/* ========================================
-   右键菜单日期选择器模态框
-   ======================================== */
 
+/* 6.10 Modal Components */
 .gantt-date-picker-modal {
 	padding: 20px;
 }
@@ -2556,18 +2008,162 @@ Gantt Calendar Plugin Styles - 甘特日历
 	background: var(--background-modifier-hover);
 }
 
+/* Task modal sizing */
+.gantt-task-modal.modal {
+	width: 640px;
+	max-width: 90vw;
+	max-height: 80vh;
+}
+
+/* Festival Color Settings */
+.festival-color-settings-container {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 16px;
+	padding: 12px 0;
+	margin-bottom: 16px;
+}
+
+.festival-color-setting {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 12px;
+	background: var(--background-secondary);
+	border-radius: 8px;
+}
+
+.festival-color-label {
+	padding: 0 10px;
+}
+
+.festival-color-name {
+	font-weight: 600;
+	color: var(--text-normal);
+	margin-bottom: 4px;
+}
+
+.festival-color-desc {
+	font-size: 12px;
+	color: var(--text-muted);
+}
+
+.festival-color-picker {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 10px;
+	flex-wrap: wrap;
+}
+
+.festival-color-input {
+	display: none;
+}
+
+.festival-color-swatch {
+	width: 14px;
+	height: 14px;
+	border-radius: 2px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	flex-shrink: 0;
+}
+
+.festival-color-swatch:hover {
+	transform: scale(1.1);
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
 /* ========================================
-   任务状态颜色样式
+   LAYER 7: Themes (主题层)
+   Visual States & Modifiers
    ======================================== */
 
-/* 状态颜色变量 - 从插件设置中读取 */
-/* 旧类名兼容 */
-.calendar-day-task-item.task-with-status,
-.calendar-week-task-item.task-with-status,
-.calendar-month-task-item.task-with-status,
-.gantt-task-item.task-with-status,
-.gantt-task-card.task-with-status,
-/* 新统一类名 */
+/* 7.1 Task Status States (高特指性) */
+/* Day View 容器 */
+.calendar-day-tasks-list .calendar-task-card--day.completed {
+	opacity: 0.65;
+	border-left-color: var(--task-completed-color);
+}
+
+.calendar-day-tasks-list .calendar-task-card--day.pending {
+	border-left-color: var(--task-pending-color);
+}
+
+/* Task View 容器 */
+.task-view-list .calendar-task-card--day.completed {
+	opacity: 0.65;
+	border-left-color: var(--task-completed-color);
+}
+
+.task-view-list .calendar-task-card--day.pending {
+	border-left-color: var(--task-pending-color);
+}
+
+/* Week View */
+.calendar-week-tasks-grid .calendar-task-card--week.completed {
+	opacity: 0.6;
+	border-left-color: var(--task-completed-color);
+}
+
+.calendar-week-tasks-grid .calendar-task-card--week.pending {
+	border-left-color: var(--task-pending-color);
+}
+
+/* Month View */
+.calendar-month-tasks .calendar-task-card--month.completed {
+	opacity: 0.5;
+	border-left-color: var(--task-completed-color);
+}
+
+.calendar-month-tasks .calendar-task-card--month.pending {
+	border-left-color: var(--task-pending-color);
+}
+
+/* Gantt View */
+.gantt-view-task-list .calendar-task-card--gantt.completed {
+	opacity: 0.7;
+	border-left-color: var(--task-completed-color);
+}
+
+.gantt-view-task-list .calendar-task-card--gantt.pending {
+	border-left-color: var(--task-pending-color);
+}
+
+.gantt-bar.completed {
+	background-color: #52c41a;
+}
+
+/* 7.2 Interactive States (hover, active) */
+.calendar-task-card--day:hover {
+	transform: translateX(4px);
+}
+
+.calendar-task-card--week:hover {
+	transform: translateX(2px);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-task-card--month:hover {
+	transform: translateX(1px);
+}
+
+.calendar-task-card--gantt:hover {
+	transform: translateX(2px);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-day:hover {
+	background-color: var(--background-secondary);
+}
+
+.calendar-day-cell:hover {
+	background-color: var(--background-modifier-hover);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* 7.3 Custom Status Colors (from Settings) */
+/* 任务卡片背景色和文字颜色 */
 .calendar-task-card.task-with-status,
 .gantt-bar.task-with-status {
 	background-color: var(--task-bg-color, var(--background-secondary));
@@ -2575,34 +2171,16 @@ Gantt Calendar Plugin Styles - 甘特日历
 }
 
 /* 状态文字颜色应用到任务文本元素 */
-.calendar-day-task-item.task-with-status .gantt-task-text,
-.calendar-week-task-item.task-with-status .gantt-task-text,
-.calendar-month-task-item.task-with-status .calendar-month-task-text,
-.gantt-task-item.task-with-status .gantt-task-text,
-/* 新统一类名 */
-.calendar-task-card.task-with-status .gantt-task-text,
-.calendar-task-card.task-with-status .calendar-week-task-text,
 .calendar-task-card.task-with-status .calendar-task-card-text {
 	color: var(--task-text-color, var(--text-normal));
 }
 
 /* 状态颜色应用到边框 - 只在没有completed/pending状态时应用 */
-.calendar-day-task-item.task-with-status:not(.completed):not(.pending),
-.calendar-week-task-item.task-with-status:not(.completed):not(.pending),
-.calendar-month-task-item.task-with-status:not(.completed):not(.pending),
-.gantt-task-item.task-with-status:not(.completed):not(.pending),
-.gantt-task-card.task-with-status:not(.completed):not(.pending),
-/* 新统一类名 */
 .calendar-task-card.task-with-status:not(.completed):not(.pending) {
 	border-left-color: var(--task-bg-color, var(--interactive-accent));
 }
 
 /* 已完成任务保持透明度 */
-.calendar-day-task-item.task-with-status.completed,
-.calendar-week-task-item.task-with-status.completed,
-.calendar-month-task-item.task-with-status.completed,
-.gantt-task-item.task-with-status.completed,
-/* 新统一类名 */
 .calendar-task-card.task-with-status.completed {
 	opacity: 0.7;
 }
@@ -2615,3 +2193,161 @@ Gantt Calendar Plugin Styles - 甘特日历
 .gantt-bar.task-with-status.completed {
 	opacity: 0.8;
 }
+
+/* 7.4 Festival Themes */
+.calendar-lunar-text.festival {
+	font-weight: 600;
+}
+
+/* 阳历节日 - 使用CSS变量 */
+.calendar-lunar-text.festival-solar {
+	color: var(--festival-solar-color);
+}
+
+/* 农历传统节日 - 使用CSS变量 */
+.calendar-lunar-text.festival-lunar {
+	color: var(--festival-lunar-color);
+}
+
+/* 二十四节气 - 使用CSS变量 */
+.calendar-lunar-text.festival-solarTerm {
+	color: var(--festival-solar-term-color);
+}
+
+/* Month view specific festival styles */
+.calendar-day-cell .calendar-lunar-text.festival {
+	font-weight: 600;
+}
+
+.calendar-day-cell .calendar-lunar-text.festival-solar {
+	color: var(--festival-solar-color);
+}
+
+.calendar-day-cell .calendar-lunar-text.festival-lunar {
+	color: var(--festival-lunar-color);
+}
+
+.calendar-day-cell .calendar-lunar-text.festival-solarTerm {
+	color: var(--festival-solar-term-color);
+}
+
+/* 7.5 Special States */
+/* Outside month */
+.calendar-day.outside-month {
+	opacity: 0.4;
+}
+
+.calendar-day.outside-month .calendar-day-number {
+	color: var(--text-faint);
+}
+
+.calendar-day-cell.outside-month {
+	background-color: var(--background-secondary);
+	opacity: 0.5;
+}
+
+.calendar-day-cell.outside-month .calendar-day-number {
+	color: var(--text-faint);
+}
+
+/* Today state */
+.calendar-day.today {
+	background-color: #ff6b6b;
+	border-radius: 2px;
+}
+
+.calendar-day.today .calendar-day-number {
+	color: red;
+	font-weight: 600;
+}
+
+.calendar-day.today .calendar-lunar-text {
+	color: rgba(255, 255, 255, 0.9);
+}
+
+.calendar-day-cell.today {
+	background-color: #ff6b6b;
+	border-color: #ff6b6b;
+}
+
+.calendar-day-cell.today .calendar-day-number {
+	color: white;
+	font-weight: 700;
+}
+
+.calendar-day-cell.today .calendar-lunar-text {
+	color: rgba(255, 255, 255, 0.9);
+}
+
+.calendar-day-column.today {
+	background-color: var(--interactive-accent);
+	background-image: linear-gradient(135deg, var(--interactive-accent) 0%, rgba(0, 0, 0, 0.1) 100%);
+	border-color: var(--interactive-accent);
+}
+
+.calendar-day-column.today .calendar-day-header {
+	border-bottom-color: rgba(255, 255, 255, 0.3);
+	color: white;
+}
+
+.calendar-day-column.today .calendar-day-name {
+	color: rgba(255, 255, 255, 0.9);
+}
+
+.calendar-day-column.today .calendar-day-number {
+	color: white;
+}
+
+.calendar-day-header-cell.today {
+	background-color: rgba(255, 107, 107, 0.1);
+}
+
+.calendar-day-header-cell.today .day-number {
+	color: #ff6b6b;
+}
+
+.calendar-day-column-time.today {
+	background-color: rgba(255, 107, 107, 0.05);
+}
+
+.calendar-week-tasks-column.today {
+	background-color: rgba(255, 107, 107, 0.03);
+}
+
+/* 7.6 Text Decoration (已完成任务) */
+.calendar-day-tasks-list .calendar-task-card--day.completed .calendar-task-card-text,
+.calendar-week-tasks-grid .calendar-task-card--week.completed .calendar-task-card-text,
+.calendar-month-tasks .calendar-task-card--month.completed .calendar-task-card-text,
+.task-view-list .calendar-task-card--day.completed .calendar-task-card-text,
+.gantt-view-task-list .calendar-task-card--gantt.completed .calendar-task-card-text {
+	text-decoration: line-through;
+	color: var(--text-muted);
+}
+
+/* Custom scrollbar */
+.calendar-time-grid::-webkit-scrollbar {
+	width: 10px;
+}
+
+.calendar-time-grid::-webkit-scrollbar-track {
+	background: var(--background-primary);
+	border-radius: 5px;
+}
+
+.calendar-time-grid::-webkit-scrollbar-thumb {
+	background: var(--scrollbar-thumb-bg, var(--background-modifier-border));
+	border-radius: 5px;
+	border: 2px solid var(--background-primary);
+}
+
+.calendar-time-grid::-webkit-scrollbar-thumb:hover {
+	background: var(--scrollbar-thumb-hover, var(--text-muted));
+}
+
+/* ========================================
+   LAYER 8: Trumps (覆盖层)
+   Utilities & Overrides
+   ======================================== */
+
+/* No utility classes currently defined */
+/* Future utility classes can be added here as needed */
