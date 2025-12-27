@@ -1,6 +1,7 @@
 import { App, Notice, normalizePath, TFolder } from 'obsidian';
 import type { GanttTask } from '../../types';
 import { formatDate } from '../../dateUtils/dateUtilsIndex';
+import { updateTaskProperties } from '../../tasks/taskUpdater';
 
 /**
  * 创建任务同名文件
@@ -9,7 +10,8 @@ import { formatDate } from '../../dateUtils/dateUtilsIndex';
 export async function createNoteFromTask(
 	app: App,
 	task: GanttTask,
-	defaultPath: string
+	defaultPath: string,
+	enabledFormats: string[] = ['tasks']
 ): Promise<void> {
 	try {
 		const raw = task.content;
@@ -64,7 +66,7 @@ export async function createNoteFromTask(
 			const leaf = app.workspace.getLeaf(false);
 			await leaf.openFile(existingFile as any);
 			// 仍将任务内容改为双链，方便后续跳转
-			await updateTaskLineToWikiLink(app, task, fileName);
+			await updateTaskProperties(app, task, { content: `[[${fileName}]]` }, enabledFormats);
 			return;
 		}
 
@@ -80,8 +82,8 @@ export async function createNoteFromTask(
 
 		new Notice(`已创建笔记: ${fileName}.md`);
 
-		// 3) 更新源任务行为双链，并移除任务中的超链接
-		await updateTaskLineToWikiLink(app, task, fileName);
+		// 3) 更新源任务行为双链，使用 updateTaskProperties 保留 tags 等元数据
+		await updateTaskProperties(app, task, { content: `[[${fileName}]]` }, enabledFormats);
 	} catch (error) {
 		console.error('Failed to create note from task:', error);
 		new Notice('创建笔记失败');
@@ -109,13 +111,6 @@ function removeLinksFromDescription(text: string): string {
 		.replace(/(https?:\/\/[^\s)]+)/g, ' ') // 去掉裸 URL
 		.replace(/\s{2,}/g, ' ').trim();
 }
-
-function removeLinks(raw: string): string {
-	return raw
-		.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, ' $1 ') // 去掉 markdown 链接，仅保留文本
-		.replace(/(https?:\/\/[^\s)]+)/g, ' '); // 去掉裸 URL
-}
-
 
 /**
  * 清理文件名中的非法字符
@@ -203,50 +198,4 @@ function generateNoteContent(task: GanttTask, mdLinks: Array<{text: string, url:
 	lines.push('');
 	
 	return lines.join('\n');
-}
-
-/**
- * 将源任务行的任务描述改为双链形式，并移除任务行中的所有超链接
- */
-async function updateTaskLineToWikiLink(app: App, task: GanttTask, noteName: string): Promise<void> {
-	const file = app.vault.getAbstractFileByPath(task.filePath);
-	if (!(file as any)) return;
-	const content = await app.vault.read(file as any);
-	const lines = content.split('\n');
-	const idx = task.lineNumber - 1;
-	if (idx < 0 || idx >= lines.length) return;
-
-	const line = lines[idx];
-	const m = line.match(/^(\s*[-*]\s*\[[ xX]\]\s*)(.*)$/);
-	if (!m) return;
-	const prefix = m[1];
-	const rest = m[2];
-
-	// 从插件设置中获取全局过滤器
-	const plugin = (app as any).plugins?.plugins['obsidian-gantt-calendar'];
-	const globalFilter = plugin?.settings?.globalTaskFilter || '';
-
-	// 保留是否存在全局筛选前缀
-	let gfPrefix = '';
-	const gfTrim = (globalFilter || '').trim();
-	if (gfTrim && rest.trim().startsWith(gfTrim)) {
-		gfPrefix = gfTrim + ' ';
-	}
-
-	// 抽取并保留所有的 Dataview 字段与日期 emoji 与优先级 emoji
-	const dvFields = rest.match(/\[(priority|created|start|scheduled|due|cancelled|completion)::\s*[^\]]+\]/g) || [];
-	const dateEmojis = rest.match(/(➕|🛫|⏳|📅|❌|✅)\s*\d{4}-\d{2}-\d{2}/g) || [];
-	const priorityEmojis = rest.match(/(🔺|⏫|🔼|🔽|⏬)/g) || [];
-
-	// 构造新行：前缀 + 可选GF + [[noteName]] + 保留的元数据（用空格拼接）
-	const metadata = [...priorityEmojis, ...dateEmojis, ...dvFields].join(' ').trim();
-
-	// 移除原行中的超链接
-	const restNoLinks = removeLinks(rest).replace(/\[\[([^\]|]+)(?:\|[^\]]+)?\]\]/g, '').trim();
-
-	let newLine = `${prefix}${gfPrefix}[[${noteName}]]`;
-	if (metadata) newLine += ` ${metadata}`;
-
-	lines[idx] = newLine;
-	await app.vault.modify(file as any, lines.join('\n'));
 }

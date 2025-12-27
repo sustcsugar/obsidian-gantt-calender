@@ -53,7 +53,7 @@ export function registerTaskContextMenu(
 				.setTitle('创建任务笔记:同名')
 				.setIcon('file-plus')
 				.onClick(() => {
-					createNoteFromTask(app, task, defaultNotePath);
+					createNoteFromTask(app, task, defaultNotePath, enabledFormats);
 				});
 		});
 
@@ -63,7 +63,7 @@ export function registerTaskContextMenu(
 				.setTitle('创建任务笔记:别名')
 				.setIcon('file-plus')
 				.onClick(() => {
-					createNoteFromTaskAlias(app, task, defaultNotePath);
+					createNoteFromTaskAlias(app, task, defaultNotePath, enabledFormats);
 				});
 		});
 

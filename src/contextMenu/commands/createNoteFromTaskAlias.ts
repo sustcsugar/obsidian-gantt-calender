@@ -1,5 +1,6 @@
 import { App, Notice, normalizePath, TFolder, Modal, Setting } from 'obsidian';
 import type { GanttTask } from '../../types';
+import { updateTaskProperties } from '../../tasks/taskUpdater';
 
 /**
  * 创建任务别名笔记
@@ -8,7 +9,8 @@ import type { GanttTask } from '../../types';
 export async function createNoteFromTaskAlias(
 	app: App,
 	task: GanttTask,
-	defaultPath: string
+	defaultPath: string,
+	enabledFormats: string[] = ['tasks']
 ): Promise<void> {
 	const alias = await promptForAlias(app, task);
 	if (!alias) return;
@@ -26,7 +28,7 @@ export async function createNoteFromTaskAlias(
 			new Notice(`文件已存在: ${fileName}.md`);
 			const leaf = app.workspace.getLeaf(false);
 			await leaf.openFile(existingFile as any);
-			await updateTaskLineToWikiLink(app, task, fileName, baseDesc);
+			await updateTaskProperties(app, task, { content: `[[${fileName}|${baseDesc}]]` }, enabledFormats);
 			return;
 		}
 		const fileContent = `# ${alias}\n\n## 任务信息\n- 原任务: ${baseDesc}\n${task.tags && task.tags.length > 0 ? `- 标签: ${task.tags.map(t => `#${t}`).join(' ')}\n` : ''}`;
@@ -34,7 +36,7 @@ export async function createNoteFromTaskAlias(
 		const leaf = app.workspace.getLeaf(false);
 		await leaf.openFile(file);
 		new Notice(`已创建笔记: ${fileName}.md`);
-		await updateTaskLineToWikiLink(app, task, fileName, baseDesc);
+		await updateTaskProperties(app, task, { content: `[[${fileName}|${baseDesc}]]` }, enabledFormats);
 	} catch (error) {
 		console.error('Failed to create alias note from task:', error);
 		new Notice('创建别名笔记失败');
@@ -108,35 +110,4 @@ async function ensureFolderExists(app: App, folderPath: string): Promise<void> {
 	if (!folder) {
 		await app.vault.createFolder(normalizedPath);
 	}
-}
-async function updateTaskLineToWikiLink(app: App, task: GanttTask, noteName: string, displayText?: string): Promise<void> {
-	const file = app.vault.getAbstractFileByPath(task.filePath);
-	if (!(file as any)) return;
-	const content = await app.vault.read(file as any);
-	const lines = content.split('\n');
-	const idx = task.lineNumber - 1;
-	if (idx < 0 || idx >= lines.length) return;
-	const line = lines[idx];
-	const m = line.match(/^(\s*[-*]\s*\[[ xX]\]\s*)(.*)$/);
-	if (!m) return;
-	const prefix = m[1];
-	const rest = m[2];
-
-	// 从插件设置中获取全局过滤器
-	const plugin = (app as any).plugins?.plugins['obsidian-gantt-calendar'];
-	const globalFilter = plugin?.settings?.globalTaskFilter || '';
-
-	let gfPrefix = '';
-	const gfTrim = (globalFilter || '').trim();
-	if (gfTrim && rest.trim().startsWith(gfTrim)) {
-		gfPrefix = gfTrim + ' ';
-	}
-	const dvFields = rest.match(/\[(priority|created|start|scheduled|due|cancelled|completion)::\s*[^\]]+\]/g) || [];
-	const dateEmojis = rest.match(/(➕|🛫|⏳|📅|❌|✅)\s*\d{4}-\d{2}-\d{2}/g) || [];
-	const priorityEmojis = rest.match(/(🔺|⏫|🔼|🔽|⏬)/g) || [];
-	const metadata = [...priorityEmojis, ...dateEmojis, ...dvFields].join(' ').trim();
-	let newLine = `${prefix}${gfPrefix}[[${noteName}|${displayText}]]`;
-	if (metadata) newLine += ` ${metadata}`;
-	lines[idx] = newLine;
-	await app.vault.modify(file as any, lines.join('\n'));
 }
