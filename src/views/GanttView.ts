@@ -385,8 +385,8 @@ export class GanttViewRenderer extends BaseCalendarRenderer {
     }
 
     // 同步时间刻度和甘特条的横向滚动
-    this.syncHorizontalScroll(timelineScroll, ganttBarsScroll);
-    this.syncHorizontalScroll(ganttBarsScroll, timelineScroll);
+    this.syncHorizontalScroll(timeline, ganttBarsScroll);
+    this.syncHorizontalScroll(ganttBarsScroll, timeline);
 
     // 同步任务列表和甘特条容器的垂直滚动
     taskList.addEventListener('scroll', () => {

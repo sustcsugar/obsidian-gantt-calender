@@ -88,12 +88,10 @@ export class TaskViewRenderer extends BaseCalendarRenderer {
 	}
 
 	render(container: HTMLElement, currentDate: Date): void {
-		// 在 calendar-content 内创建子容器作为任务视图根节点
-		const taskRoot = container.createDiv('gc-view gc-view--list');
+		// 创建任务视图容器
+		const taskRoot = container.createDiv('gc-view gc-view--task');
 
-		const listContainer = taskRoot.createDiv('gc-view--list .gc-list-view__list');
-
-		this.loadTaskList(listContainer);
+		this.loadTaskList(taskRoot);
 	}
 
 	/**
@@ -173,9 +171,9 @@ export class TaskViewRenderer extends BaseCalendarRenderer {
 	 * 渲染任务项
 	 */
 	private renderTaskItem(task: GanttTask, listContainer: HTMLElement): void {
-		const taskItem = listContainer.createDiv('calendar-task-card');
-		taskItem.addClass('calendar-task-card--task');
-		taskItem.addClass(task.completed ? 'completed' : 'pending');
+		const taskItem = listContainer.createDiv('gc-task-card');
+		taskItem.addClass('gc-task-card--task');
+		taskItem.addClass(task.completed ? 'gc-task-card--completed' : 'gc-task-card--pending');
 
 		// 应用状态颜色
 		this.applyStatusColors(task, taskItem);

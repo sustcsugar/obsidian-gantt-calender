@@ -24,7 +24,7 @@ export class WeekViewRenderer extends BaseCalendarRenderer {
 	render(container: HTMLElement, currentDate: Date): void {
 		const weekData = getWeekOfDate(currentDate, currentDate.getFullYear(), !!(this.plugin?.settings?.startOnMonday));
 
-		const weekContainer = container.createDiv('calendar-week-view');
+		const weekContainer = container.createDiv('gc-view gc-view--week');
 		const weekGrid = weekContainer.createDiv('calendar-week-grid');
 
 		// 标题行

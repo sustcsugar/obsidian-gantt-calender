@@ -9,7 +9,7 @@
  * @example
  * bem('task-card') → 'gc-task-card'
  * bem('task-card', 'text') → 'gc-task-card__text'
- * bem('task-card', null, 'month') → 'gc-task-card--month'
+ * bem('task-card', undefined, 'month') → 'gc-task-card--month'
  * bem('task-card', 'priority', 'high') → 'gc-task-card__priority--high'
  */
 
@@ -49,13 +49,13 @@ export const TaskCardClasses = {
 
 	/** Modifiers */
 	modifiers: {
-		month: bem('task-card', null, 'month'),
-		week: bem('task-card', null, 'week'),
-		day: bem('task-card', null, 'day'),
-		list: bem('task-card', null, 'list'),
-		gantt: bem('task-card', null, 'gantt'),
-		completed: bem('task-card', null, 'completed'),
-		pending: bem('task-card', null, 'pending'),
+		month: bem('task-card', undefined, 'month'),
+		week: bem('task-card', undefined, 'week'),
+		day: bem('task-card', undefined, 'day'),
+		task: bem('task-card', undefined, 'task'),
+		gantt: bem('task-card', undefined, 'gantt'),
+		completed: bem('task-card', undefined, 'completed'),
+		pending: bem('task-card', undefined, 'pending'),
 	}
 };
 
@@ -76,7 +76,7 @@ export const TooltipClasses = {
 	},
 
 	modifiers: {
-		visible: bem('task-tooltip', null, 'visible'),
+		visible: bem('task-tooltip', undefined, 'visible'),
 	},
 };
 
@@ -87,13 +87,13 @@ export const TagClasses = {
 	block: bem('tag'),
 
 	/** 颜色修饰符 (0-5) */
-	colors: [0, 1, 2, 3, 4, 5].map(i => bem('tag', null, `color-${i}`)),
+	colors: [0, 1, 2, 3, 4, 5].map(i => bem('tag', undefined, `color-${i}`)),
 
 	/** 上下文修饰符 */
 	modifiers: {
-		tooltip: bem('tag', null, 'tooltip'),
-		selectable: bem('tag', null, 'selectable'),
-		selected: bem('tag', null, 'selected'),
+		tooltip: bem('tag', undefined, 'tooltip'),
+		selectable: bem('tag', undefined, 'selectable'),
+		selected: bem('tag', undefined, 'selected'),
 	},
 };
 
@@ -105,9 +105,9 @@ export const DayViewClasses = {
 
 	/** 布局模式修饰符 */
 	modifiers: {
-		horizontal: bem('day-view', null, 'horizontal'),
-		vertical: bem('day-view', null, 'vertical'),
-		tasksOnly: bem('day-view', null, 'tasks-only'),
+		horizontal: bem('day-view', undefined, 'horizontal'),
+		vertical: bem('day-view', undefined, 'vertical'),
+		tasksOnly: bem('day-view', undefined, 'tasks-only'),
 	},
 
 	/** Elements */
@@ -131,12 +131,12 @@ export const ViewClasses = {
 
 	/** 视图类型修饰符 */
 	modifiers: {
-		year: bem('view', null, 'year'),
-		month: bem('view', null, 'month'),
-		week: bem('view', null, 'week'),
-		day: bem('view', null, 'day'),
-		list: bem('view', null, 'list'),
-		gantt: bem('view', null, 'gantt'),
+		year: bem('view', undefined, 'year'),
+		month: bem('view', undefined, 'month'),
+		week: bem('view', undefined, 'week'),
+		day: bem('view', undefined, 'day'),
+		task: bem('view', undefined, 'task'),
+		gantt: bem('view', undefined, 'gantt'),
 	},
 };
 
@@ -179,9 +179,9 @@ export const LinkClasses = {
 
 	/** 链接类型修饰符 */
 	modifiers: {
-	obsidian: bem('link', null, 'obsidian'),
-		markdown: bem('link', null, 'markdown'),
-		url: bem('link', null, 'url'),
+	obsidian: bem('link', undefined, 'obsidian'),
+		markdown: bem('link', undefined, 'markdown'),
+		url: bem('link', undefined, 'url'),
 	},
 };
 

@@ -291,18 +291,10 @@ Author: sugar
 }
 
 /* ==================== Task View Layout ==================== */
-/* BEM命名: gc-view--list */
+/* BEM命名: gc-view--task (Modifier) */
 .calendar-task-view,
-.gc-view.gc-view--list {
-	display: block;
-	flex: none;
-	height: auto;
-	overflow: visible;
-	width: 100%;
-}
-
 .task-view-list,
-.gc-view--list .gc-list-view__list {
+.gc-view--task {
 	display: flex;
 	flex-direction: column;
 	gap: 6px;
@@ -310,6 +302,7 @@ Author: sugar
 	height: auto;
 	flex: none;
 	overflow: visible;
+	width: 100%;
 }
 
 /* ========================================
@@ -766,6 +759,13 @@ Author: sugar
 }
 
 /* Task Card Modifiers */
+.gc-task-card--task {
+	padding: 10px;
+	gap: 8px;
+	flex-wrap: wrap;
+	font-size: 13px;
+}
+
 .calendar-task-card--day,
 .gc-task-card--day {
 	padding: 10px;
@@ -774,13 +774,7 @@ Author: sugar
 	font-size: 13px;
 }
 
-.calendar-task-card--task,
-.gc-task-card--list {
-	padding: 10px;
-	gap: 8px;
-	flex-wrap: wrap;
-	font-size: 13px;
-}
+
 
 .calendar-task-card--week,
 .gc-task-card--week {
@@ -2315,25 +2309,30 @@ Author: sugar
    ======================================== */
 
 /* 7.1 Task Status States (高特指性) */
-/* Day View 容器 */
-.calendar-day-tasks-list .calendar-task-card--day.completed {
-	opacity: 0.65;
-	border-left-color: var(--task-completed-color);
-}
 
-.calendar-day-tasks-list .calendar-task-card--day.pending {
-	border-left-color: var(--task-pending-color);
-}
 
 /* Task View 容器 */
-.task-view-list .calendar-task-card--task.completed {
+.gc-view--task .gc-task-card--task.gc-task-card--completed {
 	opacity: 0.65;
 	border-left-color: var(--task-completed-color);
 }
 
-.task-view-list .calendar-task-card--task.pending {
+.gc-view--task .gc-task-card--task.gc-task-card--pending {
 	border-left-color: var(--task-pending-color);
 }
+
+/* Day View 容器 */
+.calendar-day-tasks-list .calendar-task-card--day.completed,
+.gc-day-view__task-list .calendar-task-card--day.completed {
+	opacity: 0.65;
+	border-left-color: var(--task-completed-color);
+}
+
+.calendar-day-tasks-list .calendar-task-card--day.pending,
+.gc-day-view__task-list .calendar-task-card--day.pending {
+	border-left-color: var(--task-pending-color);
+}
+
 
 /* Week View */
 .calendar-week-tasks-grid .calendar-task-card--week.completed {
@@ -2390,7 +2389,7 @@ Author: sugar
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.calendar-task-card--task:hover {
+.gc-task-card--task:hover {
 	transform: translateX(4px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -2407,23 +2406,27 @@ Author: sugar
 /* 7.3 Custom Status Colors (from Settings) */
 /* 任务卡片背景色和文字颜色 */
 .calendar-task-card.task-with-status,
+.gc-task-card.task-with-status,
 .gantt-bar.task-with-status {
 	background-color: var(--task-bg-color, var(--background-secondary));
 	color: var(--task-text-color, var(--text-normal));
 }
 
 /* 状态文字颜色应用到任务文本元素 */
-.calendar-task-card.task-with-status .calendar-task-card-text {
+.calendar-task-card.task-with-status .calendar-task-card-text,
+.gc-task-card.task-with-status .gc-task-card__text {
 	color: var(--task-text-color, var(--text-normal));
 }
 
 /* 状态颜色应用到边框 - 只在没有completed/pending状态时应用 */
-.calendar-task-card.task-with-status:not(.completed):not(.pending) {
+.calendar-task-card.task-with-status:not(.completed):not(.pending),
+.gc-task-card.task-with-status:not(.gc-task-card--completed):not(.gc-task-card--pending) {
 	border-left-color: var(--task-bg-color, var(--interactive-accent));
 }
 
 /* 已完成任务保持透明度 */
-.calendar-task-card.task-with-status.completed {
+.calendar-task-card.task-with-status.completed,
+.gc-task-card.task-with-status.gc-task-card--completed {
 	opacity: 0.7;
 }
 
@@ -2560,7 +2563,7 @@ Author: sugar
 .calendar-day-tasks-list .calendar-task-card--day.completed .calendar-task-card-text,
 .calendar-week-tasks-grid .calendar-task-card--week.completed .calendar-task-card-text,
 .calendar-month-tasks .calendar-task-card--month.completed .calendar-task-card-text,
-.task-view-list .calendar-task-card--task.completed .calendar-task-card-text,
+.gc-view--task .gc-task-card--task.completed .gc-task-card__text,
 .gantt-view-task-list .calendar-task-card--gantt.completed .calendar-task-card-text {
 	text-decoration: line-through;
 	color: var(--text-muted);
