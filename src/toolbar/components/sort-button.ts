@@ -1,11 +1,11 @@
 /**
  * @fileoverview 排序下拉按钮组件
- * @module toolbar/sort-button
+ * @module toolbar/components/sort-button
  */
 
 import { setIcon } from 'obsidian';
-import type { SortState } from '../types';
-import { SORT_OPTIONS, getSortDisplayText, updateSortState } from '../tasks/taskSorter';
+import type { SortState } from '../../types';
+import { SORT_OPTIONS, getSortDisplayText, updateSortState } from '../../tasks/taskSorter';
 
 /**
  * 排序按钮配置选项

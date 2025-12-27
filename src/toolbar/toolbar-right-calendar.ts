@@ -1,7 +1,8 @@
-import { setIcon } from 'obsidian';
-import { renderRefreshButton } from './refresh-button';
-import { renderSortButton } from './sort-button';
-import { renderTagFilterButton } from './tag-filter';
+import { renderNavButtons } from './components/nav-buttons';
+import { renderCalendarViewSwitcher } from './components/calendar-view-switcher';
+import { renderRefreshButton } from './components/refresh-button';
+import { renderSortButton } from './components/sort-button';
+import { renderTagFilterButton } from './components/tag-filter';
 import type { CalendarViewType } from '../types';
 import type { DayViewRenderer } from '../views/DayView';
 import type { WeekViewRenderer } from '../views/WeekView';
@@ -14,6 +15,7 @@ import type { WeekViewRenderer } from '../views/WeekView';
 export class ToolbarRightCalendar {
 	private dayRenderer?: DayViewRenderer;
 	private weekRenderer?: WeekViewRenderer;
+	private viewSwitcherInstance?: { updateActive: (view: string) => void; cleanup: () => void };
 
 	/**
 	 * 设置渲染器引用
@@ -47,35 +49,21 @@ export class ToolbarRightCalendar {
 		container.empty();
 		container.addClass('calendar-toolbar-right');
 
-		// 导航按钮组
-		const navButtons = container.createDiv('calendar-nav-buttons');
+		// 导航按钮组 - 使用新组件
+		renderNavButtons(container, {
+			onPrevious,
+			onToday,
+			onNext,
+			containerClass: 'calendar-nav-buttons',
+			buttonClass: 'calendar-nav-compact-btn'
+		});
 
-		const prevBtn = navButtons.createEl('button', { text: '◀', attr: { title: '上一个' } });
-		prevBtn.addClass('calendar-nav-compact-btn');
-		prevBtn.onclick = onPrevious;
-
-		const nextBtn = navButtons.createEl('button', { text: '▶', attr: { title: '下一个' } });
-		nextBtn.addClass('calendar-nav-compact-btn');
-		nextBtn.onclick = onNext;
-
-		const todayBtn = navButtons.createEl('button', { text: '今天', attr: { title: '回到今天' } });
-		todayBtn.addClass('calendar-nav-compact-btn');
-		todayBtn.onclick = onToday;
-
-		// 视图选择器（日/周/月/年）
-		const viewContainer = container.createDiv('calendar-view-selector');
-		const viewTypes: { [key: string]: string } = {
-			'day': '日',
-			'week': '周',
-			'month': '月',
-			'year': '年',
-		};
-
-		['day', 'week', 'month', 'year'].forEach((type) => {
-			const btn = viewContainer.createEl('button', { text: viewTypes[type] });
-			btn.addClass('calendar-view-compact-btn');
-			if (type === currentViewType) btn.addClass('active');
-			btn.onclick = () => onViewSwitch(type as CalendarViewType);
+		// 视图选择器（日/周/月/年） - 使用新组件
+		this.viewSwitcherInstance = renderCalendarViewSwitcher(container, {
+			currentView: currentViewType as 'year' | 'month' | 'week' | 'day',
+			onViewChange: (view) => onViewSwitch(view as CalendarViewType),
+			containerClass: 'calendar-view-selector',
+			buttonClass: 'calendar-view-compact-btn'
 		});
 
 		// 日视图和周视图显示排序按钮
@@ -113,5 +101,19 @@ export class ToolbarRightCalendar {
 				getAllTasks: () => plugin.taskCache.getAllTasks()
 			});
 		}
+	}
+
+	/**
+	 * 更新当前视图的激活状态
+	 */
+	updateActiveView(viewType: CalendarViewType): void {
+		this.viewSwitcherInstance?.updateActive(viewType);
+	}
+
+	/**
+	 * 清理资源
+	 */
+	cleanup(): void {
+		this.viewSwitcherInstance?.cleanup();
 	}
 }

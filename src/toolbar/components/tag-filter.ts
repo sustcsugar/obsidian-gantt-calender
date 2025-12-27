@@ -1,10 +1,10 @@
 /**
  * @fileoverview 标签筛选按钮组件
- * @module toolbar/tag-filter
+ * @module toolbar/components/tag-filter
  */
 
-import type { GanttTask } from '../types';
-import type { TagFilterState } from '../types';
+import type { GanttTask } from '../../types';
+import type { TagFilterState } from '../../types';
 
 /**
  * 标签筛选器配置选项

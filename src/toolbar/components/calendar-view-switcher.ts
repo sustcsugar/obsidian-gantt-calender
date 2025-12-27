@@ -1,0 +1,179 @@
+/**
+ * @fileoverview 日历视图切换器组件（日/周/月/年）
+ * @module toolbar/components/calendar-view-switcher
+ */
+
+import type { CalendarViewType } from '../../types';
+
+/**
+ * 日历视图切换器配置选项
+ */
+export interface CalendarViewSwitcherOptions {
+	/** 当前视图类型 */
+	currentView: 'year' | 'month' | 'week' | 'day';
+	/** 视图切换回调 */
+	onViewChange: (view: 'year' | 'month' | 'week' | 'day') => void;
+	/** 容器样式类 */
+	containerClass?: string;
+	/** 按钮样式类 */
+	buttonClass?: string;
+	/** 是否显示完整标签 */
+	fullLabel?: boolean;
+}
+
+/**
+ * 视图类型对应的显示文本
+ */
+const VIEW_LABELS: Record<string, { short: string; full: string }> = {
+	'year': { short: '年', full: '年视图' },
+	'month': { short: '月', full: '月视图' },
+	'week': { short: '周', full: '周视图' },
+	'day': { short: '日', full: '日视图' }
+};
+
+/**
+ * 渲染日历视图切换器（日/周/月/年）
+ *
+ * 特性：
+ * - 四个视图按钮：日/周/月/年
+ * - 当前视图高亮显示
+ * - 点击切换视图
+ *
+ * @param container 容器元素
+ * @param options 配置选项
+ * @returns 包含更新函数和清理函数的对象
+ */
+export function renderCalendarViewSwitcher(
+	container: HTMLElement,
+	options: CalendarViewSwitcherOptions
+): { updateActive: (view: string) => void; cleanup: () => void } {
+	const {
+		currentView,
+		onViewChange,
+		containerClass,
+		buttonClass = 'calendar-view-compact-btn',
+		fullLabel = false
+	} = options;
+
+	// 创建视图选择器容器
+	const viewContainer = container.createDiv('calendar-view-selector');
+	if (containerClass) viewContainer.addClass(containerClass);
+
+	// 存储按钮元素以便更新
+	const buttonElements: Map<string, HTMLElement> = new Map();
+
+	// 视图类型顺序：日 -> 周 -> 月 -> 年
+	const viewTypes: Array<'day' | 'week' | 'month' | 'year'> = ['day', 'week', 'month', 'year'];
+
+	viewTypes.forEach((type) => {
+		const labels = VIEW_LABELS[type];
+		const btn = viewContainer.createEl('button', {
+			text: fullLabel ? labels.full : labels.short,
+			attr: {
+				'data-view': type,
+				title: labels.full
+			}
+		});
+
+		btn.addClass(buttonClass);
+
+		// 设置当前视图为激活状态
+		if (type === currentView) {
+			btn.addClass('active');
+		}
+
+		// 绑定点击事件
+		btn.onclick = () => onViewChange(type);
+
+		// 存储按钮引用
+		buttonElements.set(type, btn);
+	});
+
+	/**
+	 * 更新当前激活的视图
+	 */
+	const updateActive = (view: string) => {
+		buttonElements.forEach((el, viewType) => {
+			if (viewType === view) {
+				el.addClass('active');
+			} else {
+				el.removeClass('active');
+			}
+		});
+	};
+
+	// 清理函数
+	const cleanup = () => {
+		buttonElements.clear();
+		viewContainer.remove();
+	};
+
+	return { updateActive, cleanup };
+}
+
+/**
+ * 创建简化版视图切换器（只显示周/月）
+ */
+export interface SimpleViewSwitcherOptions {
+	currentView: 'week' | 'month';
+	onViewChange: (view: 'week' | 'month') => void;
+	containerClass?: string;
+	buttonClass?: string;
+}
+
+export function renderSimpleViewSwitcher(
+	container: HTMLElement,
+	options: SimpleViewSwitcherOptions
+): { updateActive: (view: string) => void; cleanup: () => void } {
+	const {
+		currentView,
+		onViewChange,
+		containerClass,
+		buttonClass = 'calendar-view-compact-btn'
+	} = options;
+
+	const viewContainer = container.createDiv('calendar-view-selector');
+	if (containerClass) viewContainer.addClass(containerClass);
+
+	const buttonElements: Map<string, HTMLElement> = new Map();
+
+	const viewTypes: Array<'week' | 'month'> = ['week', 'month'];
+	const labels: Record<string, string> = {
+		'week': '周',
+		'month': '月'
+	};
+
+	viewTypes.forEach((type) => {
+		const btn = viewContainer.createEl('button', {
+			text: labels[type],
+			attr: { 'data-view': type, title: labels[type] + '视图' }
+		});
+
+		btn.addClass(buttonClass);
+
+		if (type === currentView) {
+			btn.addClass('active');
+		}
+
+		btn.onclick = () => onViewChange(type);
+
+		buttonElements.set(type, btn);
+	});
+
+	const updateActive = (view: string) => {
+		buttonElements.forEach((el, viewType) => {
+			if (viewType === view) {
+				el.addClass('active');
+			} else {
+				el.removeClass('active');
+			}
+		});
+	};
+
+	const cleanup = () => {
+		buttonElements.clear();
+		viewContainer.remove();
+	};
+
+	return { updateActive, cleanup };
+}
