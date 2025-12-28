@@ -134,6 +134,7 @@ export class CalendarView extends ItemView {
 		const container = this.containerEl.children[1];
 		container.empty();
 		container.removeClass('gantt-root');
+		container.removeClass('task-root');
 
 		// Create toolbar
 		const toolbarContainer = container.createDiv('calendar-toolbar');
@@ -164,12 +165,19 @@ export class CalendarView extends ItemView {
 
 		// Create calendar content
 		const content = container.createDiv('calendar-content');
-		// 甘特图模式下限定滚动区域在内容容器内，并让根容器禁用外部滚动
+		// 甘特图模式/任务视图下限定滚动区域在内容容器内，并让根容器禁用外部滚动
 		if (this.viewType === 'gantt') {
 			content.addClass('gantt-mode');
 			container.addClass('gantt-root');
 		} else {
 			content.removeClass('gantt-mode');
+		}
+
+		// 任务视图也需要特殊的布局处理
+		if (this.viewType === 'task') {
+			container.addClass('task-root');
+		} else {
+			container.removeClass('task-root');
 		}
 		this.renderCalendarContent(content);
 

@@ -63,10 +63,24 @@ Author: sugar
 	min-height: 0;
 }
 
-.view-content.gantt-root {
+.view-content.gantt-root,
+.view-content.task-root {
 	overflow: hidden;
 	display: flex;
 	flex-direction: column;
+}
+
+/* 任务视图布局：toolbar 固定，content 内部滚动 */
+.view-content.task-root .calendar-toolbar {
+	position: relative; /* 覆盖 sticky，固定在顶部 */
+	top: 0;
+	flex-shrink: 0; /* 防止被压缩 */
+}
+
+.view-content.task-root .calendar-content {
+	flex: 1; /* 填充剩余空间 */
+	min-height: 0; /* 允许 flex 收缩 */
+	overflow: hidden; /* 防止外层滚动 */
 }
 
 /* Calendar Grid Layouts */
@@ -299,9 +313,9 @@ Author: sugar
 	flex-direction: column;
 	gap: 6px;
 	padding: 12px;
-	height: auto;
-	flex: none;
-	overflow: visible;
+	flex: 1; /* 填充父容器剩余空间 */
+	min-height: 0; /* 允许 flex 收缩 */
+	overflow: hidden; /* 防止溢出到外层 */
 	width: 100%;
 }
 
@@ -2970,4 +2984,71 @@ Author: sugar
 		font-size: 8px;
 		padding: 1px 3px;
 	}
+}
+
+/* ============================================
+   虚拟滚动 - 真正的虚拟滚动（动态 DOM）
+   ============================================ */
+
+/* 任务视图模式下，外层容器隐藏溢出 */
+.calendar-content:has(.gc-view--task),
+.calendar-content.gantt-mode {
+	overflow: hidden; /* 防止外层滚动条 */
+}
+
+/* 滚动容器 - 填充父容器剩余空间 */
+.gc-task-scroll-container {
+	flex: 1; /* 填充父容器剩余空间 */
+	min-height: 0; /* 允许收缩 */
+	overflow-y: auto;
+	overflow-x: visible;
+	width: 100%;
+	position: relative;
+}
+
+/* 滚动条样式 */
+.gc-task-scroll-container::-webkit-scrollbar {
+	width: 8px;
+}
+
+.gc-task-scroll-container::-webkit-scrollbar-track {
+	background: var(--background-secondary);
+}
+
+.gc-task-scroll-container::-webkit-scrollbar-thumb {
+	background: var(--background-modifier-border);
+	border-radius: 4px;
+}
+
+.gc-task-scroll-container::-webkit-scrollbar-thumb:hover {
+	background: var(--text-faint);
+}
+
+/* 虚拟滚动容器（由 VirtualScrollManager 创建） */
+.gc-virtual-scroll-container {
+	position: relative;
+	height: 100%;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+/* 占位符 - 保持滚动条高度 */
+.gc-virtual-scroll-placeholder {
+	width: 100%;
+	pointer-events: none;
+}
+
+/* 虚拟视口 - 存放实际渲染的元素 */
+.gc-virtual-scroll-viewport {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	will-change: transform; /* 优化性能 */
+	pointer-events: none; /* 让事件穿透到子元素 */
+}
+
+/* 虚拟滚动中的任务卡片 - 恢复事件响应 */
+.gc-virtual-scroll-viewport > * {
+	pointer-events: auto;
 }

@@ -6,11 +6,24 @@ import { sortTasks } from '../tasks/taskSorter';
 import { DEFAULT_SORT_STATE } from '../types';
 import { ViewClasses, withModifiers } from '../utils/bem';
 import { TaskCardComponent, TaskViewConfig } from '../components/TaskCard';
+import { VirtualScrollManager } from '../utils/virtualScroll/VirtualScrollManager';
+
+/**
+ * 虚拟滚动管理器类型
+ */
+type VirtualScrollManagerType = VirtualScrollManager<GanttTask>;
 
 /**
  * 任务视图渲染器
  */
 export class TaskViewRenderer extends BaseCalendarRenderer {
+	// 虚拟滚动管理器
+	private virtualScrollManager?: VirtualScrollManagerType;
+	private scrollContainer?: HTMLElement;
+
+	// 当前筛选后的任务数据（用于复用）
+	private currentTasks: GanttTask[] = [];
+
 	// 任务筛选状态
 	private taskFilter: 'all' | 'completed' | 'uncompleted' = 'all';
 
@@ -25,6 +38,9 @@ export class TaskViewRenderer extends BaseCalendarRenderer {
 
 	// 排序状态
 	private sortState: SortState = DEFAULT_SORT_STATE;
+
+	// 预估任务卡片高度（像素）
+	private readonly estimatedItemHeight = 60;
 
 	// ===== Getter/Setter 方法 =====
 
@@ -93,7 +109,9 @@ export class TaskViewRenderer extends BaseCalendarRenderer {
 		// 创建任务视图容器
 		const taskRoot = container.createDiv(withModifiers(ViewClasses.block, ViewClasses.modifiers.task));
 
-		this.loadTaskList(taskRoot);
+		// 创建滚动容器（用于虚拟滚动）
+		this.scrollContainer = taskRoot.createDiv('gc-task-scroll-container');
+		this.loadTaskList(this.scrollContainer);
 	}
 
 	/**
@@ -101,7 +119,6 @@ export class TaskViewRenderer extends BaseCalendarRenderer {
 	 */
 	private async loadTaskList(listContainer: HTMLElement): Promise<void> {
 		listContainer.empty();
-		listContainer.createEl('div', { text: '加载中...', cls: 'gantt-task-empty' });
 
 		try {
 			let tasks: GanttTask[] = this.plugin.taskCache.getAllTasks();
@@ -152,35 +169,198 @@ export class TaskViewRenderer extends BaseCalendarRenderer {
 			// 应用排序
 			tasks = sortTasks(tasks, this.sortState);
 
-			listContainer.empty();
+			// 保存当前筛选后的任务
+			this.currentTasks = tasks;
 
 			if (tasks.length === 0) {
 				listContainer.createEl('div', { text: '未找到符合条件的任务', cls: 'gantt-task-empty' });
+				// 清理旧的虚拟滚动管理器
+				if (this.virtualScrollManager) {
+					this.virtualScrollManager.destroy();
+					this.virtualScrollManager = undefined;
+				}
 				return;
 			}
 
-			tasks.forEach(task => this.renderTaskItem(task, listContainer));
+			// 构建日期范围描述
+			const dateRangeDesc = this.buildDateRangeDescription();
+
+			// 输出调试信息
+			console.log('[TaskView] 开始渲染任务列表', {
+				任务数量: tasks.length,
+				状态筛选: this.taskFilter,
+				字段筛选: this.getFieldLabel(this.timeFieldFilter),
+				日期范围: this.getDateRangeModeLabel(),
+				日期描述: dateRangeDesc
+			});
+
+			// 创建或更新虚拟滚动管理器
+			this.setupVirtualScroll(listContainer, tasks, dateRangeDesc);
+
 		} catch (error) {
-			console.error('Error rendering task view', error);
+			console.error('[TaskView] Error rendering task view', error);
 			listContainer.empty();
 			listContainer.createEl('div', { text: '加载任务时出错', cls: 'gantt-task-empty' });
 		}
 	}
 
 	/**
-	 * 渲染任务项（使用统一组件）
+	 * 设置虚拟滚动管理器（复用或创建新实例）
 	 */
-	private renderTaskItem(task: GanttTask, listContainer: HTMLElement): void {
+	private setupVirtualScroll(
+		container: HTMLElement,
+		tasks: GanttTask[],
+		dateRangeDesc: string
+	): void {
+		// 如果已存在虚拟滚动管理器，直接更新数据
+		if (this.virtualScrollManager) {
+			// 检查滚动容器是否仍然在 DOM 中
+			if (container.contains(this.virtualScrollManager.getScrollContainer())) {
+				// 复用现有实例，只更新数据
+				this.virtualScrollManager.updateItems(tasks);
+				return;
+			} else {
+				// 容器已不在 DOM 中，销毁旧实例
+				this.virtualScrollManager.destroy();
+				this.virtualScrollManager = undefined;
+			}
+		}
+
+		// 创建新的虚拟滚动管理器
+		this.virtualScrollManager = new VirtualScrollManager<GanttTask>({
+			items: tasks,
+			estimatedItemHeight: this.estimatedItemHeight,
+			bufferSize: 200, // 缓冲区 200px
+			container: container,
+			debug: {
+				enabled: true,
+				prefix: '[TaskView]',
+				viewType: '任务视图',
+				dateRangeMode: this.getDateRangeModeLabel(),
+				dateRangeDesc: dateRangeDesc
+			},
+			// 渲染单个任务
+			renderItem: (task, index) => {
+				return this.renderTaskItem(task, index);
+			}
+		});
+
+		// 启用滚动监听
+		this.virtualScrollManager.enableScrollListener();
+	}
+
+	/**
+	 * 渲染任务项（返回 DOM 元素，不直接添加到容器）
+	 */
+	private renderTaskItem(task: GanttTask, index: number): HTMLElement {
+		// 创建包装元素
+		const wrapper = document.createElement('div');
+		wrapper.className = 'gc-task-card gc-task-card--task gc-task-card--pending task-with-status';
+		wrapper.dataset.index = String(index);
+		wrapper.style.width = '100%';
+
+		// 创建任务卡片组件，渲染到包装元素中
 		new TaskCardComponent({
 			task,
 			config: TaskViewConfig,
-			container: listContainer,
+			container: wrapper,
 			app: this.app,
 			plugin: this.plugin,
-			onClick: (task) => {
+			onClick: (clickedTask) => {
 				// 刷新任务列表
-				this.loadTaskList(listContainer);
+				if (this.scrollContainer) {
+					this.loadTaskList(this.scrollContainer);
+				}
 			},
 		}).render();
+
+		// 注册右键菜单
+		const taskCard = wrapper.firstElementChild as HTMLElement;
+		if (taskCard) {
+			const enabledFormats = this.plugin.settings.enabledTaskFormats;
+			const defaultNotePath = this.plugin.settings.defaultNotePath || '';
+			registerTaskContextMenu(
+				taskCard,
+				task,
+				this.app,
+				enabledFormats,
+				defaultNotePath,
+				() => {
+					if (this.scrollContainer) {
+						this.loadTaskList(this.scrollContainer);
+					}
+				}
+			);
+		}
+
+		return wrapper;
+	}
+
+	/**
+	 * 获取日期范围模式的中文标签
+	 */
+	private getDateRangeModeLabel(): string {
+		const labels: Record<string, string> = {
+			'all': '全部',
+			'day': '当天',
+			'week': '当周',
+			'month': '当月',
+			'custom': '自定义'
+		};
+		return labels[this.dateRangeMode] || this.dateRangeMode;
+	}
+
+	/**
+	 * 获取时间字段的中文标签
+	 */
+	private getFieldLabel(field: string): string {
+		const labels: Record<string, string> = {
+			'createdDate': '创建时间',
+			'startDate': '开始时间',
+			'scheduledDate': '计划时间',
+			'dueDate': '截止时间',
+			'completionDate': '完成时间',
+			'cancelledDate': '取消时间'
+		};
+		return labels[field] || field;
+	}
+
+	/**
+	 * 构建日期范围描述
+	 */
+	private buildDateRangeDescription(): string {
+		if (this.dateRangeMode === 'all') {
+			return '全部时间';
+		}
+
+		const ref = this.timeValueFilter ?? new Date();
+		const formatDate = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+		if (this.dateRangeMode === 'day' || this.dateRangeMode === 'custom') {
+			return formatDate(ref);
+		} else if (this.dateRangeMode === 'week') {
+			// 计算周的开始和结束
+			const startOfWeek = new Date(ref);
+			const day = startOfWeek.getDay();
+			const diff = (day + 6) % 7;
+			startOfWeek.setDate(startOfWeek.getDate() - diff);
+			const endOfWeek = new Date(startOfWeek);
+			endOfWeek.setDate(endOfWeek.getDate() + 6);
+			return `${formatDate(startOfWeek)} ~ ${formatDate(endOfWeek)}`;
+		} else if (this.dateRangeMode === 'month') {
+			return `${ref.getFullYear()}年${ref.getMonth() + 1}月`;
+		}
+
+		return this.dateRangeMode;
+	}
+
+	/**
+	 * 清理资源（在视图卸载时调用）
+	 */
+	runDomCleanups(): void {
+		if (this.virtualScrollManager) {
+			this.virtualScrollManager.destroy();
+			this.virtualScrollManager = undefined;
+		}
 	}
 }
