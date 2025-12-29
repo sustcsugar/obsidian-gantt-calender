@@ -3012,11 +3012,11 @@ Author: sugar
 /* 主布局容器 - 使用 Grid 布局实现冻结效果 */
 .gc-gantt-view__layout {
 	display: grid;
-	grid-template-columns: 200px 1fr;
+	grid-template-columns: 200px 4px 1fr;
 	grid-template-rows: 50px 1fr;
 	grid-template-areas:
-		"corner header"
-		"tasklist chart";
+		"corner resizer header"
+		"tasklist resizer chart";
 	width: 100%;
 	height: 100%;
 	gap: 0;
@@ -3098,6 +3098,24 @@ Author: sugar
 
 .gc-gantt-view__chart-container::-webkit-scrollbar-thumb:hover {
 	background: var(--text-muted);
+}
+
+/* 分隔条 - 可拖动调整左右布局宽度 */
+.gc-gantt-view__resizer {
+	grid-area: resizer;
+	background-color: var(--background-modifier-border);
+	cursor: col-resize;
+	transition: background-color 0.2s ease;
+	position: relative;
+	z-index: 10;
+}
+
+.gc-gantt-view__resizer:hover {
+	background-color: var(--interactive-accent);
+}
+
+.gc-gantt-view__resizer:active {
+	background-color: var(--interactive-accent-hover);
 }
 
 .gc-gantt-view__chart-svg {

@@ -256,6 +256,7 @@ export const GanttClasses = {
 		tasklistSvg: bem(BLOCKS.GANTT, 'tasklist-svg'),
 		chartContainer: bem(BLOCKS.GANTT, 'chart-container'),
 		chartSvg: bem(BLOCKS.GANTT, 'chart-svg'),
+		resizer: bem(BLOCKS.GANTT, 'resizer'),
 		grid: bem(BLOCKS.GANTT, 'grid'),
 		tasks: bem(BLOCKS.GANTT, 'tasks'),
 		barGroup: bem(BLOCKS.GANTT, 'bar-group'),

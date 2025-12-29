@@ -48,6 +48,7 @@ export class SvgGanttRenderer {
 	private rowHeight = 40;
 	private columnWidth = 50;
 	private taskColumnWidth = 200;  // 任务列宽度
+	private resizerWidth = 4;  // 分隔条宽度
 	private padding = 18;
 
 	// 日期范围（用于滚动到今天）
@@ -60,6 +61,10 @@ export class SvgGanttRenderer {
 	private taskListContainer: HTMLElement | null = null;
 	private ganttContainer: HTMLElement | null = null;
 	private cornerContainer: HTMLElement | null = null;
+	private resizer: HTMLElement | null = null;  // 分隔条元素
+
+	// 拖动状态
+	private isResizing = false;
 
 	// 事件回调
 	private onDateChange?: (task: FrappeTask, start: Date, end: Date) => void;
@@ -180,8 +185,14 @@ export class SvgGanttRenderer {
 		);
 		this.renderGanttChart(this.ganttSvg, minDate, totalDays, ganttHeight);
 
+		// 创建分隔条
+		this.resizer = this.ganttLayout.createDiv(GanttClasses.elements.resizer);
+
 		// 设置同步滚动
 		this.setupSyncScrolling();
+
+		// 设置分隔条拖动
+		this.setupResizer();
 	}
 
 	/**
@@ -279,6 +290,61 @@ export class SvgGanttRenderer {
 			requestAnimationFrame(() => {
 				isSyncing = false;
 			});
+		});
+	}
+
+	/**
+	 * 设置分隔条拖动
+	 */
+	private setupResizer(): void {
+		if (!this.resizer || !this.ganttLayout) return;
+
+		const resizer = this.resizer;
+		const layout = this.ganttLayout;
+
+		// 鼠标按下开始拖动
+		resizer.addEventListener('mousedown', (e) => {
+			this.isResizing = true;
+			document.body.style.cursor = 'col-resize';
+			document.body.style.userSelect = 'none'; // 防止拖动时选中文字
+
+			e.preventDefault();
+		});
+
+		// 鼠标移动调整宽度
+		document.addEventListener('mousemove', (e) => {
+			if (!this.isResizing || !layout) return;
+
+			const layoutRect = layout.getBoundingClientRect();
+			const newWidth = e.clientX - layoutRect.left;
+
+			// 限制最小和最大宽度
+			const minWidth = 100;
+			const maxWidth = layoutRect.width - this.resizerWidth - 200;
+
+			if (newWidth >= minWidth && newWidth <= maxWidth) {
+				this.taskColumnWidth = newWidth;
+
+				// 更新 Grid 列宽
+				layout.style.gridTemplateColumns = `${newWidth}px ${this.resizerWidth}px 1fr`;
+
+				// 更新 SVG 元素宽度
+				if (this.cornerSvg) {
+					this.cornerSvg.setAttribute('width', String(newWidth));
+				}
+				if (this.taskListSvg) {
+					this.taskListSvg.setAttribute('width', String(newWidth));
+				}
+			}
+		});
+
+		// 鼠标释放结束拖动
+		document.addEventListener('mouseup', () => {
+			if (this.isResizing) {
+				this.isResizing = false;
+				document.body.style.cursor = '';
+				document.body.style.userSelect = '';
+			}
 		});
 	}
 
