@@ -8,7 +8,6 @@ import { Notice } from 'obsidian';
 import { BaseCalendarRenderer } from './BaseCalendarRenderer';
 import type { GanttTask, GanttTimeGranularity, SortState, TagFilterState } from '../types';
 import { DEFAULT_TAG_FILTER_STATE } from '../types';
-import { formatDate } from '../dateUtils/dateUtilsIndex';
 import { sortTasks } from '../tasks/taskSorter';
 import {
 	FrappeGanttWrapper,
@@ -183,12 +182,12 @@ export class GanttViewRenderer extends BaseCalendarRenderer {
 				date_format: 'YYYY-MM-DD',
 				on_click: (task) => this.handleTaskClick(task),
 				on_date_change: (task, start, end) => this.handleDateChange(task, start, end),
-				on_progress_change: (task, progress) => this.handleProgressChange(task, progress),
-				custom_popup_html: (task) => this.getPopupHtml(task)
+				on_progress_change: (task, progress) => this.handleProgressChange(task, progress)
+				// tooltip 由全局 TooltipManager 统一管理
 			};
 
-			// 9. 初始化 Frappe Gantt 包装器
-			this.ganttWrapper = new FrappeGanttWrapper(ganttRoot, config);
+			// 9. 初始化 Frappe Gantt 包装器（传递 plugin 和原始任务列表用于 tooltip）
+			this.ganttWrapper = new FrappeGanttWrapper(ganttRoot, config, this.plugin, filteredTasks);
 
 			// 10. 渲染甘特图
 			await this.ganttWrapper.init(frappeTasks);
@@ -315,83 +314,6 @@ export class GanttViewRenderer extends BaseCalendarRenderer {
 			progress,
 			this.currentTasks
 		);
-	}
-
-	/**
-	 * 生成自定义弹窗 HTML
-	 */
-	private getPopupHtml(frappeTask: import('../gantt').FrappeTask): string {
-		const originalTask = this.currentTasks.find(t =>
-			t.fileName === frappeTask.id.split('-').slice(0, -2).join('-') + '.md'
-		);
-
-		if (!originalTask) {
-			return `
-				<div class="gantt-popup">
-					<strong>${frappeTask.name}</strong><br>
-					<small>${frappeTask.start} ~ ${frappeTask.end}</small>
-				</div>
-			`;
-		}
-
-		const parts: string[] = [
-			`<strong>${this.escapeHtml(originalTask.description)}</strong>`,
-			`<hr style="margin: 8px 0; border: none; border-top: 1px solid var(--background-modifier-border);">`
-		];
-
-		// 优先级
-		if (originalTask.priority) {
-			const priorityIcon = this.getPriorityIcon(originalTask.priority);
-			parts.push(`<div>🎯 优先级: ${priorityIcon} ${originalTask.priority}</div>`);
-		}
-
-		// 时间信息
-		const timeParts: string[] = [];
-		if (originalTask.createdDate) {
-			timeParts.push(`➕ 创建: ${formatDate(originalTask.createdDate, 'yyyy-MM-dd')}`);
-		}
-		if (originalTask.startDate) {
-			timeParts.push(`🛫 开始: ${formatDate(originalTask.startDate, 'yyyy-MM-dd')}`);
-		}
-		if (originalTask.scheduledDate) {
-			timeParts.push(`⏳ 计划: ${formatDate(originalTask.scheduledDate, 'yyyy-MM-dd')}`);
-		}
-		if (originalTask.dueDate) {
-			const isOverdue = originalTask.dueDate < new Date() && !originalTask.completed;
-			const color = isOverdue ? 'color: var(--text-error);' : '';
-			timeParts.push(`<span style="${color}">📅 截止: ${formatDate(originalTask.dueDate, 'yyyy-MM-dd')}</span>`);
-		}
-		if (originalTask.completionDate) {
-			timeParts.push(`✅ 完成: ${formatDate(originalTask.completionDate, 'yyyy-MM-dd')}`);
-		}
-
-		if (timeParts.length > 0) {
-			parts.push('<div style="margin-top: 8px;">' + timeParts.join('<br>') + '</div>');
-		}
-
-		// 标签
-		if (originalTask.tags && originalTask.tags.length > 0) {
-			const tagsHtml = originalTask.tags.map(tag =>
-				`<span class="gc-tag gc-tag--popup">#${tag}</span>`
-			).join(' ');
-			parts.push(`<div style="margin-top: 8px;">${tagsHtml}</div>`);
-		}
-
-		// 文件位置
-		parts.push(`<div style="margin-top: 8px; color: var(--text-muted); font-size: 11px;">`);
-		parts.push(`📄 ${originalTask.fileName}:${originalTask.lineNumber}`);
-		parts.push(`</div>`);
-
-		return `<div class="gantt-popup">${parts.join('')}</div>`;
-	}
-
-	/**
-	 * 转义 HTML
-	 */
-	private escapeHtml(text: string): string {
-		const div = document.createElement('div');
-		div.textContent = text;
-		return div.innerHTML;
 	}
 
 	/**

@@ -5,6 +5,7 @@
 
 import { SvgGanttRenderer } from './svgGanttRenderer';
 import type { FrappeTask, FrappeGanttConfig, IFrappeGantt } from '../types';
+import type { GanttTask } from '../../types';
 
 /**
  * Frappe Gantt 包装类
@@ -17,15 +18,21 @@ export class FrappeGanttWrapper {
 	private container: HTMLElement;
 	private config: FrappeGanttConfig;
 	private isInitialized = false;
+	private plugin: any;
+	private originalTasks: GanttTask[] = [];
 
 	/**
 	 * 构造函数
 	 *
 	 * @param container - 容器元素
 	 * @param config - 甘特图配置
+	 * @param plugin - 插件实例（用于 TooltipManager）
+	 * @param originalTasks - 原始任务列表（用于 tooltip 显示）
 	 */
-	constructor(container: HTMLElement, config: FrappeGanttConfig) {
+	constructor(container: HTMLElement, config: FrappeGanttConfig, plugin: any, originalTasks: GanttTask[] = []) {
 		this.container = container;
+		this.plugin = plugin;
+		this.originalTasks = originalTasks;
 		this.config = {
 			...config,
 			header_height: config.header_height ?? 50,
@@ -51,8 +58,8 @@ export class FrappeGanttWrapper {
 		}
 
 		try {
-			// 创建 SVG 渲染器
-			this.renderer = new SvgGanttRenderer(this.container, this.config);
+			// 创建 SVG 渲染器（传递 plugin 和原始任务列表）
+			this.renderer = new SvgGanttRenderer(this.container, this.config, this.plugin, this.originalTasks);
 
 			// 设置事件处理器
 			this.renderer.setEventHandlers({

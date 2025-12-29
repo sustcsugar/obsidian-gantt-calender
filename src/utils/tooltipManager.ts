@@ -11,6 +11,11 @@ interface TooltipPosition {
 	top: number;
 }
 
+export interface MousePosition {
+	x: number;
+	y: number;
+}
+
 /**
  * Tooltip 单例管理器
  * 全局共享一个 tooltip 元素，避免频繁创建/销毁 DOM
@@ -25,6 +30,7 @@ export class TooltipManager {
 	private tooltip: HTMLElement | null = null;
 	private currentCard: HTMLElement | null = null;
 	private currentTask: GanttTask | null = null;
+	private mousePosition: MousePosition | null = null;  // 鼠标位置（用于跟随鼠标）
 
 	private showTimeout: number | null = null;
 	private hideTimeout: number | null = null;
@@ -85,15 +91,21 @@ export class TooltipManager {
 
 	/**
 	 * 显示 tooltip
+	 * @param task - 任务数据
+	 * @param card - 触发元素
+	 * @param mousePosition - 鼠标位置（可选，用于跟随鼠标）
 	 */
-	show(task: GanttTask, card: HTMLElement): void {
+	show(task: GanttTask, card: HTMLElement, mousePosition?: MousePosition): void {
 		// 取消隐藏定时器
 		if (this.hideTimeout) {
 			window.clearTimeout(this.hideTimeout);
 			this.hideTimeout = null;
 		}
 
-		// 如果是同一个任务，只更新位置（任务可能因滚动改变了位置）
+		// 保存鼠标位置
+		this.mousePosition = mousePosition || null;
+
+		// 如果是同一个任务，只更新位置
 		if (this.currentTask === task && this.currentCard === card) {
 			this.updatePosition(card);
 			return;
@@ -214,23 +226,43 @@ export class TooltipManager {
 	private updatePosition(card: HTMLElement): void {
 		if (!this.tooltip) return;
 
-		const rect = card.getBoundingClientRect();
 		const tooltipWidth = 300;
-		// 使用固定高度避免读取 offsetHeight 触发重排
 		const tooltipHeight = this.estimateTooltipHeight();
 
-		let left = rect.right + 10;
-		let top = rect.top;
+		let left: number;
+		let top: number;
+
+		// 如果有鼠标位置，使用鼠标位置；否则使用元素位置
+		if (this.mousePosition) {
+			// 跟随鼠标：显示在鼠标右下方，间距 15px
+			left = this.mousePosition.x + 15;
+			top = this.mousePosition.y + 15;
+		} else {
+			// 默认：显示在元素右侧
+			const rect = card.getBoundingClientRect();
+			left = rect.right + 10;
+			top = rect.top;
+		}
 
 		// 边界检测
 		if (left + tooltipWidth > window.innerWidth) {
-			left = rect.left - tooltipWidth - 10;
+			// 右侧空间不够，显示在左侧
+			if (this.mousePosition) {
+				left = this.mousePosition.x - tooltipWidth - 15;
+			} else {
+				left = window.innerWidth - tooltipWidth - 10;
+			}
 		}
 		if (left < 10) {
 			left = 10;
 		}
 		if (top + tooltipHeight > window.innerHeight) {
-			top = window.innerHeight - tooltipHeight - 10;
+			// 下方空间不够，向上调整
+			if (this.mousePosition) {
+				top = this.mousePosition.y - tooltipHeight - 15;
+			} else {
+				top = window.innerHeight - tooltipHeight - 10;
+			}
 		}
 		if (top < 10) {
 			top = 10;

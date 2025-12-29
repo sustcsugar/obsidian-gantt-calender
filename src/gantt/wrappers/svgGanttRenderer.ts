@@ -13,7 +13,9 @@
  */
 
 import type { FrappeTask, FrappeGanttConfig } from '../types';
-import { GanttClasses, GanttTooltipClasses } from '../../utils/bem';
+import type { GanttTask } from '../../types';
+import { GanttClasses } from '../../utils/bem';
+import { TooltipManager, type MousePosition } from '../../utils/tooltipManager';
 
 /**
  * SVG 元素辅助方法
@@ -42,6 +44,8 @@ export class SvgGanttRenderer {
 	private config: FrappeGanttConfig;
 	private tasks: FrappeTask[] = [];
 	private container: HTMLElement;
+	private plugin: any;
+	private originalTasks: GanttTask[] = [];  // 原始任务列表（用于 tooltip）
 
 	// 尺寸相关
 	private headerHeight = 50;
@@ -70,9 +74,11 @@ export class SvgGanttRenderer {
 	private onDateChange?: (task: FrappeTask, start: Date, end: Date) => void;
 	private onProgressChange?: (task: FrappeTask, progress: number) => void;
 
-	constructor(container: HTMLElement, config: FrappeGanttConfig) {
+	constructor(container: HTMLElement, config: FrappeGanttConfig, plugin: any, originalTasks: GanttTask[] = []) {
 		this.container = container;
 		this.config = config;
+		this.plugin = plugin;
+		this.originalTasks = originalTasks;
 
 		// 从配置读取尺寸
 		this.headerHeight = config.header_height ?? 50;
@@ -743,9 +749,10 @@ export class SvgGanttRenderer {
 			bar.addEventListener('click', () => this.handleTaskClick(task));
 
 			// 添加悬停效果
-			bar.addEventListener('mouseenter', () => {
+			bar.addEventListener('mouseenter', (event: MouseEvent) => {
 				bar.setAttribute('opacity', '1');
-				this.showPopup(task, bar);
+				// 传递鼠标位置，使弹窗跟随鼠标
+				this.showPopup(task, bar, { x: event.clientX, y: event.clientY });
 			});
 
 			bar.addEventListener('mouseleave', () => {
@@ -764,7 +771,7 @@ export class SvgGanttRenderer {
 	 * 渲染弹窗容器
 	 */
 	private renderPopupContainer(): void {
-		// 弹窗在需要时动态创建
+		// 弹窗由 TooltipManager 统一管理
 	}
 
 	/**
@@ -777,44 +784,44 @@ export class SvgGanttRenderer {
 	}
 
 	/**
-	 * 显示弹窗
+	 * 根据 FrappeTask ID 查找对应的原始任务
 	 */
-	private showPopup(task: FrappeTask, targetElement: Element): void {
-		if (!this.config.custom_popup_html) return;
+	private findOriginalTask(frappeTask: FrappeTask): GanttTask | null {
+		// 解析任务 ID: {sanitizedName}-{lineNumber}-{index}
+		// 注意：sanitizedName 是经过处理的文件名（特殊字符被替换为 _）
+		const parts = frappeTask.id.split('-');
+		if (parts.length < 2) return null;
 
-		// 移除现有弹窗
-		this.hidePopup();
+		const lineNumber = parseInt(parts[parts.length - 2]);
 
-		// 创建弹窗
-		const popup = document.createElement('div');
-		popup.classList.add(GanttTooltipClasses.block);
-		popup.innerHTML = this.config.custom_popup_html(task);
-
-		// 定位
-		const rect = targetElement.getBoundingClientRect();
-		popup.style.position = 'fixed';
-		popup.style.left = `${rect.right + 10}px`;
-		popup.style.top = `${rect.top}px`;
-		popup.style.zIndex = '1000';
-
-		document.body.appendChild(popup);
-
-		// 自动隐藏
-		setTimeout(() => {
-			if (popup.isConnected) {
-				this.hidePopup();
-			}
-		}, 5000);
+		// 使用 lineNumber 来匹配，因为文件名中的特殊字符会被 sanitize
+		return this.originalTasks.find(t => t.lineNumber === lineNumber) || null;
 	}
 
 	/**
-	 * 隐藏弹窗
+	 * 显示弹窗（使用全局 TooltipManager）
+	 * @param task - Frappe 任务
+	 * @param targetElement - 目标元素
+	 * @param mousePosition - 鼠标位置（可选）
+	 */
+	private showPopup(task: FrappeTask, targetElement: Element, mousePosition?: MousePosition): void {
+		if (!this.plugin || !this.originalTasks?.length) return;
+
+		const originalTask = this.findOriginalTask(task);
+		if (!originalTask) return;
+
+		const tooltipManager = TooltipManager.getInstance(this.plugin);
+		tooltipManager.show(originalTask, targetElement as HTMLElement, mousePosition);
+	}
+
+	/**
+	 * 隐藏弹窗（使用全局 TooltipManager）
 	 */
 	private hidePopup(): void {
-		const existing = document.querySelector(`.${GanttTooltipClasses.block}`);
-		if (existing) {
-			existing.remove();
-		}
+		if (!this.plugin) return;
+
+		const tooltipManager = TooltipManager.getInstance(this.plugin);
+		tooltipManager.hide();
 	}
 
 	/**
