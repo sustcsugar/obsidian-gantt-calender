@@ -328,12 +328,41 @@ export class SvgGanttRenderer {
 				// 更新 Grid 列宽
 				layout.style.gridTemplateColumns = `${newWidth}px ${this.resizerWidth}px 1fr`;
 
-				// 更新 SVG 元素宽度
+				// 更新 corner SVG 元素
 				if (this.cornerSvg) {
 					this.cornerSvg.setAttribute('width', String(newWidth));
+					const viewBox = this.cornerSvg.getAttribute('viewBox')?.split(' ');
+					if (viewBox && viewBox.length === 4) {
+						viewBox[2] = String(newWidth);
+						this.cornerSvg.setAttribute('viewBox', viewBox.join(' '));
+					}
+					// 更新内部 rect 宽度
+					const bgRect = this.cornerSvg.querySelector('rect');
+					if (bgRect) {
+						bgRect.setAttribute('width', String(newWidth));
+					}
 				}
+
+				// 更新 tasklist SVG 元素
 				if (this.taskListSvg) {
 					this.taskListSvg.setAttribute('width', String(newWidth));
+					const viewBox = this.taskListSvg.getAttribute('viewBox')?.split(' ');
+					if (viewBox && viewBox.length === 4) {
+						viewBox[2] = String(newWidth);
+						this.taskListSvg.setAttribute('viewBox', viewBox.join(' '));
+					}
+					// 更新所有 rect 和 line 的宽度
+					const rects = this.taskListSvg.querySelectorAll('rect');
+					rects.forEach(rect => {
+						rect.setAttribute('width', String(newWidth));
+					});
+					const lines = this.taskListSvg.querySelectorAll('line');
+					lines.forEach(line => {
+						const x2 = line.getAttribute('x2');
+						if (x2 === '200' || x2 === this.taskColumnWidth.toString()) {
+							line.setAttribute('x2', String(newWidth));
+						}
+					});
 				}
 			}
 		});
@@ -419,6 +448,7 @@ export class SvgGanttRenderer {
 			text.setAttribute('y', String(y));
 			text.setAttribute('font-size', '12');
 			text.setAttribute('fill', 'var(--text-normal)');
+			text.setAttribute('text-anchor', 'start');  // 左对齐
 
 			// 截断长文本
 			const maxWidth = width - this.padding * 2 - 10;
