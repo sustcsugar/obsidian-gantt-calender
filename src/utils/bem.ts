@@ -268,12 +268,6 @@ export const GanttClasses = {
 	},
 };
 
-/**
- * 甘特图工具提示类名常量
- */
-export const GanttTooltipClasses = {
-	block: bem(BLOCKS.GANTT_TOOLTIP),
-};
 
 /**
  * 工具栏组件类名常量
